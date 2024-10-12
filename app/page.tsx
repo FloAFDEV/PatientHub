@@ -1,128 +1,61 @@
-// app/page.tsx
 import Image from "next/image";
-import { useRouter } from "next/router"; // Pour gérer la navigation
-import { createClient } from "@/utils/supabase/client"; // Importez la fonction createClient
+import Link from "next/link";
+import { PasskeyModal } from "@/components/PassKeyModal";
+import { SearchParamProps } from "@/components/types/index";
 
-export default function Home() {
-	const router = useRouter();
-
-	const handleSignOut = async () => {
-		const supabase = createClient(); // Créez un nouveau client à chaque fois
-
-		const { error } = await supabase.auth.signOut();
-
-		if (error) {
-			console.error("Erreur lors de la déconnexion:", error);
-			return; // Vous pouvez gérer les erreurs ici si nécessaire
-		}
-
-		console.log("Utilisateur déconnecté avec succès");
-		router.push("/login"); // Redirigez vers la page de connexion
-	};
+const Home = ({ searchParams }: SearchParamProps) => {
+	const isAdmin = searchParams?.admin === "true";
 
 	return (
-		<div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-			<main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-				<Image
-					className="dark:invert"
-					src="https://nextjs.org/icons/next.svg"
-					alt="Next.js logo"
-					width={180}
-					height={38}
-					priority
-				/>
-				<ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-					<li className="mb-2">
-						Get started by editing{" "}
-						<code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-							app/page.tsx
-						</code>
-						.
-					</li>
-					<li>Save and see your changes instantly.</li>
-				</ol>
+		<div className="flex flex-col lg:flex-row h-screen max-h-screen bg-gradient-to-r from-sky-800 to-gray-300">
+			{isAdmin && <PasskeyModal />}
 
-				<div className="flex gap-4 items-center flex-col sm:flex-row">
-					<a
-						className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-						href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						<Image
-							className="dark:invert"
-							src="https://nextjs.org/icons/vercel.svg"
-							alt="Vercel logomark"
-							width={20}
-							height={20}
-						/>
-						Deploy now
-					</a>
-					<a
-						className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-						href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Read our docs
-					</a>
+			<section className="flex-1 flex flex-col justify-center items-center bg-transparent container px-4 md:px-8 py-8 lg:py-12">
+				<div className="max-w-md w-full text-center">
+					<Image
+						src="/assets/icons/logo-full.svg"
+						height={96}
+						width={162}
+						alt="Franck BLANCHET Ostéopathie"
+						className="h-auto mt-12 sm:mt-16 lg:mt-20 w-[150px] sm:w-[155px] md:w-[162px] rounded-2xl mb-20 sm:mb-32 lg:mb-48 shadow-gray-600 shadow-2xl"
+					/>
+
+					<h1 className="header mb-10 sm:mb-8 md:mb-10 text-2xl sm:text-3xl font-bold text-teal-300">
+						Bienvenue chez{" "}
+						<span className="text-yellow-500 font-extrabold">
+							Franck BLANCHET
+						</span>
+						<span> Ostéopathie</span>
+					</h1>
+
+					<p className="text-slate-800 mb-8 sm:mb-10 text-base md:text-lg font-medium">
+						Cette interface est réservée à l'administration.
+					</p>
+
+					<Link href="/?admin=true" className="mt-8">
+						<button className="px-6 py-2 bg-sky-600 text-xl text-white drop-shadow-2xl shadow-teal-500 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+							Accès Administrateur
+						</button>
+					</Link>
 				</div>
 
-				{/* Lien de déconnexion */}
-				<button
-					className="rounded-full border border-solid border-red-600 transition-colors flex items-center justify-center bg-red-600 text-white gap-2 hover:bg-red-700 dark:hover:bg-red-800 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-					onClick={handleSignOut}
-				>
-					Déconnexion
-				</button>
-			</main>
-			<footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image
-						aria-hidden
-						src="https://nextjs.org/icons/file.svg"
-						alt="File icon"
-						width={16}
-						height={16}
-					/>
-					Learn
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image
-						aria-hidden
-						src="https://nextjs.org/icons/window.svg"
-						alt="Window icon"
-						width={16}
-						height={16}
-					/>
-					Examples
-				</a>
-				<a
-					className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-					href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					<Image
-						aria-hidden
-						src="https://nextjs.org/icons/globe.svg"
-						alt="Globe icon"
-						width={16}
-						height={16}
-					/>
-					Go to nextjs.org →
-				</a>
-			</footer>
+				{/* Section pour les droits réservés */}
+				<footer className="mt-auto mb-4">
+					<p className="text-slate-900 text-sm md:text-base">
+						© 2024 Franck BLANCHET. Tous droits réservés.
+					</p>
+				</footer>
+			</section>
+
+			<Image
+				src="/assets/images/onboarding-img.png"
+				height={1000}
+				width={1000}
+				alt="Image d'accueil"
+				className="max-w-[50%] hidden lg:block object-cover"
+			/>
 		</div>
 	);
-}
+};
+
+export default Home;

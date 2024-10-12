@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 				error.message
 			);
 			return redirect(
-				`/error?message=${encodeURIComponent(error.message)}`
+				`/error?page?message=${encodeURIComponent(error.message)}`
 			);
 		}
 	} else {
