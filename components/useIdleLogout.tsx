@@ -4,9 +4,9 @@
 import { useIdleLogout } from "@/hooks/useIdleLogout";
 
 const IdleLogout = () => {
-	useIdleLogout();
+  useIdleLogout();
 
-	return null;
+  return null;
 };
 
 export default IdleLogout;
