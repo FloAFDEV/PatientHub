@@ -99,7 +99,7 @@ export const PasskeyModal = () => {
 			<AlertDialogOverlay className="fixed inset-0 bg-transparent/5" />
 			<AlertDialogContent className="shad-alert-dialog max-w-lg w-full mx-auto p-6 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
 				<AlertDialogHeader>
-					<AlertDialogTitle className="flex items-start justify-between font-bold">
+					<AlertDialogTitle className="flex items-start justify-between font-bold text-slate-200">
 						Vérification d'accès administrateur
 						<Image
 							src="/assets/icons/close.svg"
@@ -107,7 +107,7 @@ export const PasskeyModal = () => {
 							width={20}
 							height={20}
 							onClick={closeModal}
-							className="cursor-pointer hover:bg-red-700 rounded-xl bg-amber-800"
+							className="cursor-pointer hover:bg-red-500 rounded-xl bg-red-700"
 						/>
 					</AlertDialogTitle>
 					<AlertDialogDescription className="font-thin">
@@ -124,11 +124,11 @@ export const PasskeyModal = () => {
 							setPasskey(value)
 						}
 					>
-						<InputOTPGroup className="shad-otp w-full flex justify-between p-2">
+						<InputOTPGroup className="shad-otp w-full flex justify-between p-2 text-gray-300">
 							{Array.from({ length: 6 }, (_, index) => (
 								<InputOTPSlot
 									key={index}
-									className="shad-otp-slot flex justify-center items-center text-2xl md:text-3xl font-bold border border-gray-500 rounded-lg w-10 md:w-12 h-10 md:h-12 gap-2 md:gap-4"
+									className="shad-otp-slot flex justify-center items-center text-2xl md:text-3xl font-bold border border-gray-500 rounded-lg w-10 md:w-12 h-10 md:h-12 gap-2 md:gap-4 text-slate-200"
 									index={index}
 								/>
 							))}

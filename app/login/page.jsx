@@ -13,8 +13,8 @@ export default function LoginPage({ searchParams }) {
 					<Image
 						src="/assets/images/welcome.webp"
 						alt="Welcome"
-						width={800} // Augmenter la largeur pour les grands écrans
-						height={200} // Ajuster la hauteur pour correspondre
+						width={800}
+						height={200}
 						layout="responsive"
 					/>
 				</div>
@@ -88,7 +88,7 @@ export default function LoginPage({ searchParams }) {
 				{/* Section pour les droits réservés */}
 				<footer className="mt-auto mb-4">
 					<p className="text-slate-900 text-sm md:text-base mt-4">
-						© 2024 Franck BLANCHET. Tous droits réservés.
+						© 2024 AFDEV. Tous droits réservés.
 					</p>
 				</footer>
 			</div>

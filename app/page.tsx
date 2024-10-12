@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PasskeyModal } from "@/components/PassKeyModal";
 import { SearchParamProps } from "@/components/types/index";
+import Footer from "@/components/Footer";
 
 const Home = ({ searchParams }: SearchParamProps) => {
 	const isAdmin = searchParams?.admin === "true";
@@ -17,34 +18,36 @@ const Home = ({ searchParams }: SearchParamProps) => {
 						height={96}
 						width={162}
 						alt="Franck BLANCHET Ostéopathie"
-						className="h-auto mt-12 sm:mt-16 lg:mt-20 w-[150px] sm:w-[155px] md:w-[162px] rounded-2xl mb-20 sm:mb-32 lg:mb-48 shadow-gray-600 shadow-2xl"
+						className="h-auto mt-12 sm:mt-16 lg:mt-20 w-[150px] sm:w-[155px] md:w-[162px] rounded-2xl mb-10 sm:mb-20 lg:mb-32 shadow-gray-600 shadow-2xl"
 					/>
 
-					<h1 className="header mb-10 sm:mb-8 md:mb-10 text-2xl sm:text-3xl font-bold text-teal-300">
-						Bienvenue chez{" "}
-						<span className="text-yellow-500 font-extrabold">
-							Franck BLANCHET
+					{/* Section de bienvenue révisée */}
+					<div className="bg-opacity-90 p-6 rounded-lg mb-8">
+						<h1 className="text-3xl sm:text-4xl font-bold text-slate-200 mb-2">
+							Bienvenue chez{" "}
+							<span className="text-yellow-500 font-extrabold">
+								Franck BLANCHET
+							</span>
+						</h1>
+						<span className="text-lg sm:text-xl font-medium text-slate-800">
+							Ostéopathie
 						</span>
-						<span> Ostéopathie</span>
-					</h1>
+					</div>
 
-					<p className="text-slate-800 mb-8 sm:mb-10 text-base md:text-lg font-medium">
-						Cette interface est réservée à l'administration.
+					<p className="text-slate-800 mb-6 sm:mb-8 text-base md:text-lg font-medium">
+						Cette interface est réservée à l'administration. Si vous
+						êtes un patient, veuillez contacter le cabinet pour
+						prendre rendez-vous.
 					</p>
 
-					<Link href="/?admin=true" className="mt-8">
-						<button className="px-6 py-2 bg-sky-600 text-xl text-white drop-shadow-2xl shadow-teal-500 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+					<Link href="/?admin=true" className="mt-4">
+						<button className="px-6 py-2 text-xl bg-sky-600 text-white drop-shadow-2xl shadow-teal-500 rounded-md hover:bg-sky-800">
 							Accès Administrateur
 						</button>
 					</Link>
 				</div>
-
-				{/* Section pour les droits réservés */}
-				<footer className="mt-auto mb-4">
-					<p className="text-slate-900 text-sm md:text-base">
-						© 2024 Franck BLANCHET. Tous droits réservés.
-					</p>
-				</footer>
+				{/* Ajout du Footer */}
+				<Footer />
 			</section>
 
 			<Image

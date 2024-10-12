@@ -1,8 +1,8 @@
 // app/layout.tsx
-
 import { Metadata } from "next";
 import localFont from "next/font/local";
 import Footer from "@/components/Footer";
+import IdleLogout from "@/components/useIdleLogout";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -27,8 +27,9 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} antialiased flex flex-col min-h-screen`}
 			>
+				<IdleLogout />
 				{children}
-				<Footer /> {/* Ajouter le footer ici */}
+				<Footer />
 			</body>
 		</html>
 	);

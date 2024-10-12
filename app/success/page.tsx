@@ -41,8 +41,8 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 
 			{/* Utilisation d'un bouton simple */}
 			<Link href="/" className="mt-8">
-				<button className="px-6 py-2 bg-sky-600 text-white drop-shadow-2xl shadow-teal-500 rounded-md hover:bg-indigo-700">
-					Retour à la page d'accueil
+				<button className="px-6 py-2 text-xl bg-sky-600 text-white drop-shadow-2xl shadow-teal-500 rounded-md hover:bg-sky-800">
+					Vers accès administrateur
 				</button>
 			</Link>
 
