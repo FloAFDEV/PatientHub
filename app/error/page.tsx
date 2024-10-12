@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
-export default function ErrorPage() {
+function ErrorContent() {
   const searchParams = useSearchParams();
-  const message = searchParams.get("message");
+  const message = searchParams.get('message');
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 text-gray-800 p-4">
@@ -21,5 +22,13 @@ export default function ErrorPage() {
         </a>
       </p>
     </div>
+  );
+}
+
+export default function ErrorPage() {
+  return (
+    <Suspense fallback={<div>Chargement...</div>}>
+      <ErrorContent />
+    </Suspense>
   );
 }

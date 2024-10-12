@@ -1,7 +1,7 @@
 // components/IdleLogout.tsx
-"use client";
+'use client';
 
-import { useIdleLogout } from "@/hooks/useIdleLogout";
+import { useIdleLogout } from '@/hooks/useIdleLogout';
 
 const IdleLogout = () => {
   useIdleLogout();

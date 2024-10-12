@@ -1,7 +1,7 @@
 // app/success/page.tsx
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface SuccessPageProps {
   searchParams: {
@@ -10,7 +10,7 @@ interface SuccessPageProps {
 }
 
 export default function SuccessPage({ searchParams }: SuccessPageProps) {
-  const message = searchParams.message || "Opération réussie !";
+  const message = searchParams.message || 'Opération réussie !';
 
   return (
     <div className="flex h-screen max-h-screen px-[5%] bg-gradient-to-r from-sky-800 to-gray-300 flex-col items-center justify-center">
