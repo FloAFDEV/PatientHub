@@ -2,8 +2,6 @@ import { login } from "./action.ts";
 import Image from "next/image";
 
 export default function LoginPage({ searchParams }) {
-	const isRegistering = searchParams.mode === "register";
-
 	return (
 		<div className="flex flex-col lg:flex-row h-screen max-h-screen bg-gray-100">
 			{/* Section gauche avec nom du site, image et formulaire */}
