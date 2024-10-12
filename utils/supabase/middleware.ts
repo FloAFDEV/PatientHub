@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 
 export async function updateSession(request: NextRequest) {
-    let supabaseResponse = NextResponse.next({
+    const supabaseResponse = NextResponse.next({
         request: {
             headers: request.headers,
         },
@@ -16,14 +16,14 @@ export async function updateSession(request: NextRequest) {
         cookies: {
             get(name: string) {
                 return request.cookies.get(name)?.value;
-            },
+		   },
             set(name: string, value: string, options: CookieOptions) {
                 supabaseResponse.cookies.set(name, value, options);
             },
             remove(name: string, options: CookieOptions) {
                 supabaseResponse.cookies.set(name, '', {
                     ...options,
-                    maxAge: 0,
+							maxAge: 0,
                 });
             },
         },
