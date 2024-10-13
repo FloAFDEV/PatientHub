@@ -2,8 +2,12 @@ import { createServerClient, CookieOptions } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 
-export async function updateSession(request: NextRequest) {
-	const supabaseResponse = NextResponse.next({
+const SESSION_EXPIRATION = 5 * 60 * 1000; // 5 minutes en millisecondes
+
+export async function updateSession(
+	request: NextRequest
+): Promise<NextResponse> {
+	let response = NextResponse.next({
 		request: {
 			headers: request.headers,
 		},
@@ -18,10 +22,12 @@ export async function updateSession(request: NextRequest) {
 				return request.cookies.get(name)?.value;
 			},
 			set(name: string, value: string, options: CookieOptions) {
-				supabaseResponse.cookies.set(name, value, options);
+				response.cookies.set({ name, value, ...options });
 			},
 			remove(name: string, options: CookieOptions) {
-				supabaseResponse.cookies.set(name, "", {
+				response.cookies.set({
+					name,
+					value: "",
 					...options,
 					maxAge: 0,
 				});
@@ -29,28 +35,62 @@ export async function updateSession(request: NextRequest) {
 		},
 	});
 
-	const {
-		data: { user },
-		error,
-	} = await supabase.auth.getUser();
+	try {
+		const {
+			data: { session },
+		} = await supabase.auth.getSession();
 
-	console.log("User session:", user);
-	if (error) {
-		console.error(
-			"Erreur lors de la récupération de l'utilisateur:",
-			error
-		);
+		if (session) {
+			console.log(
+				"Session trouvée pour l'utilisateur:",
+				session.user.email
+			);
+
+			// Mettre à jour l'expiration de la session
+			const expirationTime = Date.now() + SESSION_EXPIRATION;
+			response.cookies.set({
+				name: "sessionExpiration",
+				value: expirationTime.toString(),
+				httpOnly: true,
+				secure: process.env.NODE_ENV === "production",
+				sameSite: "strict",
+				maxAge: SESSION_EXPIRATION / 1000, // en secondes
+			});
+		} else {
+			console.log("Aucune session trouvée");
+
+			// Vérifier si la session a expiré
+			const sessionExpiration = request.cookies.get("sessionExpiration");
+			if (
+				sessionExpiration &&
+				Date.now() > parseInt(sessionExpiration.value)
+			) {
+				if (
+					!request.nextUrl.pathname.startsWith("/login") &&
+					!request.nextUrl.pathname.startsWith("/auth")
+				) {
+					const redirectUrl = new URL("/login", request.url);
+					console.log(
+						`Session expirée. Redirection vers ${redirectUrl.pathname}`
+					);
+					return NextResponse.redirect(redirectUrl);
+				}
+			}
+		}
+
+		if (
+			!session &&
+			!request.nextUrl.pathname.startsWith("/login") &&
+			!request.nextUrl.pathname.startsWith("/auth")
+		) {
+			const redirectUrl = new URL("/login", request.url);
+			console.log(`Redirection vers ${redirectUrl.pathname}`);
+			return NextResponse.redirect(redirectUrl);
+		}
+
+		return response;
+	} catch (error) {
+		console.error("Erreur lors de la récupération de la session:", error);
+		return response;
 	}
-
-	if (
-		!user &&
-		!request.nextUrl.pathname.startsWith("/login") &&
-		!request.nextUrl.pathname.startsWith("/auth")
-	) {
-		const url = new URL("/login", request.url);
-		console.log(`Redirection vers ${url.pathname}`);
-		return NextResponse.redirect(url);
-	}
-
-	return supabaseResponse;
 }

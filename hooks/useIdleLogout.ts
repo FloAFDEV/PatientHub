@@ -1,43 +1,50 @@
 // hooks/useIdleLogout.ts
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
 const EXPIRATION_TIME = 5 * 60 * 1000; // 5 minutes
 
 export const useIdleLogout = () => {
-    const router = useRouter();
+	const router = useRouter();
+	const supabase = createClient();
 
-    useEffect(() => {
-        let timeoutId: NodeJS.Timeout;
+	useEffect(() => {
+		let timeoutId: NodeJS.Timeout;
 
-        const handleActivity = () => {
-            clearTimeout(timeoutId); // Efface le timeout actuel
-            timeoutId = setTimeout(() => {
-                // Déconnexion automatique
-                localStorage.removeItem('accessKey'); // Ou votre méthode de déconnexion
-                localStorage.removeItem('accessKeyExpiration');
-                router.push('/'); // Redirection vers la page d'accueil
-            }, EXPIRATION_TIME);
-        };
+		const checkSessionExpiration = async () => {
+			const expirationTime = document.cookie
+				.split("; ")
+				.find((row) => row.startsWith("sessionExpiration="))
+				?.split("=")[1];
 
-        // Écoute les événements d'activité
-        window.addEventListener('mousemove', handleActivity);
-        window.addEventListener('keypress', handleActivity);
-        window.addEventListener('click', handleActivity);
-        window.addEventListener('scroll', handleActivity);
+			if (expirationTime && Date.now() > parseInt(expirationTime)) {
+				await supabase.auth.signOut();
+				router.push("/login?error=Session expirée");
+			}
+		};
 
-        // Démarre le timeout initial
-        handleActivity();
+		const handleActivity = () => {
+			clearTimeout(timeoutId);
+			checkSessionExpiration();
+			timeoutId = setTimeout(checkSessionExpiration, EXPIRATION_TIME);
+		};
 
-        // Nettoyage des événements lors de la désinscription du composant
-        return () => {
-            clearTimeout(timeoutId);
-            window.removeEventListener('mousemove', handleActivity);
-            window.removeEventListener('keypress', handleActivity);
-            window.removeEventListener('click', handleActivity);
-            window.removeEventListener('scroll', handleActivity);
-        };
-    }, [router]);
+		window.addEventListener("mousemove", handleActivity);
+		window.addEventListener("keypress", handleActivity);
+		window.addEventListener("click", handleActivity);
+		window.addEventListener("scroll", handleActivity);
+
+		handleActivity();
+
+		return () => {
+			clearTimeout(timeoutId);
+			window.removeEventListener("mousemove", handleActivity);
+			window.removeEventListener("keypress", handleActivity);
+			window.removeEventListener("click", handleActivity);
+			window.removeEventListener("scroll", handleActivity);
+		};
+	}, [router]);
 };
