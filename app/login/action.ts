@@ -1,33 +1,40 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
-import { createClient } from '@/utils/supabase/server';
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
+
+// Regex pour valider le mot de passe
+const passwordRegex =
+	/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 export async function login(formData: FormData) {
-  const supabase = createClient();
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
+	const supabase = createClient();
+	const email = formData.get("email") as string;
+	const password = formData.get("password") as string;
 
-  if (!email || !password) {
-    redirect(
-      `/error?page?message=${encodeURIComponent(
-        'Email ou mot de passe manquant.'
-      )}`
-    );
-    return; // Sortir de la fonction après redirection
-  }
+	// Vérification des champs manquants
+	if (!email || !password) {
+		return { error: "Email ou mot de passe manquant." }; // Retourne l'erreur sans redirection
+	}
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+	// Validation du mot de passe
+	if (!passwordRegex.test(password)) {
+		return {
+			error: "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.",
+		};
+	}
 
-  if (error) {
-    redirect(`/error?page?message=${encodeURIComponent(error.message)}`);
-    return;
-  }
+	const { error } = await supabase.auth.signInWithPassword({
+		email,
+		password,
+	});
 
-  revalidatePath('/');
-  redirect(`/success?message=${encodeURIComponent('Connexion réussie !')}`);
+	if (error) {
+		return { error: error.message }; // Retourne l'erreur sans redirection
+	}
+
+	// Si tout est OK, on continue la redirection
+	revalidatePath("/");
+	redirect(`/success?message=${encodeURIComponent("Connexion réussie !")}`);
 }
