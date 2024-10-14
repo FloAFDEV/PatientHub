@@ -1,15 +1,9 @@
 import { Metadata } from "next";
-import localFont from "next/font/local";
-import Footer from "@/components/Footer";
+import { GeistSans } from "geist/font/sans";
 import IdleLogout from "@/components/useIdleLogout";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/ModeToggle";
 import "./globals.css";
-
-// Chargement de la police
-const geistSans = localFont({
-	src: "./fonts/GeistVF.woff",
-	weight: "100 900",
-	display: "swap",
-});
 
 export const metadata: Metadata = {
 	title: "PatientHub",
@@ -23,9 +17,19 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang="fr">
-			<body className="antialiased flex flex-col min-h-screen">
-				{children}
+		<html lang="fr" className={`${GeistSans.variable}`}>
+			<head />
+			<body className={`antialiased flex flex-col min-h-screen`}>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<IdleLogout />
+					<ModeToggle />
+					{children}
+				</ThemeProvider>
 			</body>
 		</html>
 	);

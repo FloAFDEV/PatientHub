@@ -46,7 +46,6 @@ export async function updateSession(
 				session.user.email
 			);
 
-			// Mettre à jour l'expiration de la session
 			const expirationTime = Date.now() + SESSION_EXPIRATION;
 			response.cookies.set({
 				name: "sessionExpiration",
@@ -59,22 +58,16 @@ export async function updateSession(
 		} else {
 			console.log("Aucune session trouvée");
 
-			// Vérifier si la session a expiré
 			const sessionExpiration = request.cookies.get("sessionExpiration");
 			if (
 				sessionExpiration &&
 				Date.now() > parseInt(sessionExpiration.value)
 			) {
-				if (
-					!request.nextUrl.pathname.startsWith("/login") &&
-					!request.nextUrl.pathname.startsWith("/auth")
-				) {
-					const redirectUrl = new URL("/login", request.url);
-					console.log(
-						`Session expirée. Redirection vers ${redirectUrl.pathname}`
-					);
-					return NextResponse.redirect(redirectUrl);
-				}
+				const redirectUrl = new URL("/login", request.url);
+				console.log(
+					`Session expirée. Redirection vers ${redirectUrl.pathname}`
+				);
+				return NextResponse.redirect(redirectUrl);
 			}
 		}
 
