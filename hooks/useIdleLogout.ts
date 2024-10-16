@@ -18,8 +18,10 @@ export const useIdleLogout = () => {
 				.find((row) => row.startsWith("sessionExpiration="))
 				?.split("=")[1];
 
+			console.log("Checking session expiration:", expirationTime); // Ajouté ici
+
 			if (expirationTime && Date.now() > parseInt(expirationTime, 10)) {
-				// Appel à NextAuth pour se déconnecter
+				console.log("Session expired, logging out."); // Ajouté ici
 				await signOut({ callbackUrl: "/login?error=Session expirée" });
 			}
 		};

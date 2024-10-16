@@ -1,14 +1,14 @@
 import { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
-import IdleLogout from "@/components/useIdleLogout";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ModeToggle } from "@/components/ModeToggle";
+import Head from "@/app/head";
+import ClientLayout from "./ClientLayout";
 import "./globals.css";
 
 export const metadata: Metadata = {
 	title: "PatientHub",
 	description:
-		"Application de suivi et de gestion de patients en osthéopathie",
+		"Application de suivi et de gestion de patients en ostéopathie",
 };
 
 export default function RootLayout({
@@ -18,17 +18,15 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="fr" className={`${GeistSans.variable}`}>
-			<head />
-			<body className={`antialiased flex flex-col min-h-screen`}>
+			<Head />
+			<body className="antialiased flex flex-col min-h-screen">
 				<ThemeProvider
 					attribute="class"
-					defaultTheme="system"
+					defaultTheme="light"
 					enableSystem
 					disableTransitionOnChange
 				>
-					<IdleLogout />
-					<ModeToggle />
-					{children}
+					<ClientLayout>{children}</ClientLayout>
 				</ThemeProvider>
 			</body>
 		</html>
