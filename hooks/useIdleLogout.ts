@@ -18,30 +18,30 @@ export const useIdleLogout = () => {
 				.find((row) => row.startsWith("sessionExpiration="))
 				?.split("=")[1];
 
-			console.log("Checking session expiration:", expirationTime); // Ajouté ici
+			console.log("Checking session expiration:", expirationTime); // Logging the expiration time
 
 			if (expirationTime && Date.now() > parseInt(expirationTime, 10)) {
-				console.log("Session expired, logging out."); // Ajouté ici
+				console.log("Session expired, logging out."); // Logging session expiration
 				await signOut({ callbackUrl: "/login?error=Session expirée" });
 			}
 		};
 
 		const handleActivity = () => {
 			clearTimeout(timeoutId);
-			checkSessionExpiration(); // Vérifiez immédiatement lors d'une activité
+			checkSessionExpiration(); // Check expiration on activity
 			timeoutId = setTimeout(checkSessionExpiration, EXPIRATION_TIME);
 		};
 
-		// Ajoutez des écouteurs d'événements pour détecter l'activité de l'utilisateur
+		// Add event listeners to detect user activity
 		window.addEventListener("mousemove", handleActivity);
 		window.addEventListener("keypress", handleActivity);
 		window.addEventListener("click", handleActivity);
 		window.addEventListener("scroll", handleActivity);
 
-		// Appel initial pour définir le timeout
+		// Initial call to set the timeout
 		handleActivity();
 
-		// Nettoyage lors du démontage du composant
+		// Cleanup on component unmount
 		return () => {
 			clearTimeout(timeoutId);
 			window.removeEventListener("mousemove", handleActivity);

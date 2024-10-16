@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 	keywords: "ostéopathie, gestion, patients, santé",
 	authors: [{ name: "Florent Perez", url: "https://example.com" }], // Remplace par ton URL
 	viewport: "width=device-width, initial-scale=1",
-	robots: "noindex, nofollow", // Indique aux moteurs de recherche de ne pas indexer
+	robots: "noindex, nofollow", //  ne pas indexer
 	openGraph: {
 		title: "PatientHub",
 		description:

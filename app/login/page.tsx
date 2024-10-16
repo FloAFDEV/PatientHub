@@ -38,9 +38,7 @@ export default function LoginPage() {
 
 	return (
 		<div className="flex flex-col lg:flex-row h-screen max-h-screen bg-background text-foreground">
-			{/* Section de connexion */}
 			<div className="flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-r from-sky-800 to-muted dark:from-sky-900 dark:to-muted-foreground relative">
-				{/* Repositionnement du ModeToggle en haut à droite */}
 				<div className="absolute top-4 right-4 z-10">
 					<ModeToggle />
 				</div>
@@ -61,7 +59,7 @@ export default function LoginPage() {
 				<h1 className="text-6xl lg:text-6xl font-extra-bold text-foreground mb-6 text-center">
 					PatientHub
 				</h1>
-				<div className="max-w-md w-full bg-card- text-card-foreground p-6 shadow-2xl rounded-2xl mt-10">
+				<div className="max-w-md w-full text-card-foreground p-6 shadow-2xl rounded-2xl mt-10">
 					<h2 className="text-2xl font-bold text-foreground mb-4 text-center">
 						Connexion
 					</h2>
@@ -134,6 +132,7 @@ export default function LoginPage() {
 					src="/assets/images/welcome-img.png"
 					alt="Image de connexion Welcome"
 					fill
+					sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 					className="object-cover"
 				/>
 			</div>

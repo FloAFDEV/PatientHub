@@ -30,6 +30,7 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 					height={300}
 					width={280}
 					alt="success"
+					sizes="(max-width: 768px) 100vw, (max-width: 600px) 50vw, 33vw"
 				/>
 				<h1 className="text-3xl font-semibold text-teal-300 mt-6">
 					{message}
