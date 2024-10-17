@@ -7,6 +7,6 @@ export default function ClientLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	useIdleLogout();
-	return <>{children}</>;
+	useIdleLogout(); // Ce hook ne s'exécute que côté client
+	return <>{children}</>; // Rend les enfants comme ils sont
 }

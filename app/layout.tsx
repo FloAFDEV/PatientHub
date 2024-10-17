@@ -1,10 +1,7 @@
-// app/layout.tsx
-
 import { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "@/components/theme-provider";
-import Head from "@/app/head"; // Assurez-vous que ce composant ne génère pas de classes dynamiques
-import ClientLayout from "./ClientLayout";
+import Head from "@/app/head";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,22 +15,24 @@ export default function RootLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	const currentTheme =
-		typeof window !== "undefined" ? localStorage.getItem("theme") : "light";
+	const defaultTheme = "light"; // Définit un thème par défaut
 
 	return (
-		<html lang="fr" className={`${GeistSans.variable}`}>
-			<Head />
-			<body
-				className={`antialiased flex flex-col min-h-screen ${currentTheme}`}
-			>
+		<html
+			lang="fr"
+			className={`${GeistSans.variable}`}
+			suppressHydrationWarning
+		>
+			<body className={`${defaultTheme}`} suppressHydrationWarning>
+				{" "}
+				{/* Suppression des classes ici */}
 				<ThemeProvider
 					attribute="class"
-					defaultTheme="light"
+					defaultTheme={defaultTheme}
 					enableSystem
 					disableTransitionOnChange
 				>
-					<ClientLayout>{children}</ClientLayout>
+					{children} {/* Rendu des enfants ici */}
 				</ThemeProvider>
 			</body>
 		</html>
