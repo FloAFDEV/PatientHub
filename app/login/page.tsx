@@ -30,7 +30,8 @@ export default function LoginPage() {
 		});
 
 		if (result?.error) {
-			setError(result.error);
+			setError("Identifiants invalides. Veuillez réessayer.");
+			console.error("Erreur de connexion:", result.error);
 		} else {
 			router.push("/dashboard");
 		}
@@ -107,7 +108,7 @@ export default function LoginPage() {
 						</button>
 						{error && (
 							<p className="text-red-500 text-sm text-center">
-								{error}
+								{error} {/* Affichage du message d'erreur */}
 							</p>
 						)}
 						<p className="text-sm text-muted-foreground text-center">
