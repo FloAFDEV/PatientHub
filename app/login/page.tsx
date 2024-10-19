@@ -106,7 +106,7 @@ export default function LoginPage() {
 					</p>
 					<h1 className="text-6xl lg:text-6xl font-black text-foreground mb-6 text-center">
 						<span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-violet-500 to-pink-500">
-							PatientHub
+							PatientHub 2.0
 						</span>
 					</h1>
 					<div className="max-w-md w-full text-card-foreground border p-6 shadow-2xl rounded-2xl mt-6 mb-24">
