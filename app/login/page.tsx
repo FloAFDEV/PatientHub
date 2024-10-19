@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
 import { createClient } from "@/utils/supabase/client";
 import { ModeToggle } from "@/components/ModeToggle";
+import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 
 const supabase = createClient();
 
@@ -14,6 +15,7 @@ export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [hiddenField, setHiddenField] = useState("");
 	const [isMounted, setIsMounted] = useState(false);
 	const router = useRouter();
 
@@ -36,6 +38,11 @@ export default function LoginPage() {
 		}
 		if (password.length < 6) {
 			setError("Le mot de passe doit contenir au moins 6 caractères.");
+			return false;
+		}
+		if (hiddenField) {
+			// Vérifie si le champ caché est non vide
+			setError("Le champ caché ne doit pas être rempli.");
 			return false;
 		}
 		return true;
@@ -72,106 +79,120 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div
-			suppressHydrationWarning
-			className="flex flex-col lg:flex-row h-screen max-h-screen bg-background text-foreground"
-		>
-			<div className="flex-1 flex flex-col items-center justify-center p-6 ">
-				{isMounted && (
-					<div className="absolute top-4 right-4 z-10">
-						<ModeToggle />
+		<BackgroundBeamsWithCollision>
+			<div
+				suppressHydrationWarning
+				className="flex-grow flex flex-col justify-between"
+			>
+				<div className="flex-1 flex flex-col items-center justify-center p-6">
+					{isMounted && (
+						<div className="absolute top-4 right-4 z-10">
+							<ModeToggle />
+						</div>
+					)}
+					<div className="w-1/3 max-w-lg lg:max-w-2xl">
+						<Image
+							src="/assets/images/welcome.webp"
+							alt="Welcome"
+							width={800}
+							height={400}
+							sizes="(max-width: 768px) 100vw, (max-width: 600px) 50vw, 33vw"
+							className="w-full h-auto mt-36"
+							priority
+						/>
 					</div>
-				)}
-				<div className="w-full max-w-lg lg:max-w-2xl mt-24">
-					<Image
-						src="/assets/images/welcome.webp"
-						alt="Welcome"
-						width={800}
-						height={400}
-						sizes="(max-width: 768px) 100vw, (max-width: 600px) 50vw, 33vw"
-						className="w-full h-auto"
-						priority
-					/>
-				</div>
-				<p className="text-lg lg:text-3xl font-medium text-foreground mb-4 text-center">
-					Bienvenue sur
-				</p>
-				<h1 className="text-6xl lg:text-6xl font-extra-bold text-foreground mb-6 text-center">
-					PatientHub
-				</h1>
-				<div className="max-w-md w-full text-card-foreground p-6 shadow-2xl rounded-2xl mt-10">
-					<h2 className="text-2xl font-bold text-foreground mb-4 text-center">
-						Connexion
-					</h2>
-					<form onSubmit={handleSubmit} className="space-y-4">
-						<div>
-							<label
-								htmlFor="email"
-								className="block text-m font-medium text-foreground"
-							>
-								Email :
-							</label>
+					<p className="text-lg lg:text-3xl font-medium text-foreground mb-4 text-center">
+						Bienvenue sur
+					</p>
+					<h1 className="text-6xl lg:text-6xl font-black text-foreground mb-6 text-center">
+						<span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-violet-500 to-pink-500">
+							PatientHub
+						</span>
+					</h1>
+					<div className="max-w-md w-full text-card-foreground border p-6 shadow-2xl rounded-2xl mt-6 mb-24">
+						<h2 className="text-2xl font-bold text-foreground mb-4 text-center">
+							Connexion
+						</h2>
+						<form onSubmit={handleSubmit} className="space-y-4">
+							{/* Champ Email */}
+							<div>
+								<label
+									htmlFor="email"
+									className="block text-m font-medium text-foreground"
+								>
+									Email :
+								</label>
+								<input
+									id="email"
+									name="email"
+									type="email"
+									required
+									autoComplete="email"
+									placeholder="Votre email"
+									className="mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+									aria-describedby="email-error"
+								/>
+							</div>
+							{/* Champ Mot de Passe */}
+							<div>
+								<label
+									htmlFor="password"
+									className="block text-m font-medium text-foreground"
+								>
+									Mot de passe :
+								</label>
+								<input
+									id="password"
+									name="password"
+									type="password"
+									required
+									autoComplete="current-password"
+									placeholder="Votre mot de passe"
+									className="mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+									value={password}
+									onChange={(e) =>
+										setPassword(e.target.value)
+									}
+									aria-describedby="password-error"
+								/>
+							</div>{" "}
 							<input
-								id="email"
-								name="email"
-								type="email"
-								required
-								autoComplete="email"
-								placeholder="Votre email"
-								className="mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
-								aria-describedby="email-error"
+								type="hidden"
+								name="hiddenField"
+								value={hiddenField}
 							/>
-						</div>
-						<div>
-							<label
-								htmlFor="password"
-								className="block text-m font-medium text-foreground"
+							{/* Bouton de soumission */}
+							<button
+								type="submit"
+								className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 px-4 rounded-md hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+								disabled={isLoading}
+								aria-busy={isLoading}
 							>
-								Mot de passe :
-							</label>
-							<input
-								id="password"
-								name="password"
-								type="password"
-								required
-								autoComplete="current-password"
-								placeholder="Votre mot de passe"
-								className="mt-1 block w-full px-3 py-2 border border-input rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-								aria-describedby="password-error"
-							/>
-						</div>
-						<button
-							type="submit"
-							className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-							disabled={isLoading}
-							aria-busy={isLoading}
-						>
-							{isLoading
-								? "Connexion en cours..."
-								: "Se connecter"}
-						</button>
-						{error && (
-							<p
-								className="text-red-500 text-sm text-center"
-								role="alert"
-							>
-								{error}
+								{isLoading
+									? "Connexion en cours..."
+									: "Se connecter"}
+							</button>
+							{/* Message d'erreur */}
+							{error && (
+								<p
+									className="text-red-500 text-sm text-center"
+									role="alert"
+								>
+									{error}
+								</p>
+							)}
+							<p className="text-sm text-muted-foreground text-center">
+								Entrez vos identifiants et mot de passe.
 							</p>
-						)}
-						<p className="text-sm text-muted-foreground text-center">
-							Entrez vos identifiants et mot de passe.
-						</p>
-						<p className="text-sm text-muted-foreground text-center">
-							Vous n&apos;avez pas accès ?{" "}
-							<a
-								href={`mailto:afdevflo@gmail.com?subject=${encodeURIComponent(
-									"Demande d'accès à PatientHub"
-								)}&body=${encodeURIComponent(
-									`Bonjour AFDEV,
+							<p className="text-sm text-muted-foreground text-center">
+								Vous n&apos;avez pas accès ?{" "}
+								<a
+									href={`mailto:afdevflo@gmail.com?subject=${encodeURIComponent(
+										"Demande d'accès à PatientHub"
+									)}&body=${encodeURIComponent(
+										`Bonjour AFDEV,
 
 Je suis [Nom complet ou société],
 
@@ -187,17 +208,18 @@ Je vous remercie d'avance pour votre aide.
 
 Cordialement,
 [Nom complet ou société]`
-								)}`}
-								className="text-sky-700 underline hover:text-sky-800"
-							>
-								Contactez l&apos;administrateur
-							</a>{" "}
-							pour plus d&apos;informations.
-						</p>
-					</form>
+									)}`}
+									className="text-sky-700 underline hover:text-sky-800"
+								>
+									Contactez l&apos;administrateur
+								</a>{" "}
+								pour plus d&apos;informations.
+							</p>
+						</form>
+					</div>
+					<Footer />
 				</div>
-				<Footer />
 			</div>
-		</div>
+		</BackgroundBeamsWithCollision>
 	);
 }
