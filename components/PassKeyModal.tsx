@@ -39,25 +39,26 @@ export const PasskeyModal = () => {
 	const EXPIRATION_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 	useEffect(() => {
-		const encryptedKey = localStorage.getItem("accessKey");
-		const accessKey = encryptedKey ? decryptKey(encryptedKey) : null;
-		const expirationTimestamp = localStorage.getItem("accessKeyExpiration");
+		if (typeof window !== "undefined") {
+			const encryptedKey = localStorage.getItem("accessKey");
+			const accessKey = encryptedKey ? decryptKey(encryptedKey) : null;
+			const expirationTimestamp = localStorage.getItem(
+				"accessKeyExpiration"
+			);
 
-		// Vérifiez si la clé d'accès existe et si elle n'est pas expirée
-		const isValidKey =
-			accessKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY &&
-			expirationTimestamp &&
-			Date.now() < Number(expirationTimestamp);
+			const isValidKey =
+				accessKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY &&
+				expirationTimestamp &&
+				Date.now() < Number(expirationTimestamp);
 
-		if (path) {
 			if (isValidKey) {
 				setIsKeyValid(true);
-				router.push("/admin"); // Redirection si la clé est valide
+				router.push("/admin");
 			} else {
-				setOpen(true); // Ouvre la modal si la clé n'est pas valide
+				setOpen(true);
 			}
 		}
-	}, [path, router]);
+	}, []);
 
 	const closeModal = () => {
 		setOpen(false);
@@ -113,7 +114,7 @@ export const PasskeyModal = () => {
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 
-				<div className="mt-4">
+				<div suppressHydrationWarning className="mt-4">
 					<InputOTP
 						maxLength={6}
 						value={passkey}

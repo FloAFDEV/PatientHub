@@ -28,8 +28,12 @@
 		"**/*.tsx",
 		".next/types/**/*.ts",
 		"utils/supabases/server.ts",
-		"utils/client.js",
-		"utils/middleware.ts"
+		"OUT/client.js",
+		"utils/supabase/middleware.js",
+		"app/layout.js",
+		"middleware.js",
+		"utils/supabase/server.js",
+		"utils/supabase/client.js"
 	],
 	"exclude": ["node_modules"]
 }
