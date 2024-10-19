@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { createClient } from "@/utils/supabase/client";
 import { ModeToggle } from "@/components/ModeToggle";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
+import { PasskeyModal } from "@/components/PassKeyModal";
 
 const supabase = createClient();
 
@@ -17,7 +18,7 @@ export default function LoginPage() {
 	const [password, setPassword] = useState("");
 	const [hiddenField, setHiddenField] = useState("");
 	const [isMounted, setIsMounted] = useState(false);
-	const router = useRouter();
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 	useEffect(() => {
 		setIsMounted(true);
@@ -68,7 +69,7 @@ export default function LoginPage() {
 				);
 				console.error("Erreur de connexion:", error);
 			} else if (data.session) {
-				router.push("/dashboard");
+				setIsAuthenticated(true);
 			}
 		} catch (error) {
 			setError("Une erreur est survenue. Veuillez réessayer plus tard.");
@@ -84,6 +85,7 @@ export default function LoginPage() {
 				suppressHydrationWarning
 				className="flex-grow flex flex-col justify-between"
 			>
+				{isAuthenticated && <PasskeyModal />}
 				<div className="flex-1 flex flex-col items-center justify-center p-6">
 					{isMounted && (
 						<div className="absolute top-4 right-4 z-10">
@@ -101,12 +103,9 @@ export default function LoginPage() {
 							priority
 						/>
 					</div>
-					<p className="text-lg lg:text-3xl font-medium text-foreground mb-4 text-center">
-						Bienvenue sur
-					</p>
 					<h1 className="text-6xl lg:text-6xl font-black text-foreground mb-6 text-center">
 						<span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-violet-500 to-pink-500">
-							PatientHub 2.0
+							PatientHub
 						</span>
 					</h1>
 					<div className="max-w-md w-full text-card-foreground border p-6 shadow-2xl rounded-2xl mt-6 mb-24">

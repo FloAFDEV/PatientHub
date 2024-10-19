@@ -79,7 +79,7 @@ export const PasskeyModal = () => {
 			);
 
 			setOpen(false);
-			router.push("/admin"); // Redirection après validation
+			router.push("/dashboard"); // Redirection après validation
 		} else {
 			setError("Code d'accès invalide. Veuillez réessayer.");
 		}
