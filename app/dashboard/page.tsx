@@ -92,7 +92,7 @@ export function SidebarDashboard() {
 			{/* Déplacement du sélecteur de thème en dehors de la sidebar */}
 			<div className="flex-1 flex flex-col">
 				{/* Sélecteur de thème placé en haut à droite */}
-				<div className="fixed top-4 right-4 z-50 xs:top-10 xs:m">
+				<div className="fixed top-4 right-4 z-50s:top-10 xs:">
 					<ModeToggle />
 				</div>
 
