@@ -13,7 +13,7 @@ function ErrorContent() {
 				Oups ! Erreur 404
 			</h1>
 			<p className="text-lg mt-2">
-				Désolé, la page demandée n'existe pas ou a été déplacée.
+				Désolé, la page demandée n&apos;existe pas ou a été déplacée.
 			</p>
 			{message && (
 				<p className="text-md text-red-600 font-semibold mt-2">
@@ -25,7 +25,7 @@ function ErrorContent() {
 					href="/login"
 					className="text-blue-500 hover:underline font-semibold"
 				>
-					Retour à l'accueil
+					Retour à l&apos;accueil
 				</a>
 			</p>
 		</div>

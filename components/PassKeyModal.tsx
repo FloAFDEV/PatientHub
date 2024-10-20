@@ -19,7 +19,7 @@ import {
 	InputOTPSlot,
 } from "@/components/ui/input-otp";
 
-// Fonctions de chiffrement et déchiffrement
+// Encryption and decryption functions
 export function encryptKey(passkey: string) {
 	return btoa(passkey);
 }
@@ -58,18 +58,18 @@ export const PasskeyModal = () => {
 				setOpen(true);
 			}
 		}
-	}, []);
+	}, [router]);
 
 	const closeModal = () => {
 		setOpen(false);
-		router.push("/"); // Redirige vers la page d'accueil si l'utilisateur ferme la modal
+		router.push("/"); // Redirects to the home page if the user closes the modal
 	};
 
 	const validatePasskey = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
 		if (passkey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
-			const encryptedKey = encryptKey(passkey); // Chiffre la clé avant de la sauvegarder
+			const encryptedKey = encryptKey(passkey); // Encrypt the key before saving
 			const expirationTimestamp = Date.now() + EXPIRATION_TIME;
 
 			localStorage.setItem("accessKey", encryptedKey);
@@ -79,15 +79,15 @@ export const PasskeyModal = () => {
 			);
 
 			setOpen(false);
-			router.push("/success"); // Redirection après validation
+			router.push("/success"); // Redirect after validation
 		} else {
-			setError("Code d'accès invalide. Veuillez réessayer.");
+			setError("Code d&apos;accès invalide. Veuillez réessayer.");
 		}
 	};
 
 	const handleOpenChange = (newOpen: boolean) => {
 		if (!newOpen) {
-			closeModal(); // Si la modal se ferme sans validation
+			closeModal(); // If the modal closes without validation
 		}
 		setOpen(newOpen);
 	};

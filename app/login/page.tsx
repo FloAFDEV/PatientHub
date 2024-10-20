@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
 import { createClient } from "@/utils/supabase/client";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -16,7 +15,7 @@ export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [hiddenField, setHiddenField] = useState("");
+	const [hiddenField] = useState("");
 	const [isMounted, setIsMounted] = useState(false);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 

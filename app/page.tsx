@@ -18,7 +18,7 @@ const Home = ({ searchParams }: SearchParamProps) => {
 						className="h-auto mt-12 sm:mt-16 lg:mt-20 w-[150px] sm:w-[155px] md:w-[162px] rounded-2xl mb-10 sm:mb-20 lg:mb-32 shadow-gray-600 shadow-2xl"
 					/>
 
-					{/* Section de bienvenue révisée */}
+					{/* Revised welcome section */}
 					<div className="bg-opacity-90 p-6 rounded-lg mb-8">
 						<h1 className="text-3xl sm:text-4xl font-bold text-slate-200 mb-2">
 							Bienvenue chez{" "}
@@ -43,7 +43,7 @@ const Home = ({ searchParams }: SearchParamProps) => {
 						</button>
 					</Link>
 				</div>
-				{/* Ajout du Footer */}
+				{/* Adding the Footer */}
 				<Footer />
 			</section>
 
