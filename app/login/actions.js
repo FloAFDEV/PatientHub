@@ -3,11 +3,10 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 
 // Fonction pour vérifier si l'utilisateur actuel est un administrateur
-async function isAdmin(supabase: SupabaseClient<any, "public", any>) {
+async function isAdmin(supabase) {
 	const {
 		data: { user },
 		error,
@@ -25,12 +24,17 @@ async function isAdmin(supabase: SupabaseClient<any, "public", any>) {
 }
 
 // Gestion des erreurs
-function handleError(message: string) {
+function handleError(message) {
 	redirect(`/error?message=${encodeURIComponent(message)}`);
 }
 
+// Redirection vers une page 404
+function handleNotFound() {
+	redirect("/404"); // Redirection vers la page 404
+}
+
 // Fonction de connexion
-export async function login(formData: { get: (arg0: string) => any }) {
+export async function login(formData) {
 	const supabase = createClient();
 
 	const email = formData.get("email");
@@ -63,16 +67,16 @@ export async function login(formData: { get: (arg0: string) => any }) {
 		redirect("/dashboard");
 	} catch (err) {
 		console.error("Login error:", err); // Ajout de logs d'erreur
-		handleError((err as Error).message);
+		handleError(err.message); // Utilisez err.message pour afficher l'erreur réelle
 	}
 }
 
 // Fonction d'inscription pour les administrateurs
-export async function adminAddUser(formData: { get: (arg0: string) => any }) {
+export async function adminAddUser(formData) {
 	const supabase = createClient();
 
 	if (!(await isAdmin(supabase))) {
-		handleError("Accès non autorisé");
+		handleNotFound(); // Redirection vers 404 si l'utilisateur n'est pas admin
 		return;
 	}
 
@@ -118,7 +122,7 @@ export async function adminAddUser(formData: { get: (arg0: string) => any }) {
 		return { success: true, message: "Utilisateur ajouté avec succès" };
 	} catch (err) {
 		console.error("Admin Add User error:", err); // Ajout de logs d'erreur
-		handleError((err as Error).message);
+		handleError(err.message); // Utilisez err.message pour afficher l'erreur réelle
 	}
 }
 
@@ -127,6 +131,6 @@ export async function logout() {
 	const supabase = createClient();
 	await supabase.auth.signOut();
 	cookies().delete("session");
-	revalidatePath("/"); // Invalide le cache pour la page d'accueil après déconnexion
+	revalidatePath("/");
 	redirect("/login");
 }

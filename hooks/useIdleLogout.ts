@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 
-const EXPIRATION_TIME = 5 * 60 * 1000; // 5 minutes
+// Durée d'expiration de la session (5 minutes)
+const EXPIRATION_TIME = 5 * 60 * 1000;
 
 export const useIdleLogout = () => {
 	const router = useRouter();
@@ -13,35 +13,40 @@ export const useIdleLogout = () => {
 		let timeoutId: NodeJS.Timeout;
 
 		const checkSessionExpiration = async () => {
+			// Récupération du temps d'expiration de la session à partir des cookies
 			const expirationTime = document.cookie
 				.split("; ")
 				.find((row) => row.startsWith("sessionExpiration="))
 				?.split("=")[1];
 
-			console.log("Checking session expiration:", expirationTime); // Logging the expiration time
+			console.log(
+				"Vérification de l'expiration de la session :",
+				expirationTime
+			); // Journalisation du temps d'expiration
 
 			if (expirationTime && Date.now() > parseInt(expirationTime, 10)) {
-				console.log("Session expired, logging out."); // Logging session expiration
-				await signOut({ callbackUrl: "/login?error=Session expirée" });
+				console.log("Session expirée, déconnexion."); // Journalisation de l'expiration de la session
+				// Rediriger l'utilisateur vers la page de connexion avec un message d'erreur
+				router.push("/login?error=Session expirée");
 			}
 		};
 
 		const handleActivity = () => {
 			clearTimeout(timeoutId);
-			checkSessionExpiration(); // Check expiration on activity
+			checkSessionExpiration(); // Vérifier l'expiration lors d'une activité
 			timeoutId = setTimeout(checkSessionExpiration, EXPIRATION_TIME);
 		};
 
-		// Add event listeners to detect user activity
+		// Ajouter des écouteurs d'événements pour détecter l'activité de l'utilisateur
 		window.addEventListener("mousemove", handleActivity);
 		window.addEventListener("keypress", handleActivity);
 		window.addEventListener("click", handleActivity);
 		window.addEventListener("scroll", handleActivity);
 
-		// Initial call to set the timeout
+		// Appel initial pour définir le timeout
 		handleActivity();
 
-		// Cleanup on component unmount
+		// Nettoyage à la désinstallation du composant
 		return () => {
 			clearTimeout(timeoutId);
 			window.removeEventListener("mousemove", handleActivity);

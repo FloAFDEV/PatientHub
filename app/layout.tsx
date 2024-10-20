@@ -14,7 +14,7 @@ export default function RootLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	const defaultTheme = "light"; // Définit un thème par défaut
+	const defaultTheme = "enableSystem";
 
 	return (
 		<html
@@ -23,15 +23,13 @@ export default function RootLayout({
 			suppressHydrationWarning
 		>
 			<body className={`${defaultTheme}`} suppressHydrationWarning>
-				{" "}
-				{/* Suppression des classes ici */}
 				<ThemeProvider
 					attribute="class"
 					defaultTheme={defaultTheme}
 					enableSystem
 					disableTransitionOnChange
 				>
-					{children} {/* Rendu des enfants ici */}
+					{children}
 				</ThemeProvider>
 			</body>
 		</html>
