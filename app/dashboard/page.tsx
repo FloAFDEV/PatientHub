@@ -186,26 +186,26 @@ const Dashboard = () => {
 						<h2 className="text-lg font-medium text-gray-700 dark:text-white">
 							Statistique 2
 						</h2>
-						<p className="mt-2 text-gray-600 dark:text-gray400">
+						<p className="mt-2 text-gray-600 dark:text-gray-400">
 							Détails sur la statistique 2...
 						</p>
 					</div>
 
-					<div className="bg-gray100 dark:bg-neutral800 p4 rounded-lg shadow-md">
-						<h2 className="text-lg font-medium text-gray700 dark:text-white">
+					<div className="bg-gray-100 dark:bg-neutral-800 p4 rounded-lg shadow-md">
+						<h2 className="text-lg font-medium text-gray-700 dark:text-white">
 							Statistique 3
 						</h2>
-						<p className="mt2 text-gray600 dark:text-gray400">
+						<p className="mt2 text-gray600 dark:text-gray-400">
 							Détails sur la statistique 3...
 						</p>
 					</div>
 				</div>
 
-				<div className="flex1 bg-gray100 dark:bg-neutral800 p4 rounded-lg shadow-md">
-					<h2 className="text-lg font-medium text-gray700 dark:text-white">
+				<div className="flex1 bg-gray-100 dark:bg-neutral-800 p4 rounded-lg shadow-md">
+					<h2 className="text-lg font-medium text-gray-700 dark:text-white">
 						Graphiques et autres visualisations
 					</h2>
-					<p className="mt2 text-gray600 dark:text-gray400">
+					<p className="mt2 text-gray600 dark:text-gray-400">
 						Contenu supplémentaire, comme des graphiques, des
 						tableaux...
 					</p>
