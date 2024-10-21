@@ -3,9 +3,7 @@ import Link from "next/link";
 import { SearchParamProps } from "@/components/types/index";
 import Footer from "@/components/Footer";
 
-const Home = ({ searchParams }: SearchParamProps) => {
-	const isAdmin = searchParams?.admin === "true";
-
+const Home = ({}: SearchParamProps) => {
 	return (
 		<div className="flex flex-col lg:flex-row h-screen max-h-screen bg-gradient-to-r from-sky-800 to-gray-300">
 			<section className="flex-1 flex flex-col justify-center items-center bg-transparent container px-4 md:px-8 py-8 lg:py-12">

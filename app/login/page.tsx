@@ -91,7 +91,7 @@ export default function LoginPage() {
 							<ModeToggle />
 						</div>
 					)}
-					<div className="w-1/3 max-w-lg lg:max-w-2xl">
+					<div className="w-2/3 max-w-lg lg:max-w-2xl">
 						<Image
 							src="/assets/images/welcome.webp"
 							alt="Welcome"

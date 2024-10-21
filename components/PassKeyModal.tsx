@@ -30,7 +30,6 @@ export function decryptKey(passkey: string) {
 
 export const PasskeyModal = () => {
 	const router = useRouter();
-	const path = usePathname();
 	const [open, setOpen] = useState(false);
 	const [passkey, setPasskey] = useState("");
 	const [error, setError] = useState("");
@@ -53,17 +52,14 @@ export const PasskeyModal = () => {
 
 			if (isValidKey) {
 				setIsKeyValid(true);
-				router.push("/admin");
+				router.push("/success");
 			} else {
 				setOpen(true);
 			}
 		}
 	}, [router]);
 
-	const closeModal = () => {
-		setOpen(false);
-		router.push("/"); // Redirects to the home page if the user closes the modal
-	};
+	const closeModal = () => {};
 
 	const validatePasskey = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
@@ -78,18 +74,23 @@ export const PasskeyModal = () => {
 				expirationTimestamp.toString()
 			);
 
-			setOpen(false);
-			router.push("/success"); // Redirect after validation
+			setIsKeyValid(true); // Indiquer que la clé est valide
+			setOpen(false); // Fermer la modal
+			router.push("/success"); // Rediriger après validation
 		} else {
-			setError("Code d&apos;accès invalide. Veuillez réessayer.");
+			setError("Code d'accès invalide. Veuillez réessayer.");
 		}
 	};
 
 	const handleOpenChange = (newOpen: boolean) => {
 		if (!newOpen) {
-			closeModal(); // If the modal closes without validation
+			// Empêcher la fermeture de la modal sans validation
+			if (!isKeyValid) {
+				setOpen(true);
+			}
+		} else {
+			setOpen(newOpen);
 		}
-		setOpen(newOpen);
 	};
 
 	return (
@@ -97,14 +98,14 @@ export const PasskeyModal = () => {
 			<AlertDialogOverlay className="fixed inset-0 bg-transparent/5" />
 			<AlertDialogContent className="shad-alert-dialog max-w-lg w-full mx-auto p-6 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
 				<AlertDialogHeader>
-					<AlertDialogTitle className="flex items-start justify-between font-bold text-slate-200">
+					<AlertDialogTitle className="flex items-start justify-between font-bold text-slate-500">
 						Vérification d&apos;accès administrateur
 						<Image
 							src="/assets/icons/close.svg"
 							alt="fermer"
 							width={20}
 							height={20}
-							onClick={closeModal}
+							onClick={closeModal} // Fonction pour fermer la modale
 							className="cursor-pointer hover:bg-red-500 rounded-xl bg-red-700"
 						/>
 					</AlertDialogTitle>
@@ -122,11 +123,11 @@ export const PasskeyModal = () => {
 							setPasskey(value)
 						}
 					>
-						<InputOTPGroup className="shad-otp w-full flex justify-between p-2 text-gray-300">
+						<InputOTPGroup className="shad-otp w-full flex justify-between p-2 text-gray-500">
 							{Array.from({ length: 6 }, (_, index) => (
 								<InputOTPSlot
 									key={index}
-									className="shad-otp-slot flex justify-center items-center text-2xl md:text-3xl font-bold border border-gray-500 rounded-lg w-10 md:w-12 h-10 md:h-12 gap-2 md:gap-4 text-slate-200"
+									className="shad-otp-slot flex justify-center items-center text-2xl md:text-3xl font-bold border border-gray-500 rounded-lg w-10 md:w-12 h-10 md:h-12 gap-2 md:gap-4 text-green-950"
 									index={index}
 								/>
 							))}

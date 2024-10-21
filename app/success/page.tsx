@@ -1,5 +1,6 @@
 // app/success/page.tsx
 
+import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,7 +14,7 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 	const message = searchParams.message || "Opération réussie !";
 
 	return (
-		<div className="flex h-screen max-h-screen px-[5%] bg-gradient-to-r from-sky-800 to-gray-300 flex-col items-center justify-center">
+		<div className="flex h-screen max-h-screen px-[5%] bg-gray-100 dark:bg-neutral-800 w-full border border-neutral-200 dark:border-neutral-700 flex-col items-center justify-center">
 			<Link href="/">
 				<Image
 					src="/assets/icons/logo-full.svg"
@@ -47,11 +48,7 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 				</button>
 			</Link>
 
-			<footer className="mt-auto mb-4">
-				<p className="text-sm text-slate-900">
-					© 2024 Franck BLANCHET Ostéopathie
-				</p>
-			</footer>
+			<Footer />
 		</div>
 	);
 }

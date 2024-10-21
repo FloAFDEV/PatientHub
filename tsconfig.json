@@ -1,35 +1,38 @@
 {
 	"compilerOptions": {
-		"target": "esnext",
-		"module": "commonjs",
-		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"jsx": "preserve",
-		"baseUrl": ".",
-		"paths": {
-			"@/*": ["./*"]
-		},
 		"lib": ["dom", "dom.iterable", "esnext"],
 		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": true,
 		"noEmit": true,
-		"incremental": true,
-		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
+		"jsx": "preserve",
+		"incremental": true,
 		"plugins": [
 			{
 				"name": "next"
 			}
-		]
+		],
+		"paths": {
+			"@/*": ["./*"]
+		}
 	},
 	"include": [
-		"app/**/*.ts",
-		"app/**/*.js",
-		"app/**/*.tsx",
-		"app/**/*.jsx",
-		".next/types/**/*.ts"
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		"utils/supabases/server.ts",
+		"OUT/client.js",
+		"utils/supabase/middleware.js",
+		"app/layout.js",
+		"middleware.js",
+		"utils/supabase/server.js",
+		"utils/supabase/client.js"
 	],
-	"exclude": ["node_modules", ".next"]
+	"exclude": ["node_modules"]
 }

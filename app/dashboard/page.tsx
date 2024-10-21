@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
 	IconArrowLeft,
@@ -13,43 +14,71 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
 import { cn } from "@/components/lib/utils";
-import { logout } from "@/app/logout/actions";
+import { createClient } from "@/utils/supabase/client";
+
+const supabase = createClient();
 
 export function SidebarDashboard() {
-	const [open, setOpen] = useState(false); // État pour l'ouverture de la sidebar
+	const [open, setOpen] = useState(false);
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
+	const router = useRouter();
+
+	const handleLogout = async (e: React.MouseEvent) => {
+		e.preventDefault();
+		setIsLoggingOut(true);
+		try {
+			const { error } = await supabase.auth.signOut();
+			if (error) throw error;
+
+			// Nettoyage du localStorage
+			localStorage.removeItem("accessKey");
+			localStorage.removeItem("accessKeyExpiration");
+
+			// Suppression manuelle des cookies Supabase
+			document.cookie =
+				"sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+			document.cookie =
+				"sb-refresh-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+
+			// Redirection vers la page de connexion
+			router.push("/login");
+		} catch (error) {
+			console.error("Erreur lors de la déconnexion:", error);
+		} finally {
+			setIsLoggingOut(false);
+		}
+	};
 
 	const links = [
 		{
 			label: "Dashboard",
-			href: "/dashboard", // Mettez ici le lien correct
+			href: "/dashboard",
 			icon: (
 				<IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
 			),
 		},
 		{
 			label: "Patients",
-			href: "/patients", // Mettez ici le lien correct
+			href: "/patients",
 			icon: (
 				<IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
 			),
 		},
 		{
 			label: "Settings",
-			href: "/settings", // Mettez ici le lien correct
+			href: "/settings",
 			icon: (
 				<IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
 			),
 		},
 		{
-			label: "Se déconnecter",
+			label: isLoggingOut ? "Déconnexion..." : "Se déconnecter",
 			href: "#",
 			icon: (
 				<IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
 			),
-			onClick: async (e: React.MouseEvent) => {
-				e.preventDefault(); // Empêche le comportement par défaut du lien
-				await logout(); // Appelle la fonction de déconnexion
-			},
+			onClick: handleLogout,
+			disabled: isLoggingOut,
 		},
 	];
 
@@ -89,16 +118,13 @@ export function SidebarDashboard() {
 				</SidebarBody>
 			</Sidebar>
 
-			{/* Déplacement du sélecteur de thème en dehors de la sidebar */}
 			<div className="flex-1 flex flex-col">
-				{/* Sélecteur de thème placé en haut à droite */}
-				<div className="fixed top-4 right-4 z-50s:top-10 xs:">
+				<div className="fixed top-4 right-4 z-50 xs:top-10 xs:m">
 					<ModeToggle />
 				</div>
 
 				<Dashboard />
 
-				{/* Footer */}
 				<footer className="bg-gray-200 dark:bg-neutral-900 text-center p-4 border-t border-neutral-300 dark:border-neutral-700">
 					<p className="text-sm text-gray-600 dark:text-gray-400">
 						© 2024 - PatientHub. Tous droits réservés.
@@ -108,8 +134,6 @@ export function SidebarDashboard() {
 		</div>
 	);
 }
-
-// ... reste du code (Logo, LogoIcon, Dashboard, logout)
 
 export const Logo = () => {
 	return (
@@ -140,7 +164,6 @@ export const LogoIcon = () => {
 	);
 };
 
-// Composant Dashboard avec contenu
 const Dashboard = () => {
 	return (
 		<>
@@ -149,7 +172,6 @@ const Dashboard = () => {
 					Bienvenue sur votre tableau de bord
 				</h1>
 
-				{/* Exemple de section personnalisée */}
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 					<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
 						<h2 className="text-lg font-medium text-gray-700 dark:text-white">
@@ -164,26 +186,26 @@ const Dashboard = () => {
 						<h2 className="text-lg font-medium text-gray-700 dark:text-white">
 							Statistique 2
 						</h2>
-						<p className="mt-2 text-gray-600 dark:text-gray-400">
+						<p className="mt-2 text-gray-600 dark:text-gray400">
 							Détails sur la statistique 2...
 						</p>
 					</div>
 
-					<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
-						<h2 className="text-lg font-medium text-gray-700 dark:text-white">
+					<div className="bg-gray100 dark:bg-neutral800 p4 rounded-lg shadow-md">
+						<h2 className="text-lg font-medium text-gray700 dark:text-white">
 							Statistique 3
 						</h2>
-						<p className="mt-2 text-gray-600 dark:text-gray-400">
+						<p className="mt2 text-gray600 dark:text-gray400">
 							Détails sur la statistique 3...
 						</p>
 					</div>
 				</div>
 
-				<div className="flex-1 bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
-					<h2 className="text-lg font-medium text-gray-700 dark:text-white">
+				<div className="flex1 bg-gray100 dark:bg-neutral800 p4 rounded-lg shadow-md">
+					<h2 className="text-lg font-medium text-gray700 dark:text-white">
 						Graphiques et autres visualisations
 					</h2>
-					<p className="mt-2 text-gray-600 dark:text-gray-400">
+					<p className="mt2 text-gray600 dark:text-gray400">
 						Contenu supplémentaire, comme des graphiques, des
 						tableaux...
 					</p>
