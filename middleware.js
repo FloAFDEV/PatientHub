@@ -9,7 +9,7 @@ export async function middleware(request) {
 		if (sessionExpiration) {
 			const expirationTime = parseInt(sessionExpiration.value);
 			if (Date.now() > expirationTime) {
-				return NextResponse.redirect(new URL("/", request.url));
+				return NextResponse.redirect(new URL("/login", request.url));
 			}
 		}
 
@@ -20,7 +20,7 @@ export async function middleware(request) {
 		if (protectedRoutes.includes(new URL(request.url).pathname)) {
 			// Si la route est protégée mais pas de passkey valide, rediriger vers la page de passkey
 			if (!passkey) {
-				return NextResponse.redirect(new URL("/error", request.url)); // Redirection vers la page de saisie de passkey
+				return NextResponse.redirect(new URL("/login", request.url)); // Redirection vers la page de saisie de passkey
 			}
 
 			// Vérification de la passkey
