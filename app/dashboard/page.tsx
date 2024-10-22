@@ -6,6 +6,7 @@ import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
 	IconArrowLeft,
 	IconBrandTabler,
+	IconContract,
 	IconSettings,
 	IconUserBolt,
 } from "@tabler/icons-react";
@@ -79,6 +80,13 @@ export function SidebarDashboard() {
 			),
 			onClick: handleLogout,
 			disabled: isLoggingOut,
+		},
+		{
+			label: "Contact",
+			href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour,%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci!",
+			icon: (
+				<IconContract className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+			),
 		},
 	];
 
@@ -191,7 +199,7 @@ const Dashboard = () => {
 						</p>
 					</div>
 
-					<div className="bg-gray-100 dark:bg-neutral-800 p4 rounded-lg shadow-md">
+					<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
 						<h2 className="text-lg font-medium text-gray-700 dark:text-white">
 							Statistique 3
 						</h2>
@@ -201,7 +209,7 @@ const Dashboard = () => {
 					</div>
 				</div>
 
-				<div className="flex1 bg-gray-100 dark:bg-neutral-800 p4 rounded-lg shadow-md">
+				<div className="flex1 bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
 					<h2 className="text-lg font-medium text-gray-700 dark:text-white">
 						Graphiques et autres visualisations
 					</h2>
