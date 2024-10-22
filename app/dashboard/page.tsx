@@ -83,7 +83,7 @@ export function SidebarDashboard() {
 		},
 		{
 			label: "Contact",
-			href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour,%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci!",
+			href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour%2C%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci%21",
 			icon: (
 				<IconContract className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
 			),
