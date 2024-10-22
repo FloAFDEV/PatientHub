@@ -16,6 +16,7 @@ import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
 import { cn } from "@/components/lib/utils";
 import { createClient } from "@/utils/supabase/client";
+import { signOut } from "@/app/logout/actions";
 
 const supabase = createClient();
 
@@ -27,27 +28,16 @@ export function SidebarDashboard() {
 	const handleLogout = async (e: React.MouseEvent) => {
 		e.preventDefault();
 		setIsLoggingOut(true);
-		try {
-			const { error } = await supabase.auth.signOut();
-			if (error) throw error;
-
-			// Nettoyage du localStorage
-			localStorage.removeItem("accessKey");
-			localStorage.removeItem("accessKeyExpiration");
-
-			// Suppression manuelle des cookies Supabase
-			document.cookie =
-				"sb-access-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-			document.cookie =
-				"sb-refresh-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-
-			// Redirection vers la page de connexion
+		const result = await signOut();
+		if (result.success) {
 			router.push("/login");
-		} catch (error) {
-			console.error("Erreur lors de la déconnexion:", error);
-		} finally {
-			setIsLoggingOut(false);
+		} else {
+			console.error("Erreur lors de la déconnexion:", result.error);
+			alert(
+				"Une erreur est survenue lors de la déconnexion. Veuillez réessayer."
+			);
 		}
+		setIsLoggingOut(false);
 	};
 
 	const links = [
@@ -125,14 +115,11 @@ export function SidebarDashboard() {
 					</div>
 				</SidebarBody>
 			</Sidebar>
-
 			<div className="flex-1 flex flex-col">
 				<div className="fixed top-4 right-4 z-50 xs:top-10 xs:m">
 					<ModeToggle />
 				</div>
-
 				<Dashboard />
-
 				<footer className="bg-gray-200 dark:bg-neutral-900 text-center p-4 border-t border-neutral-300 dark:border-neutral-700">
 					<p className="text-sm text-gray-600 dark:text-gray-400">
 						© 2024 - PatientHub. Tous droits réservés.
