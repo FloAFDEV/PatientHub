@@ -44,7 +44,7 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 
 	// Vérification si la clé d'accès est déjà stockée et valide
 	useEffect(() => {
-		const checkValidKey = () => {
+		if (typeof window !== "undefined") {
 			const encryptedKey = localStorage.getItem("accessKey");
 			const accessKey = encryptedKey ? decryptKey(encryptedKey) : null;
 			const expirationTimestamp = localStorage.getItem(
@@ -58,13 +58,11 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 
 			if (isValidKey) {
 				setIsKeyValid(true);
-				router.push("/dashboard");
+				router.push("/dashboard"); // Redirige vers le tableau de bord si la clé est valide
 			} else {
 				setIsKeyValid(false);
 			}
-		};
-
-		checkValidKey();
+		}
 	}, [router]);
 
 	const closeModal = () => {
@@ -74,35 +72,27 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 	};
 
 	// Fonction de validation du code d'accès admin
-	const validatePasskey = async (e: React.MouseEvent<HTMLButtonElement>) => {
+	const validatePasskey = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
 		if (passkey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
-			const encryptedKey = encryptKey(passkey); // Encrypt key before storing
+			const encryptedKey = encryptKey(passkey); // Encrypte la clé avant de la stocker
 			const expirationTimestamp = Date.now() + EXPIRATION_TIME;
 
-			// Attempt to store in localStorage with error handling
-			try {
-				localStorage.setItem("accessKey", encryptedKey);
-				localStorage.setItem(
-					"accessKeyExpiration",
-					expirationTimestamp.toString()
-				);
-				setIsKeyValid(true);
-				console.log("Validation réussie, redirection...");
-				closeModal(); // Close the modal
+			localStorage.setItem("accessKey", encryptedKey);
+			localStorage.setItem(
+				"accessKeyExpiration",
+				expirationTimestamp.toString()
+			);
 
-				router.push(
-					`/success?message=${encodeURIComponent(
-						"Validation réussie, vous pouvez accéder tableau de bord et à votre espace PatientHub"
-					)}`
-				);
-			} catch (error) {
-				setError(
-					"Erreur lors de la sauvegarde de la clé d'accès. Veuillez réessayer."
-				);
-				console.error("LocalStorage Error: ", error);
-			}
+			setIsKeyValid(true);
+			console.log("Validation réussie, redirection...");
+			closeModal(); // Ferme la modale
+			router.push(
+				`/success?message=${encodeURIComponent(
+					"Validation réussie, vous pouvez accéder tableau de bord et à \nvotre espace PatientHub"
+				)}`
+			);
 		} else {
 			setError("Code d'accès invalide. Veuillez réessayer.");
 		}

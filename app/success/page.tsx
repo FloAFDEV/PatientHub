@@ -1,10 +1,8 @@
-"use client"; // Assurez-vous que ce composant est un composant client
+// app/success/page.tsx
 
-import { useEffect } from "react";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Import pour la redirection
 
 interface SuccessPageProps {
 	searchParams: {
@@ -14,17 +12,6 @@ interface SuccessPageProps {
 
 export default function SuccessPage({ searchParams }: SuccessPageProps) {
 	const message = searchParams.message || "Opération réussie !";
-	const router = useRouter();
-
-	useEffect(() => {
-		// Rediriger vers /dashboard après 3 secondes (3000 ms)
-		const timer = setTimeout(() => {
-			router.push("/dashboard");
-		}, 3000); // Vous pouvez ajuster le délai à votre convenance
-
-		// Nettoyer le timer au démontage du composant
-		return () => clearTimeout(timer);
-	}, [router]);
 
 	return (
 		<div className="flex h-screen max-h-screen px-4 sm:px-6 md:px-[5%] bg-gray-100 dark:bg-neutral-800 w-full border border-green-500 dark:border-green-500 flex-col items-center justify-center">
@@ -59,11 +46,12 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 				</h1>
 			</section>
 
-			{/* Message optionnel pour informer l'utilisateur de la redirection */}
-			<p className="mt-4 text-center text-gray-600">
-				Vous serez redirigé vers votre espace administrateur dans 3
-				secondes...
-			</p>
+			{/* Utilisation d'un bouton simple */}
+			<Link href="/dashboard" className="mt-6 sm:mt-8">
+				<button className="px-4 py-2 sm:px-6 sm:py-3 text-lg sm:text-xl bg-sky-600 text-white drop-shadow-2xl shadow-teal-500 rounded-md hover:bg-sky-800 transition duration-300">
+					Vers accès administrateur
+				</button>
+			</Link>
 
 			<Footer />
 		</div>
