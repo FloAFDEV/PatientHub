@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
 	Sidebar,
@@ -21,11 +21,31 @@ import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
 import { cn } from "@/components/lib/utils";
 import { signOut } from "@/app/logout/actions";
+import { createClient } from "@/utils/supabase/client"; // Assurez-vous d'importer votre client Supabase
+
+const supabase = createClient();
 
 export default function SidebarDashboard() {
 	const [open, setOpen] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
+	const [isAuthenticated, setIsAuthenticated] = useState(false); // État pour l'authentification
 	const router = useRouter();
+
+	// Vérifier la session à l'initialisation
+	useEffect(() => {
+		const checkSession = async () => {
+			const {
+				data: { session },
+			} = await supabase.auth.getSession();
+			if (!session) {
+				router.push("/login"); // Rediriger vers la page de connexion si la session est inexistante
+			} else {
+				setIsAuthenticated(true); // Mettre à jour l'état si l'utilisateur est authentifié
+			}
+		};
+
+		checkSession();
+	}, [router]);
 
 	// Fonction de déconnexion
 	const handleLogout = async (e: React.MouseEvent) => {

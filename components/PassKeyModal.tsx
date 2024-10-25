@@ -74,27 +74,35 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 	};
 
 	// Fonction de validation du code d'accès admin
-	const validatePasskey = (e: React.MouseEvent<HTMLButtonElement>) => {
+	const validatePasskey = async (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
 		if (passkey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
-			const encryptedKey = encryptKey(passkey); // Encrypte la clé avant de la stocker
+			const encryptedKey = encryptKey(passkey); // Encrypt key before storing
 			const expirationTimestamp = Date.now() + EXPIRATION_TIME;
 
-			localStorage.setItem("accessKey", encryptedKey);
-			localStorage.setItem(
-				"accessKeyExpiration",
-				expirationTimestamp.toString()
-			);
+			// Attempt to store in localStorage with error handling
+			try {
+				localStorage.setItem("accessKey", encryptedKey);
+				localStorage.setItem(
+					"accessKeyExpiration",
+					expirationTimestamp.toString()
+				);
+				setIsKeyValid(true);
+				console.log("Validation réussie, redirection...");
+				closeModal(); // Close the modal
 
-			setIsKeyValid(true);
-			console.log("Validation réussie, redirection...");
-			closeModal(); // Ferme la modale
-			router.push(
-				`/success?message=${encodeURIComponent(
-					"Validation réussie, vous pouvez accéder tableau de bord et à \nvotre espace PatientHub"
-				)}`
-			);
+				router.push(
+					`/success?message=${encodeURIComponent(
+						"Validation réussie, vous pouvez accéder tableau de bord et à votre espace PatientHub"
+					)}`
+				);
+			} catch (error) {
+				setError(
+					"Erreur lors de la sauvegarde de la clé d'accès. Veuillez réessayer."
+				);
+				console.error("LocalStorage Error: ", error);
+			}
 		} else {
 			setError("Code d'accès invalide. Veuillez réessayer.");
 		}
