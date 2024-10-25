@@ -192,7 +192,6 @@ export default function LoginPage() {
 						</form>
 					</div>
 
-					{/* Section supplémentaire masquée sur mobile */}
 					<div className="hidden md:block mt-4 text-center text-muted-foreground px-4">
 						<p className="text-base leading-tight">
 							La plateforme conçue pour faciliter la gestion des
@@ -206,6 +205,13 @@ export default function LoginPage() {
 					<Footer />
 				</div>
 			</div>
+			<Image
+				src="/assets/images/onboarding-img.png"
+				height={1000}
+				width={1000}
+				alt="Image d'accueil"
+				className="side-img max-w-[50%] hidden md:block mt-0"
+			/>
 		</BackgroundBeamsWithCollision>
 	);
 }

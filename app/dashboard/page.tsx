@@ -2,7 +2,12 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
+import {
+	Sidebar,
+	SidebarBody,
+	SidebarLink,
+	Links,
+} from "@/components/ui/sidebar";
 import {
 	IconArrowLeft,
 	IconBrandTabler,
@@ -15,32 +20,36 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
 import { cn } from "@/components/lib/utils";
-import { createClient } from "@/utils/supabase/client";
 import { signOut } from "@/app/logout/actions";
 
-const supabase = createClient();
-
-export function SidebarDashboard() {
+export default function SidebarDashboard() {
 	const [open, setOpen] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const router = useRouter();
 
+	// Fonction de déconnexion
 	const handleLogout = async (e: React.MouseEvent) => {
 		e.preventDefault();
 		setIsLoggingOut(true);
+
 		const result = await signOut();
 		if (result.success) {
-			router.push("/login");
+			router.push("/login"); // Redirige après la déconnexion
 		} else {
-			console.error("Erreur lors de la déconnexion:", result.error);
 			alert(
-				"Une erreur est survenue lors de la déconnexion. Veuillez réessayer."
+				result.error ||
+					"Erreur lors de la déconnexion. Veuillez réessayer."
 			);
 		}
 		setIsLoggingOut(false);
 	};
 
-	const links = [
+	type Link = Omit<Links, "onClick"> & {
+		onClick?: (e: React.MouseEvent) => Promise<void>;
+		disabled?: boolean;
+	};
+
+	const links: Link[] = [
 		{
 			label: "Dashboard",
 			href: "/dashboard",
@@ -66,7 +75,7 @@ export function SidebarDashboard() {
 			label: isLoggingOut ? "Déconnexion..." : "Se déconnecter",
 			href: "#",
 			icon: (
-				<IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+				<IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
 			),
 			onClick: handleLogout,
 			disabled: isLoggingOut,
@@ -104,19 +113,19 @@ export function SidebarDashboard() {
 								icon: (
 									<Image
 										src="/assets/images/admin.jpg"
-										className="h-7 w-7 flex-shrink-0 rounded-full"
+										className="h-8 w-8 flex-shrink-0 rounded-md"
 										width={50}
 										height={50}
 										alt="Avatar"
 									/>
 								),
 							}}
-						/>
+						/>{" "}
 					</div>
 				</SidebarBody>
 			</Sidebar>
 			<div className="flex-1 flex flex-col">
-				<div className="fixed top-4 right-4 z-50 xs:top-10 xs:m">
+				<div className="fixed top-4 right-4 z-50 xs:top-10 xs:m ">
 					<ModeToggle />
 				</div>
 				<Dashboard />
@@ -161,53 +170,45 @@ export const LogoIcon = () => {
 
 const Dashboard = () => {
 	return (
-		<>
-			<div className="flex-1 p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-6">
-				<h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
-					Bienvenue sur votre tableau de bord
-				</h1>
-
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-					<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
-						<h2 className="text-lg font-medium text-gray-700 dark:text-white">
-							Statistique 1
-						</h2>
-						<p className="mt-2 text-gray-600 dark:text-gray-400">
-							Détails sur la statistique 1...
-						</p>
-					</div>
-
-					<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
-						<h2 className="text-lg font-medium text-gray-700 dark:text-white">
-							Statistique 2
-						</h2>
-						<p className="mt-2 text-gray-600 dark:text-gray-400">
-							Détails sur la statistique 2...
-						</p>
-					</div>
-
-					<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
-						<h2 className="text-lg font-medium text-gray-700 dark:text-white">
-							Statistique 3
-						</h2>
-						<p className="mt2 text-gray600 dark:text-gray-400">
-							Détails sur la statistique 3...
-						</p>
-					</div>
-				</div>
-
-				<div className="flex1 bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
+		<div className="flex-1 p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-6">
+			<h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
+				Bienvenue sur votre tableau de bord
+			</h1>
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
 					<h2 className="text-lg font-medium text-gray-700 dark:text-white">
-						Graphiques et autres visualisations
+						Statistique 1
+					</h2>
+					<p className="mt-2 text-gray-600 dark:text-gray-400">
+						Détails sur la statistique 1...
+					</p>
+				</div>
+				<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
+					<h2 className="text-lg font-medium text-gray-700 dark:text-white">
+						Statistique 2
+					</h2>
+					<p className="mt-2 text-gray-600 dark:text-gray-400">
+						Détails sur la statistique 2...
+					</p>
+				</div>
+				<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
+					<h2 className="text-lg font-medium text-gray-700 dark:text-white">
+						Statistique 3
 					</h2>
 					<p className="mt2 text-gray600 dark:text-gray-400">
-						Contenu supplémentaire, comme des graphiques, des
-						tableaux...
+						Détails sur la statistique 3...
 					</p>
 				</div>
 			</div>
-		</>
+			<div className="flex1 bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
+				<h2 className="text-lg font-medium text-gray-700 dark:text-white">
+					Graphiques et autres visualisations
+				</h2>
+				<p className="mt2 text-gray600 dark:text-gray-400">
+					Contenu supplémentaire, comme des graphiques, des
+					tableaux...
+				</p>
+			</div>
+		</div>
 	);
 };
-
-export default SidebarDashboard;

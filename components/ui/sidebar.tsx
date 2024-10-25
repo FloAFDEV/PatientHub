@@ -5,10 +5,12 @@ import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 
-interface Links {
+export interface Links {
 	label: string;
 	href: string;
 	icon: React.JSX.Element | React.ReactNode;
+	onClick?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+	disabled?: boolean;
 }
 
 interface SidebarContextProps {
@@ -165,13 +167,29 @@ export const SidebarLink = ({
 	props?: LinkProps;
 }) => {
 	const { open, animate } = useSidebar();
+
+	const handleClick = (
+		e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+	) => {
+		if (link.disabled) {
+			e.preventDefault();
+			return;
+		}
+		if (link.onClick) {
+			e.preventDefault();
+			link.onClick(e);
+		}
+	};
+
 	return (
 		<Link
 			href={link.href}
 			className={cn(
-				"flex items-center justify-start gap-2  group/sidebar py-2",
+				"flex items-center justify-start gap-2 group/sidebar py-2",
+				{ "pointer-events-none opacity-50": link.disabled },
 				className
 			)}
+			onClick={handleClick}
 			{...props}
 		>
 			{link.icon}

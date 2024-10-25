@@ -32,7 +32,8 @@
 		"app/layout.js",
 		"middleware.js",
 		"utils/supabase/server.js",
-		"utils/supabase/client.js"
+		"utils/supabase/client.js",
+		"app/logout/actions.js"
 	],
 	"exclude": ["node_modules"]
 }

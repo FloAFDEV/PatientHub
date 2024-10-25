@@ -25,7 +25,7 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 				/>
 			</Link>
 			<div>
-				<h1 className="text-2xl sm:text-3xl font-semibold text-teal-300 mt-4 sm:mt-6">
+				<h1 className="text-2xl sm:text-3xl font-semibold text-teal-400 mt-4 sm:mt-6">
 					Bienvenue !
 				</h1>
 			</div>
@@ -38,12 +38,12 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 					sizes="(max-width: 768px) 80vw, (max-width: 600px) 60vw, 33vw"
 					className="max-w-full h-auto"
 				/>
-				<h1 className="text-2xl sm:text-3xl font-semibold text-teal-300 mt-4 sm:mt-6">
+				<h1
+					className="text-2xl sm:text-3xl font-semibold text-teal-400 mt-4 sm:mt-6"
+					style={{ whiteSpace: "pre-line" }}
+				>
 					{message}
 				</h1>
-				<p className="mt-2 sm:mt-4 font-medium text-lg sm:text-xl">
-					Vous pouvez maintenant accéder à votre PatientHub
-				</p>
 			</section>
 
 			{/* Utilisation d'un bouton simple */}

@@ -1,4 +1,3 @@
-// PassKeyModal.tsx
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -18,13 +17,13 @@ import {
 	InputOTPSlot,
 } from "@/components/ui/input-otp";
 
-// Encryption and decryption functions
+// Fonctions d'encryption et de décryption
 export function encryptKey(passkey: string) {
-	return btoa(passkey);
+	return btoa(passkey); // Encode en base64 pour l'encryption
 }
 
 export function decryptKey(passkey: string) {
-	return atob(passkey);
+	return atob(passkey); // Décode en base64 pour la décryption
 }
 
 interface PasskeyModalProps {
@@ -41,8 +40,9 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 	const [error, setError] = useState("");
 	const [isKeyValid, setIsKeyValid] = useState(false);
 
-	const EXPIRATION_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
+	const EXPIRATION_TIME = 5 * 60 * 1000; // 5 minutes en millisecondes
 
+	// Vérification si la clé d'accès est déjà stockée et valide
 	useEffect(() => {
 		if (typeof window !== "undefined") {
 			const encryptedKey = localStorage.getItem("accessKey");
@@ -58,12 +58,12 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 
 			if (isValidKey) {
 				setIsKeyValid(true);
-				router.push("/success");
+				router.push("/dashboard"); // Redirige vers le tableau de bord si la clé est valide
 			} else {
 				setIsKeyValid(false);
 			}
 		}
-	}, [router, onClose]);
+	}, [router]);
 
 	const closeModal = () => {
 		onClose();
@@ -71,11 +71,12 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 		setError("");
 	};
 
+	// Fonction de validation du code d'accès admin
 	const validatePasskey = (e: React.MouseEvent<HTMLButtonElement>) => {
 		e.preventDefault();
 
 		if (passkey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
-			const encryptedKey = encryptKey(passkey); // Encrypt the key before saving
+			const encryptedKey = encryptKey(passkey); // Encrypte la clé avant de la stocker
 			const expirationTimestamp = Date.now() + EXPIRATION_TIME;
 
 			localStorage.setItem("accessKey", encryptedKey);
@@ -84,9 +85,14 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 				expirationTimestamp.toString()
 			);
 
-			setIsKeyValid(true); // Indiquer que la clé est valide
-			onClose(); // Fermer la modal
-			router.push("/success"); // Rediriger après validation
+			setIsKeyValid(true);
+			console.log("Validation réussie, redirection...");
+			closeModal(); // Ferme la modale
+			router.push(
+				`/success?message=${encodeURIComponent(
+					"Validation réussie, vous pouvez accéder tableau de bord et à \nvotre espace PatientHub"
+				)}`
+			);
 		} else {
 			setError("Code d'accès invalide. Veuillez réessayer.");
 		}
@@ -104,7 +110,7 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 							alt="fermer"
 							width={20}
 							height={20}
-							onClick={closeModal} // Fonction pour fermer la modale
+							onClick={closeModal} // Ferme la modal
 							className="cursor-pointer hover:bg-red-500 rounded-xl bg-red-700"
 						/>
 					</AlertDialogTitle>
@@ -114,7 +120,7 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 
-				<div suppressHydrationWarning className="mt-4">
+				<div className="mt-4">
 					<InputOTP
 						maxLength={6}
 						value={passkey}
