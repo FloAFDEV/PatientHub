@@ -44,7 +44,7 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 
 	// Vérification si la clé d'accès est déjà stockée et valide
 	useEffect(() => {
-		if (typeof window !== "undefined") {
+		const checkValidKey = () => {
 			const encryptedKey = localStorage.getItem("accessKey");
 			const accessKey = encryptedKey ? decryptKey(encryptedKey) : null;
 			const expirationTimestamp = localStorage.getItem(
@@ -58,11 +58,13 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 
 			if (isValidKey) {
 				setIsKeyValid(true);
-				router.push("/dashboard"); // Redirige vers le tableau de bord si la clé est valide
+				router.push("/dashboard");
 			} else {
 				setIsKeyValid(false);
 			}
-		}
+		};
+
+		checkValidKey();
 	}, [router]);
 
 	const closeModal = () => {

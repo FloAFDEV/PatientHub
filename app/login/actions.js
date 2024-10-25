@@ -46,7 +46,7 @@ export async function login(formData) {
 	}
 
 	try {
-		const { user, error } = await supabase.auth.signIn({
+		const { error } = await supabase.auth.signIn({
 			email,
 			password,
 		});

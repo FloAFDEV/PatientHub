@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Import pour la redirection
 import Image from "next/image";
 import Footer from "@/components/Footer";
 import { createClient } from "@/utils/supabase/client";
@@ -11,6 +12,7 @@ import { PasskeyModal } from "@/components/PassKeyModal";
 const supabase = createClient();
 
 export default function LoginPage() {
+	const router = useRouter();
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [email, setEmail] = useState("");
@@ -20,9 +22,15 @@ export default function LoginPage() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
+	// Vérifier si l'utilisateur est déjà authentifié à chaque chargement de la page
 	useEffect(() => {
 		setIsMounted(true);
-	}, []);
+		const isUserAuthenticated = localStorage.getItem("authToken"); // Vérifie un jeton existant
+		if (isUserAuthenticated) {
+			setIsAuthenticated(true);
+			router.push("/dashboard"); // Redirection vers le tableau de bord si déjà authentifié
+		}
+	}, [router]);
 
 	const validateForm = () => {
 		if (!email) {
@@ -69,6 +77,7 @@ export default function LoginPage() {
 				console.error("Erreur de connexion:", error);
 			} else if (data.session) {
 				setIsAuthenticated(true);
+				localStorage.setItem("authToken", data.session.access_token); // Enregistre le token
 				setIsModalOpen(true); // Ouvrir la modale après une connexion réussie
 			}
 		} catch (error) {
@@ -80,7 +89,7 @@ export default function LoginPage() {
 	};
 
 	const closeModal = () => {
-		setIsModalOpen(false); // Ferme la modale
+		setIsModalOpen(false);
 	};
 
 	return (
@@ -89,7 +98,7 @@ export default function LoginPage() {
 				suppressHydrationWarning
 				className="flex-grow flex flex-col justify-between min-h-screen"
 			>
-				{/* Passer open et onClose à PasskeyModal */}
+				{/* Affichage de la modal si authentifié */}
 				{isModalOpen && (
 					<PasskeyModal open={isModalOpen} onClose={closeModal} />
 				)}
