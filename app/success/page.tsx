@@ -32,8 +32,8 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 			<section className="flex flex-col items-center text-center mt-8 sm:mt-12">
 				<Image
 					src="/assets/gifs/success.gif"
-					height={300}
-					width={300}
+					width={500}
+					height={500}
 					alt="success"
 					sizes="(max-width: 768px) 80vw, (max-width: 600px) 60vw, 33vw"
 					className="max-w-full h-auto"

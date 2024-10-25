@@ -21,26 +21,35 @@ import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
 import { cn } from "@/components/lib/utils";
 import { signOut } from "@/app/logout/actions";
-import { createClient } from "@/utils/supabase/client"; // Assurez-vous d'importer votre client Supabase
+import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/supabase-js";
 
 const supabase = createClient();
 
 export default function SidebarDashboard() {
 	const [open, setOpen] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
-	const [isAuthenticated, setIsAuthenticated] = useState(false); // État pour l'authentification
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [user, setUser] = useState<User | null>(null);
 	const router = useRouter();
 
 	// Vérifier la session à l'initialisation
 	useEffect(() => {
 		const checkSession = async () => {
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
-			if (!session) {
-				router.push("/login"); // Rediriger vers la page de connexion si la session est inexistante
+			const { data, error } = await supabase.auth.getSession();
+
+			if (error) {
+				console.error(
+					"Erreur lors de la récupération de la session :",
+					error
+				);
+			} else if (!data.session) {
+				console.log("Aucune session trouvée, redirection vers /login");
+				await router.push("/login");
 			} else {
-				setIsAuthenticated(true); // Mettre à jour l'état si l'utilisateur est authentifié
+				console.log("Session trouvée :", data.session); // Debug
+				setUser(data.session.user); // Stocker l’utilisateur
+				setIsAuthenticated(true);
 			}
 		};
 
@@ -54,7 +63,7 @@ export default function SidebarDashboard() {
 
 		const result = await signOut();
 		if (result.success) {
-			router.push("/login"); // Redirige après la déconnexion
+			await router.push("/login"); // Redirige après la déconnexion
 		} else {
 			alert(
 				result.error ||
@@ -125,30 +134,42 @@ export default function SidebarDashboard() {
 							))}
 						</div>
 					</div>
-					<div>
-						<SidebarLink
-							link={{
-								label: "Franck BLANCHET",
-								href: "#",
-								icon: (
-									<Image
-										src="/assets/images/admin.jpg"
-										className="h-8 w-8 flex-shrink-0 rounded-md"
-										width={50}
-										height={50}
-										alt="Avatar"
-									/>
-								),
-							}}
-						/>{" "}
+
+					{/* Affichage des informations utilisateur */}
+					<div className="bg-gray-100 dark:bg-neutral-800 rounded-md flex items-center gap-3">
+						{" "}
+						{user ? (
+							<>
+								<Image
+									src="/assets/images/admin.jpg"
+									className="h-7 w-auto rounded-full"
+									width={40}
+									height={40}
+									alt="User Avatar"
+								/>
+								<div>
+									<p className="ml-4 text-sm font-medium text-gray-800 dark:text-white">
+										{user.email}
+									</p>
+									<p className="ml-4 text-xs text-gray-600 dark:text-gray-400">
+										{user.user_metadata?.full_name ||
+											"Utilisateur"}
+									</p>
+								</div>
+							</>
+						) : (
+							<p className="text-xs text-gray-500">
+								Chargement des informations utilisateur...
+							</p>
+						)}
 					</div>
 				</SidebarBody>
 			</Sidebar>
 			<div className="flex-1 flex flex-col">
-				<div className="fixed top-4 right-4 z-50 xs:top-10 xs:m ">
+				<div className="fixed z-50 top-4 left-4 md:top-4 md:right-4 md:left-auto">
 					<ModeToggle />
 				</div>
-				<Dashboard />
+				<Dashboard user={user} />
 				<footer className="bg-gray-200 dark:bg-neutral-900 text-center p-4 border-t border-neutral-300 dark:border-neutral-700">
 					<p className="text-sm text-gray-600 dark:text-gray-400">
 						© 2024 - PatientHub. Tous droits réservés.
@@ -188,43 +209,83 @@ export const LogoIcon = () => {
 	);
 };
 
-const Dashboard = () => {
+interface DashboardProps {
+	user: User | null;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	return (
-		<div className="flex-1 p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-6">
-			<h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
-				Bienvenue sur votre tableau de bord
-			</h1>
+		<div className="flex-1 p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-6 overflow-y-auto">
+			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg shadow-lg mb-6">
+				<h1 className="text-3xl font-bold mb-2">
+					Bienvenue, {user ? user.email : "Utilisateur"}
+				</h1>
+				<p className="text-lg">
+					Voici un aperçu de votre tableau de bord
+				</p>
+			</div>
+
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
-					<h2 className="text-lg font-medium text-gray-700 dark:text-white">
-						Statistique 1
+				<div className="bg-white dark:bg-neutral-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+					<h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+						Patients actifs
 					</h2>
-					<p className="mt-2 text-gray-600 dark:text-gray-400">
-						Détails sur la statistique 1...
+					<p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+						152
+					</p>
+					<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+						+12% par rapport au mois dernier
 					</p>
 				</div>
-				<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
-					<h2 className="text-lg font-medium text-gray-700 dark:text-white">
-						Statistique 2
+				<div className="bg-white dark:bg-neutral-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+					<h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+						Rendez-vous aujourd'hui
 					</h2>
-					<p className="mt-2 text-gray-600 dark:text-gray-400">
-						Détails sur la statistique 2...
+					<p className="text-3xl font-bold text-green-600 dark:text-green-400">
+						8
+					</p>
+					<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+						Prochain RDV à 14h30
 					</p>
 				</div>
-				<div className="bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
-					<h2 className="text-lg font-medium text-gray-700 dark:text-white">
-						Statistique 3
+				<div className="bg-white dark:bg-neutral-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+					<h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+						Nouveaux patients
 					</h2>
-					<p className="mt2 text-gray600 dark:text-gray-400">
-						Détails sur la statistique 3...
+					<p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+						24
+					</p>
+					<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+						Ce mois-ci
 					</p>
 				</div>
 			</div>
-			<div className="flex1 bg-gray-100 dark:bg-neutral-800 p-4 rounded-lg shadow-md">
-				<h2 className="text-lg font-medium text-gray-700 dark:text-white">
+
+			<div className="mt-8">
+				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
+					Actions rapides
+				</h2>
+				<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+					<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+						Ajouter un patient
+					</button>
+					<button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+						Voir les rendez-vous
+					</button>
+					<button className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+						Gérer les dossiers
+					</button>
+					<button className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+						Rapports mensuels
+					</button>
+				</div>
+			</div>
+
+			<div className="bg-white dark:bg-neutral-800 p-6 rounded-lg shadow-lg">
+				<h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
 					Graphiques et autres visualisations
 				</h2>
-				<p className="mt2 text-gray600 dark:text-gray-400">
+				<p className="text-gray-600 dark:text-gray-400">
 					Contenu supplémentaire, comme des graphiques, des
 					tableaux...
 				</p>

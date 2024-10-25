@@ -216,8 +216,9 @@ export default function LoginPage() {
 			</div>
 			<Image
 				src="/assets/images/onboarding-img.png"
-				height={1000}
-				width={1000}
+				height={800}
+				width={600}
+				priority
 				alt="Image d'accueil"
 				className="side-img max-w-[50%] hidden md:block mt-0"
 			/>
