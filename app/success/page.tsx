@@ -1,5 +1,7 @@
-// app/success/page.tsx
+"use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +14,15 @@ interface SuccessPageProps {
 
 export default function SuccessPage({ searchParams }: SuccessPageProps) {
 	const message = searchParams.message || "Opération réussie !";
+	const router = useRouter();
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			router.push("/dashboard");
+		}, 3000); // Redirection après 3 secondes
+
+		return () => clearTimeout(timer);
+	}, [router]);
 
 	return (
 		<div className="flex h-screen max-h-screen px-4 sm:px-6 md:px-[5%] bg-gray-100 dark:bg-neutral-800 w-full border border-green-500 dark:border-green-500 flex-col items-center justify-center">
@@ -46,10 +57,14 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 				</h1>
 			</section>
 
-			{/* Utilisation d'un bouton simple */}
+			<p className="mt-6 text-lg text-gray-600 dark:text-gray-400">
+				Redirection automatique vers le tableau de bord dans 3
+				secondes...
+			</p>
+
 			<Link href="/dashboard" className="mt-6 sm:mt-8">
 				<button className="px-4 py-2 sm:px-6 sm:py-3 text-lg sm:text-xl bg-sky-600 text-white drop-shadow-2xl shadow-teal-500 rounded-md hover:bg-sky-800 transition duration-300">
-					Vers accès administrateur
+					Accéder immédiatement au tableau de bord
 				</button>
 			</Link>
 
