@@ -11,14 +11,17 @@ datasource db {
 
 // Utilisateurs : Administrateurs et Ostéopathes
 model User {
-  id          Int        @id @default(autoincrement())
-  name        String
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email       String     @unique
-  role        Role // Rôle : Administrateur ou Ostéopathe
-  osteopath   Osteopath? @relation(fields: [osteopathId], references: [id]) // Relation vers Ostéopathes (si l'utilisateur est un ostéopathe)
-  osteopathId Int?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  first_name  String?
+  last_name   String?
+  role        Role
+  osteopath   Osteopath? // Relation avec l'ostéopathe
+  osteopathId Int? // Champ de clé étrangère pour l'ostéopathe
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+
+  @@map("users") // Map to Supabase's users table
 }
 
 // Rôles possibles
@@ -30,13 +33,12 @@ enum Role {
 // Modèle Ostéopathes
 model Osteopath {
   id        Int       @id @default(autoincrement())
-  name      String // Nom de l'ostéopathe
-  email     String // Email de l'ostéopathe
-  cabinets  Cabinet[] // Cabinets dans lesquels l'ostéopathe pratique
-  patients  Patient[] // Patients associés à cet ostéopathe
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String    @unique @db.Uuid
+  cabinets  Cabinet[]
+  patients  Patient[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  User      User[]
 }
 
 // Modèle Cabinets
