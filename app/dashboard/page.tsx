@@ -192,7 +192,7 @@ export const Logo = () => {
 					alt="Logo de PatientHub"
 					width={32}
 					height={32}
-					className="object-contain rounded-md"
+					className="object-contain rounded-md shadow-xl"
 				/>
 			</div>
 			<motion.span
@@ -208,11 +208,16 @@ export const Logo = () => {
 
 export const LogoIcon = () => {
 	return (
-		<Link
-			href="#"
-			className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
-		>
-			<div className="h-5 w-6 bg-black dark:bg-white rounded-br-lg rounded-tr-sm rounded-tl-lg rounded-bl-sm flex-shrink-0" />
+		<Link href="#" className="flex items-center justify-center py-2">
+			<div className="h-8 w-8">
+				<Image
+					src="/assets/images/logo-full.svg"
+					alt="Logo de PatientHub"
+					width={32} // Ajusté pour correspondre à l'icône du mode fermé
+					height={32}
+					className="object-contain rounded-md shadow-md"
+				/>
+			</div>
 		</Link>
 	);
 };
