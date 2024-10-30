@@ -8,6 +8,7 @@ import { createClient } from "@/utils/supabase/client";
 import { ModeToggle } from "@/components/ModeToggle";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import { PasskeyModal } from "@/components/PassKeyModal";
+import Link from "next/link";
 
 const supabase = createClient();
 
@@ -19,16 +20,14 @@ export default function LoginPage() {
 	const [password, setPassword] = useState("");
 	const [hiddenField] = useState(""); // Champ caché pour le spam
 	const [isMounted, setIsMounted] = useState(false);
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	// Vérifier si l'utilisateur est déjà authentifié à chaque chargement de la page
 	useEffect(() => {
 		setIsMounted(true);
-		const isUserAuthenticated = localStorage.getItem("authToken"); // Vérifie un jeton existant
+		const isUserAuthenticated = localStorage.getItem("authToken");
 		if (isUserAuthenticated) {
-			setIsAuthenticated(true);
-			router.push("/dashboard"); // Redirection vers le tableau de bord si déjà authentifié
+			router.push("/success");
 		}
 	}, [router]);
 
@@ -76,7 +75,6 @@ export default function LoginPage() {
 				);
 				console.error("Erreur de connexion:", error);
 			} else if (data.session) {
-				setIsAuthenticated(true);
 				localStorage.setItem("authToken", data.session.access_token); // Enregistre le token
 				setIsModalOpen(true); // Ouvrir la modale après une connexion réussie
 			}
@@ -203,12 +201,12 @@ export default function LoginPage() {
 								)}
 								<p className="text-sm text-muted-foreground text-center">
 									Vous n&apos;avez pas accès ?{" "}
-									<a
+									<Link
 										href="mailto:afdevflo@gmail.com?subject=Demande%20d'accès%20à%20PatientHub&body=Bonjour%20[Nom%20complet%20ou%20société],%0A%0AJ'aimerais%20demander%20un%20acc%C3%A8s%20%C3%A0%20la%20plateforme.%0A%0AVoici%20quelques%20informations%20:%0A%0A-%20Nom%20complet%20ou%20société%20:%20[Nom%20complet%20ou%20société]%0A- %20Email%20:%20[Votre%20adresse%20e-mail]%0A- %20Raison%20de%20la%20demande%20:%20[Expliquez%20bri%C3%A8vement%20pourquoi%20vous%20souhaitez%20acc%C3%A9der%20%C3%A0%20la%20plateforme]%0A%0AJe%20vous%20remercie%20d'avance%20pour%20votre%20aide.%0A%0AMerci%20pour%20l'intérêt%20porté.%0A%0ACordialement,%0AAFDEV"
 										className="text-sky-700 underline hover:text-sky-800"
 									>
 										Contactez l&apos;administrateur
-									</a>{" "}
+									</Link>{" "}
 									pour plus d&apos;informations.
 								</p>
 							</form>

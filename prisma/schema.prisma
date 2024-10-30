@@ -1,5 +1,3 @@
-// schema.prisma
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,101 +9,146 @@ datasource db {
 
 // Utilisateurs : Administrateurs et Ostéopathes
 model User {
-  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email       String     @unique
-  first_name  String?
-  last_name   String?
-  role        Role
-  osteopath   Osteopath? // Relation avec l'ostéopathe
-  osteopathId Int? // Champ de clé étrangère pour l'ostéopathe
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
-
-  @@map("users") // Map to Supabase's users table
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Identifiant unique
+  email       String     @unique // Adresse email unique
+  first_name  String? // Prénom
+  last_name   String? // Nom de famille
+  role        Role // Rôle de l'utilisateur (ADMIN ou OSTEOPATH)
+  osteopath   Osteopath? @relation // Relation avec l'ostéopathe
+  osteopathId Int? // Clé étrangère optionnelle vers Osteopath
+  created_at  DateTime   @default(now()) // Date de création
+  updated_at  DateTime   @updatedAt // Date de dernière mise à jour
 }
 
 // Rôles possibles
 enum Role {
-  ADMIN
-  OSTEOPATH
+  ADMIN // Administrateur
+  OSTEOPATH // Ostéopathe
 }
 
 // Modèle Ostéopathes
 model Osteopath {
-  id        Int       @id @default(autoincrement())
-  user      User      @relation(fields: [userId], references: [id])
-  userId    String    @unique @db.Uuid
-  cabinets  Cabinet[]
-  patients  Patient[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id        Int       @id @default(autoincrement()) // Identifiant unique
+  user      User      @relation(fields: [userId], references: [id]) // Relation vers User
+  userId    String    @unique @db.Uuid // Clé étrangère unique vers User
+  name      String // Nom de l'ostéopathe
+  cabinets  Cabinet[] // Un ostéopathe peut avoir plusieurs cabinets
+  patients  Patient[] // Un ostéopathe peut avoir plusieurs patients
+  createdAt DateTime  @default(now()) // Date de création
+  updatedAt DateTime  @updatedAt // Date de dernière mise à jour
 }
 
 // Modèle Cabinets
 model Cabinet {
-  id          Int       @id @default(autoincrement())
+  id          Int       @id @default(autoincrement()) // Identifiant unique
   name        String // Nom du cabinet
   address     String // Adresse du cabinet
   phone       String? // Numéro de téléphone du cabinet
   osteopath   Osteopath @relation(fields: [osteopathId], references: [id]) // Relation avec l'ostéopathe
-  osteopathId Int
+  osteopathId Int // Clé étrangère vers l'ostéopathe
   patients    Patient[] // Patients associés à ce cabinet
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now()) // Date de création
+  updatedAt   DateTime  @updatedAt // Date de dernière mise à jour
 }
 
 // Modèle Patients
 model Patient {
-  id               Int               @id @default(autoincrement())
-  name             String // Nom du patient
-  email            String? // Email du patient
-  phone            String? // Numéro de téléphone du patient
-  birthDate        DateTime? // Date de naissance (format JJ/MM/AAAA)
-  gender           Gender? // Genre (Homme/Femme)
-  address          String? // Adresse
-  avatarUrl        String? // URL de la photo/avatar du patient
-  isDeceased       Boolean           @default(false) // Indique si le patient est décédé
-  osteopath        Osteopath         @relation(fields: [osteopathId], references: [id]) // Relation avec l'ostéopathe
-  osteopathId      Int
-  cabinet          Cabinet           @relation(fields: [cabinetId], references: [id]) // Relation avec le cabinet
-  cabinetId        Int
-  medicalDocuments MedicalDocument[] // Documents médicaux (IRM, radios, etc.)
-  consultations    Consultation[] // HDLM : Historique des consultations (consultations successives)
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  Appointment      Appointment[]
+  id                     Int               @id @default(autoincrement()) // Identifiant unique
+  userId                 String? // ID utilisateur associé (si applicable)
+  name                   String // Nom du patient
+  email                  String? // Email du patient
+  phone                  String? // Numéro de téléphone du patient
+  birthDate              DateTime? // Date de naissance
+  gender                 Gender? // Genre (Homme/Femme)
+  address                String? // Adresse
+  avatarUrl              String? // URL de la photo/avatar du patient
+  maritalStatus          MaritalStatus? // Statut marital
+  occupation             String? // Métier
+  isSmoker               Boolean           @default(false) // Indique si le patient est fumeur
+  contraception          Contraception? // Méthode de contraception
+  currentTreatment       String? // Liste des traitements en cours
+  handedness             Handedness? // Latéralité
+  generalPractitioner    String? // Nom du médecin traitant
+  surgicalHistory        String? // Antécédents chirurgicaux
+  traumaHistory          String? // Antécédents traumatiques
+  rheumatologicalHistory String? // Antécédents rhumatologiques
+  hasVisionCorrection    Boolean           @default(false) // Correction de la vision
+  ophtalmologistName     String? // Nom de l'ophtalmologiste
+  entProblems            String? // Problèmes ORL
+  entDoctorName          String? // Nom du médecin ORL
+  digestiveProblems      String? // Problèmes digestifs
+  hdlm                   String? // Informations HDLM
+  isDeceased             Boolean           @default(false) // Indique si le patient est décédé
+  osteopath              Osteopath         @relation(fields: [osteopathId], references: [id]) // Relation avec l'ostéopathe
+  osteopathId            Int // Clé étrangère vers l'ostéopathe
+  cabinet                Cabinet?          @relation(fields: [cabinetId], references: [id]) // Relation avec le cabinet (rendre optionnel)
+  cabinetId              Int? // Clé étrangère optionnelle vers le cabinet
+  medicalDocuments       MedicalDocument[] // Documents médicaux associés
+  consultations          Consultation[] // Historique des consultations
+  createdAt              DateTime          @default(now()) // Date de création
+  updatedAt              DateTime          @updatedAt // Date de dernière mise à jour
+  appointments           Appointment[] // Rendez-vous associés au patient
 }
 
-// Modèle pour les consultations (HDLM)
+// Modèle pour les consultations
 model Consultation {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement()) // Identifiant unique
   date      DateTime // Date de la consultation
   notes     String // Notes de la consultation
   patient   Patient  @relation(fields: [patientId], references: [id]) // Relation avec le patient
-  patientId Int
+  patientId Int // Clé étrangère vers le patient
 }
 
 // Modèle pour les rendez-vous
 model Appointment {
-  id        Int      @id @default(autoincrement())
+  id        Int               @id @default(autoincrement()) // Identifiant unique
   date      DateTime // Date et heure du rendez-vous
   reason    String // Raison du rendez-vous
-  status    String // Statut (scheduled, completed, canceled)
-  patient   Patient  @relation(fields: [patientId], references: [id]) // Relation avec le patient
-  patientId Int
+  status    AppointmentStatus // Statut (scheduled, completed, canceled)
+  patient   Patient           @relation(fields: [patientId], references: [id]) // Relation avec le patient
+  patientId Int // Clé étrangère vers le patient
 }
 
 // Modèle pour les documents médicaux
 model MedicalDocument {
-  id          Int     @id @default(autoincrement())
-  url         String // URL du document médical (image, PDF, etc.)
-  description String // Description du document (ex. IRM, radio, etc.)
+  id          Int     @id @default(autoincrement()) // Identifiant unique
+  url         String // URL du document médical
+  description String // Description du document
   patient     Patient @relation(fields: [patientId], references: [id]) // Relation avec le patient
-  patientId   Int
+  patientId   Int // Clé étrangère vers le patient
 }
 
 // Enums pour le genre
 enum Gender {
-  Homme
-  Femme
+  Homme // Homme
+  Femme // Femme
+}
+
+enum MaritalStatus {
+  SINGLE // Célibataire
+  MARRIED // Marié(e)
+  DIVORCED // Divorcé(e)
+  WIDOWED // Veuf/veuve
+  SEPARATED // Séparé(e)
+}
+
+enum Handedness {
+  LEFT // Gaucher
+  RIGHT // Droitier
+  AMBIDEXTROUS // Ambidextre
+}
+
+// Enum pour la contraception
+enum Contraception {
+  NONE // Aucun
+  PILLS // Pilules
+  CONDOM // Préservatifs
+  IMPLANTS // Implants
+}
+
+// Enum pour le statut des rendez-vous
+enum AppointmentStatus {
+  SCHEDULED // Prévu
+  COMPLETED // Terminé
+  CANCELED // Annulé
 }

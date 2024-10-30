@@ -1,8 +1,10 @@
+// app/api/patients/route.js
+
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function getPatients() {
+export async function GET() {
 	try {
 		const patients = await prisma.patient.findMany({
 			include: {
@@ -10,11 +12,14 @@ export async function getPatients() {
 				osteopath: true,
 			},
 		});
-		return patients;
+		return new Response(JSON.stringify(patients), {
+			status: 200,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
 	} catch (error) {
 		console.error("Error retrieving patients:", error);
-		throw new Error("Could not retrieve patients");
+		return new Response("Could not retrieve patients", { status: 500 });
 	}
 }
-
-export default prisma;

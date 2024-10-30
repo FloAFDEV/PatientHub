@@ -33,7 +33,8 @@
 		"middleware.js",
 		"utils/supabase/server.js",
 		"utils/supabase/client.js",
-		"app/logout/actions.js"
+		"app/logout/actions.js",
+		"node_modules/@prisma/client/index.d.ts"
 	],
 	"exclude": ["node_modules"]
 }

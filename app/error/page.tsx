@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -21,12 +22,12 @@ function ErrorContent() {
 				</p>
 			)}
 			<p className="mt-4">
-				<a
+				<Link
 					href="/login"
 					className="text-blue-500 hover:underline font-semibold"
 				>
 					Retour à l&apos;accueil
-				</a>
+				</Link>
 			</p>
 		</div>
 	);

@@ -2,12 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-	Sidebar,
-	SidebarBody,
-	SidebarLink,
-	Links,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
 	IconArrowLeft,
 	IconBrandTabler,
@@ -23,6 +18,7 @@ import { cn } from "@/components/lib/utils";
 import { signOut } from "@/app/logout/actions";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
+import PatientList from "@/components/PatientList/PatientList";
 
 const supabase = createClient();
 
@@ -47,7 +43,6 @@ export default function SidebarDashboard() {
 
 			if (data.session) {
 				setUser(data.session.user); // Mettez à jour l'utilisateur ici
-				console.log("Utilisateur récupéré :", data.session.user);
 			} else {
 				await router.push("/login");
 			}
@@ -112,8 +107,6 @@ export default function SidebarDashboard() {
 			),
 		},
 	];
-
-	console.log("User metadata:", user?.user_metadata);
 
 	return (
 		<div
@@ -256,7 +249,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				</div>
 				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
-						Rendez-vous aujourd'hui
+						Rendez-vous aujourd&apos;hui
 					</h2>
 					<p className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400">
 						8
@@ -306,6 +299,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					Contenu supplémentaire, comme des graphiques, des
 					tableaux...
 				</p>
+				<PatientList />
 			</div>
 		</div>
 	);
