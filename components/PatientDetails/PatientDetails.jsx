@@ -13,15 +13,30 @@ const PatientDetails = ({ patient, onClose }) => {
 			.trim();
 	};
 
+	const maritalStatusTranslations = {
+		SINGLE: "Célibataire",
+		MARRIED: "Marié(e)",
+		DIVORCED: "Divorcé(e)",
+		WIDOWED: "Veuf/veuve",
+		SEPARATED: "Séparé(e)",
+	};
+
+	const contraceptionTranslations = {
+		NONE: "Aucun",
+		PILLS: "Pilule",
+		CONDOM: "Préservatifs",
+		IMPLANTS: "Implants",
+	};
+
 	return (
-		<div className="p-4 max-w-2xl mx-auto rounded-lg shadow-lg">
+		<div className="p-4 w-full mx-auto">
 			<button className="mb-4 text-red-500" onClick={onClose}>
 				&times; Fermer
 			</button>
 			<div className="flex flex-col items-center mb-6">
 				<img
 					src={patient.avatarUrl}
-					alt={`${patient.name}'s avatar`}
+					alt={`avatar de ${patient.name}`}
 					className="w-24 h-24 mb-4 rounded-full border-2 border-gray-300"
 				/>
 				<h1 className="text-3xl font-bold">{patient.name}</h1>
@@ -67,12 +82,12 @@ const PatientDetails = ({ patient, onClose }) => {
 					</a>
 				</p>
 				<p>
-					<strong>Statut Marital:</strong> {patient.maritalStatus}{" "}
-					{/* Ici, vous pouvez le traduire si besoin */}
+					<strong>Statut Marital:</strong>{" "}
+					{maritalStatusTranslations[patient.maritalStatus]}
 				</p>
 				<p>
 					<strong>Méthode de contraception:</strong>{" "}
-					{patient.contraception} {/* Traduction ajoutée */}
+					{contraceptionTranslations[patient.contraception]}
 				</p>
 				<p>
 					<strong>Traitements en cours:</strong>{" "}

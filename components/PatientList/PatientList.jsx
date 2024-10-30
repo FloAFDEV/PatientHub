@@ -51,7 +51,7 @@ const PatientList = () => {
 	}
 
 	return (
-		<div>
+		<div className="max-w-full h-screen overflow-y-auto">
 			<h1 className="p-2 text-2xl font-bold mb-4">
 				Liste de vos patients
 			</h1>

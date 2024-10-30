@@ -235,34 +235,36 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				</p>
 			</div>
 
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
 				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
 						Patients actifs
 					</h2>
-					<p className="text-2xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400">
+					<p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
 						152
 					</p>
 					<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
 						+12% par rapport au mois dernier
 					</p>
 				</div>
+
 				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
-						Rendez-vous aujourd&apos;hui
+						Rendez-vous aujourd'hui
 					</h2>
-					<p className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400">
+					<p className="text-3xl font-bold text-green-600 dark:text-green-400">
 						8
 					</p>
 					<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
 						Prochain RDV à 14h30
 					</p>
 				</div>
+
 				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
 						Nouveaux patients
 					</h2>
-					<p className="text-2xl sm:text-3xl font-bold text-purple-600 dark:text-purple-400">
+					<p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
 						24
 					</p>
 					<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
