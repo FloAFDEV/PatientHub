@@ -1,17 +1,31 @@
-// app/components/PatientDetails/PatientDetails.jsx
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const PatientDetails = ({ patient, onClose }) => {
-	if (!patient) return null;
+	const [error, setError] = useState(null);
 
 	// Fonction pour formatter le numéro de téléphone
 	const formatPhoneNumber = (phone) => {
+		if (!phone) return ""; // Gestion des numéros nuls
 		return phone
 			.replace(/\D/g, "")
 			.replace(/(\d{2})(?=\d)/g, "$1 ")
 			.trim();
 	};
+
+	// Vérifier si le patient a toutes les propriétés nécessaires
+	const validatePatientData = () => {
+		if (!patient) {
+			setError("Aucune donnée patient disponible.");
+			return false;
+		}
+		setError(null);
+		return true;
+	};
+
+	useEffect(() => {
+		// Validation initiale des données du patient
+		validatePatientData();
+	}, [patient]);
 
 	const maritalStatusTranslations = {
 		SINGLE: "Célibataire",
@@ -28,6 +42,19 @@ const PatientDetails = ({ patient, onClose }) => {
 		IMPLANTS: "Implants",
 	};
 
+	if (error) {
+		return (
+			<div className="p-4 w-full mx-auto">
+				<button className="mb-4 text-red-500" onClick={onClose}>
+					&times; Fermer
+				</button>
+				<div className="text-red-500">
+					<strong>Erreur:</strong> {error}
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="p-4 w-full mx-auto">
 			<button className="mb-4 text-red-500" onClick={onClose}>
@@ -35,79 +62,95 @@ const PatientDetails = ({ patient, onClose }) => {
 			</button>
 			<div className="flex flex-col items-center mb-6">
 				<img
-					src={patient.avatarUrl}
-					alt={`avatar de ${patient.name}`}
-					className="w-24 h-24 mb-4 rounded-full border-2 border-gray-300"
+					src={patient.avatarUrl || "default-avatar.png"} // Image par défaut
+					alt={`Avatar de ${patient.name || "inconnu"}`} // Gérer les noms inconnus
+					className="w-28 h-28 mb-4 rounded-lg border-2 border-gray-300"
 				/>
-				<h1 className="text-3xl font-bold">{patient.name}</h1>
+				<h1 className="text-3xl font-bold">
+					{patient.name || "Nom inconnu"}
+				</h1>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 				<p>
 					<strong>Email:</strong>{" "}
 					<a
-						href={`mailto:${patient.email}`}
+						href={`mailto:${patient.email || ""}`} // Gérer email manquant
 						className="hover:underline"
 					>
-						{patient.email}
+						{patient.email || "Email non disponible"}
 					</a>
 				</p>
 				<p>
 					<strong>Téléphone:</strong>{" "}
 					<a
-						href={`tel:${patient.phone.replace(/\D/g, "")}`}
+						href={
+							patient.phone
+								? `tel:${patient.phone.replace(/\D/g, "")}`
+								: "#"
+						} // Gérer téléphone manquant
 						className="hover:underline"
 					>
-						{formatPhoneNumber(patient.phone)}
+						{formatPhoneNumber(patient.phone) ||
+							"Téléphone non disponible"}
 					</a>
 				</p>
 				<p>
 					<strong>Date de Naissance:</strong>{" "}
-					{new Date(patient.birthDate).toLocaleDateString("fr-FR")}{" "}
-					{/* Format européen */}
+					{patient.birthDate
+						? new Date(patient.birthDate).toLocaleDateString(
+								"fr-FR"
+						  )
+						: "Inconnu"}
 				</p>
 				<p>
-					<strong>Genre:</strong> {patient.gender}
+					<strong>Genre:</strong> {patient.gender || "Inconnu"}
 				</p>
 				<p>
 					<strong>Adresse:</strong>{" "}
-					<a
-						href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-							patient.address
-						)}`}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="hover:underline"
-					>
-						{patient.address}
-					</a>
+					{patient.address ? (
+						<a
+							href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+								patient.address
+							)}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="hover:underline"
+						>
+							{patient.address}
+						</a>
+					) : (
+						"Inconnue"
+					)}
 				</p>
 				<p>
 					<strong>Statut Marital:</strong>{" "}
-					{maritalStatusTranslations[patient.maritalStatus]}
+					{maritalStatusTranslations[patient.maritalStatus] ||
+						"Inconnu"}
 				</p>
 				<p>
 					<strong>Méthode de contraception:</strong>{" "}
-					{contraceptionTranslations[patient.contraception]}
+					{contraceptionTranslations[patient.contraception] ||
+						"Inconnue"}
 				</p>
 				<p>
 					<strong>Traitements en cours:</strong>{" "}
-					{patient.currentTreatment}
+					{patient.currentTreatment || "Aucun"}
 				</p>
 				<p>
 					<strong>Antécédents chirurgicaux:</strong>{" "}
-					{patient.surgicalHistory}
+					{patient.surgicalHistory || "Aucun"}
 				</p>
 				<p>
 					<strong>Antécédents traumatiques:</strong>{" "}
-					{patient.traumaHistory}
+					{patient.traumaHistory || "Aucun"}
 				</p>
 				<p>
 					<strong>Antécédents rhumatologiques:</strong>{" "}
-					{patient.rheumatologicalHistory}
+					{patient.rheumatologicalHistory || "Aucun"}
 				</p>
 				<p>
 					<strong>Nom du médecin traitant:</strong>{" "}
-					{patient.generalPractitioner}
+					{patient.generalPractitioner || "Inconnu"}
 				</p>
 			</div>
 			<div className="mb-6">
@@ -125,7 +168,8 @@ const PatientDetails = ({ patient, onClose }) => {
 									rel="noopener noreferrer"
 									className="text-blue-500 hover:underline"
 								>
-									{doc.description}
+									{doc.description ||
+										"Document sans description"}
 								</a>
 							</li>
 						))
@@ -146,7 +190,7 @@ const PatientDetails = ({ patient, onClose }) => {
 								{new Date(consultation.date).toLocaleDateString(
 									"fr-FR"
 								)}
-								: {consultation.notes}
+								: {consultation.notes || "Pas de notes"}
 							</li>
 						))
 					) : (

@@ -301,7 +301,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					Contenu supplémentaire, comme des graphiques, des
 					tableaux...
 				</p>
-				<PatientList />
+				<PatientList initialPatients={undefined} />
 			</div>
 		</div>
 	);
