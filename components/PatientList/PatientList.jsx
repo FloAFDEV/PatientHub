@@ -128,7 +128,10 @@ const PatientList = ({ initialPatients, user }) => {
 							? "bg-blue-500 text-white scale-110 ring-2 ring-blue-300"
 							: "hover:bg-blue-100 hover:scale-110"
 					}`}
-					onClick={() => setSearchLetter("")}
+					onClick={() => {
+						setSearchLetter("");
+						setSearchTerm("");
+					}}
 				>
 					Tous
 				</button>
@@ -212,7 +215,7 @@ const PatientList = ({ initialPatients, user }) => {
 				<select
 					value={currentPage}
 					onChange={(e) => setCurrentPage(Number(e.target.value))}
-					className="mb-4 md:mb-0 p-2 border border-blue-500 rounded-lg max-w-[60px] shadow-md"
+					className="mb-4 md:mb-0 p-2 border border-blue-500 rounded-lg shadow-md"
 				>
 					{Array.from({ length: totalPages }, (_, index) => (
 						<option key={index} value={index + 1}>
