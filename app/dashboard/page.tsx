@@ -27,9 +27,9 @@ export default function SidebarDashboard() {
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const [user, setUser] = useState<User | null>(null);
 	const [loadingUser, setLoadingUser] = useState(true);
+	const [activeTab, setActiveTab] = useState("dashboard");
 	const router = useRouter();
 
-	// Vérification de la session utilisateur lors de l'initialisation
 	useEffect(() => {
 		const checkSession = async () => {
 			const { data, error } = await supabase.auth.getSession();
@@ -45,13 +45,12 @@ export default function SidebarDashboard() {
 			} else {
 				await router.push("/login");
 			}
-			setLoadingUser(false); // Fin du chargement une fois la session vérifiée
+			setLoadingUser(false);
 		};
 
 		checkSession();
 	}, [router]);
 
-	// Fonction de déconnexion
 	const handleLogout = async (e: React.MouseEvent) => {
 		e.preventDefault();
 		setIsLoggingOut(true);
@@ -70,23 +69,34 @@ export default function SidebarDashboard() {
 	const links = [
 		{
 			label: "Dashboard",
-			href: "/dashboard",
+			href: "#",
 			icon: (
 				<IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
 			),
+			onClick: () => setActiveTab("dashboard"),
 		},
 		{
 			label: "Patients",
-			href: "/patients",
+			href: "#",
 			icon: (
 				<IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
 			),
+			onClick: () => setActiveTab("patients"),
 		},
 		{
-			label: "Settings",
-			href: "/settings",
+			label: "Cabinet",
+			href: "#",
 			icon: (
 				<IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+			),
+			onClick: () => setActiveTab("Cabinet"),
+		},
+
+		{
+			label: "Contact",
+			href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour%2C%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci%21",
+			icon: (
+				<IconContract className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
 			),
 		},
 		{
@@ -98,16 +108,8 @@ export default function SidebarDashboard() {
 			onClick: handleLogout,
 			disabled: isLoggingOut,
 		},
-		{
-			label: "Contact",
-			href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour%2C%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci%21",
-			icon: (
-				<IconContract className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-			),
-		},
 	];
 
-	// Afficher un écran de chargement initial pendant la vérification de la session
 	if (loadingUser) {
 		return <p className="text-center text-gray-500">Chargement...</p>;
 	}
@@ -120,7 +122,7 @@ export default function SidebarDashboard() {
 		>
 			<Sidebar open={open} setOpen={setOpen}>
 				<SidebarBody className="justify-between gap-10">
-					<div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+					<div className="flex flex-col flex-1 overflow-y-auto">
 						{open ? <Logo /> : <LogoIcon />}
 						<div className="mt-8 flex flex-col gap-2">
 							{links.map((link, idx) => (
@@ -129,7 +131,6 @@ export default function SidebarDashboard() {
 						</div>
 					</div>
 
-					{/* Affichage des informations utilisateur */}
 					<div className="bg-gray-100 dark:bg-neutral-800 rounded-md flex items-center gap-3">
 						{user ? (
 							<>
@@ -167,7 +168,13 @@ export default function SidebarDashboard() {
 				<div className="fixed z-50 top-4 left-4 md:top-4 md:right-4 md:left-auto">
 					<ModeToggle />
 				</div>
-				<Dashboard user={user} />
+				{/* Render the active tab's content */}
+				{activeTab === "dashboard" && <Dashboard user={user} />}
+				{activeTab === "patients" && (
+					<PatientList initialPatients={undefined} user={user} />
+				)}
+				{activeTab === "Cabinet"}
+
 				<footer className="bg-gray-200 dark:bg-neutral-900 text-center p-4 border-t border-neutral-300 dark:border-neutral-700">
 					<p className="text-sm text-gray-600 dark:text-gray-400">
 						© 2024 - PatientHub. Tous droits réservés.
@@ -224,15 +231,11 @@ interface DashboardProps {
 	user: User | null;
 }
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
-	const [showPatientList, setShowPatientList] = useState(false);
-
-	const handleTogglePatientList = () => {
-		setShowPatientList((prev) => !prev);
-	};
+	const [] = useState(false);
 
 	return (
 		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
-			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6">
+			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mt-10 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6">
 				<h1 className="text-2xl sm:text-3xl font-bold mb-2">
 					Bienvenue,{" "}
 					{user
@@ -295,7 +298,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						Voir les rendez-vous
 					</button>
 					<button className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base">
-						Gérer les dossiers
+						Voir le listing patient
 					</button>
 					<button className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base">
 						Rapports mensuels
@@ -311,7 +314,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					Contenu supplémentaire, comme des graphiques, des
 					tableaux...
 				</p>
-				<PatientList initialPatients={undefined} />
+				<PatientList initialPatients={undefined} user={user} />
 			</div>
 		</div>
 	);

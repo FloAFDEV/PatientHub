@@ -125,6 +125,11 @@ export const MobileSidebar = ({
 					<IconMenu2
 						className="text-neutral-800 dark:text-neutral-200"
 						onClick={() => setOpen(!open)}
+						aria-label={
+							open ? "Fermer la sidebar" : "Ouvrir la sidebar"
+						}
+						role="button"
+						aria-expanded={open}
 					/>
 				</div>
 				<AnimatePresence>
