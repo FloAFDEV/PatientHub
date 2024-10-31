@@ -17,8 +17,8 @@ import { ModeToggle } from "@/components/ModeToggle";
 import { cn } from "@/components/lib/utils";
 import { signOut } from "@/app/logout/actions";
 import { createClient } from "@/utils/supabase/client";
-import { User } from "@supabase/supabase-js";
 import PatientList from "@/components/PatientList/PatientList";
+import { User } from "@supabase/supabase-js";
 
 const supabase = createClient();
 
@@ -26,26 +26,26 @@ export default function SidebarDashboard() {
 	const [open, setOpen] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const [user, setUser] = useState<User | null>(null);
+	const [loadingUser, setLoadingUser] = useState(true);
 	const router = useRouter();
 
-	// Vérifier la session à l'initialisation
+	// Vérification de la session utilisateur lors de l'initialisation
 	useEffect(() => {
 		const checkSession = async () => {
 			const { data, error } = await supabase.auth.getSession();
-
 			if (error) {
 				console.error(
 					"Erreur lors de la récupération de la session :",
 					error
 				);
-				return; // Ne pas continuer si erreur
+				return;
 			}
-
 			if (data.session) {
-				setUser(data.session.user); // Mettez à jour l'utilisateur ici
+				setUser(data.session.user);
 			} else {
 				await router.push("/login");
 			}
+			setLoadingUser(false); // Fin du chargement une fois la session vérifiée
 		};
 
 		checkSession();
@@ -55,7 +55,6 @@ export default function SidebarDashboard() {
 	const handleLogout = async (e: React.MouseEvent) => {
 		e.preventDefault();
 		setIsLoggingOut(true);
-
 		const result = await signOut();
 		if (result.success) {
 			await router.push("/login");
@@ -108,6 +107,11 @@ export default function SidebarDashboard() {
 		},
 	];
 
+	// Afficher un écran de chargement initial pendant la vérification de la session
+	if (loadingUser) {
+		return <p className="text-center text-gray-500">Chargement...</p>;
+	}
+
 	return (
 		<div
 			className={cn(
@@ -158,6 +162,7 @@ export default function SidebarDashboard() {
 					</div>
 				</SidebarBody>
 			</Sidebar>
+
 			<div className="flex-1 flex flex-col">
 				<div className="fixed z-50 top-4 left-4 md:top-4 md:right-4 md:left-auto">
 					<ModeToggle />
@@ -206,7 +211,7 @@ export const LogoIcon = () => {
 				<Image
 					src="/assets/images/logo-full.svg"
 					alt="Logo de PatientHub"
-					width={32} // Ajusté pour correspondre à l'icône du mode fermé
+					width={32}
 					height={32}
 					className="object-contain rounded-md shadow-md"
 				/>
@@ -218,8 +223,13 @@ export const LogoIcon = () => {
 interface DashboardProps {
 	user: User | null;
 }
-
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
+	const [showPatientList, setShowPatientList] = useState(false);
+
+	const handleTogglePatientList = () => {
+		setShowPatientList((prev) => !prev);
+	};
+
 	return (
 		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
 			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6">

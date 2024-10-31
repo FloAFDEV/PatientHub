@@ -1,3 +1,5 @@
+// components/PatientList/PatientList.jsx
+
 import React, { useEffect, useState } from "react";
 import { IconGenderMale, IconGenderFemale } from "@tabler/icons-react";
 import PatientDetails from "../PatientDetails/PatientDetails";
