@@ -161,7 +161,7 @@ const PatientList = ({ initialPatients, user }) => {
 					currentPatients.map((patient) => (
 						<li
 							key={patient.id}
-							className="p-4 border border-blue-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col bg-white"
+							className="p-4 border border-blue-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col dark:bg-stone-800"
 						>
 							<div
 								className="flex items-center cursor-pointer justify-between"
@@ -173,17 +173,17 @@ const PatientList = ({ initialPatients, user }) => {
 									)
 								}
 							>
-								<div className="flex items-center">
+								<div className="flex items-center ">
 									{patient.gender === "Homme" ? (
 										<IconGenderMale className="text-blue-500 mr-2" />
 									) : (
 										<IconGenderFemale className="text-pink-500 mr-2" />
 									)}
-									<h2 className="font-semibold text-lg text-gray-800">
+									<h2 className="font-semibold text-lg text-gray-800 dark:text-gray-300">
 										{patient.name}
 									</h2>
 								</div>
-								<div className="text-gray-600 text-sm ml-4">
+								<div className="text-gray-600 dark:text-gray-300 text-sm ml-4">
 									<p>Téléphone: {patient.phone}</p>
 								</div>
 							</div>

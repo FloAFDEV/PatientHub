@@ -2,6 +2,57 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// Fonction pour formater les données du patient
+function formatPatientData(data) {
+	return {
+		name: data.name || "",
+		email: data.email || null,
+		phone: data.phone || null,
+		address: data.address || null,
+		gender: data.gender === "Homme" ? "Homme" : "Femme",
+		maritalStatus:
+			data.maritalStatus === "Marié(e)"
+				? "MARRIED"
+				: data.maritalStatus || null,
+		occupation: data.occupation || null,
+		children: data.children || null,
+		physicalActivity: data.physicalActivity || null,
+		isSmoker: data.isSmoker === "true",
+		handedness:
+			data.handedness === "Droitier"
+				? "RIGHT"
+				: data.handedness === "Gaucher"
+				? "LEFT"
+				: "AMBIDEXTROUS",
+		contraception:
+			data.contraception === "Préservatifs"
+				? "CONDOM"
+				: data.contraception || null,
+		currentTreatment: data.currentTreatment || null,
+		generalPractitioner: data.generalPractitioner || null,
+		surgicalHistory: data.surgicalHistory || null,
+		allergies: data.allergies || null,
+		digestiveProblems: data.digestiveProblems || null,
+		digestiveDoctorName: data.digestiveDoctorName || null,
+		osteopathName: data.osteopathName || null,
+		osteopathId: data.osteopathId || 1, // ID ostéopathe par défaut
+		userId: data.userId || null,
+		birthDate: data.birthDate ? new Date(data.birthDate) : null,
+		avatarUrl: data.avatarUrl || null,
+		traumaHistory: data.traumaHistory || null,
+		rheumatologicalHistory: data.rheumatologicalHistory || null,
+		hasVisionCorrection: data.hasVisionCorrection === "true",
+		ophtalmologistName: data.ophtalmologistName || null,
+		entProblems: data.entProblems || null,
+		entDoctorName: data.entDoctorName || null,
+		hdlm: data.hdlm || null,
+		isDeceased: data.isDeceased === "true",
+		cabinetId: data.cabinetId || null,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	};
+}
+
 // Méthode GET pour récupérer tous les patients ou un patient par e-mail
 export async function GET(request) {
 	const { searchParams } = new URL(request.url);
@@ -52,11 +103,12 @@ export async function POST(request) {
 	const patientData = await request.json();
 
 	try {
+		const formattedPatientData = formatPatientData(patientData);
+
 		const newPatient = await prisma.patient.create({
-			data: {
-				...patientData,
-			},
+			data: formattedPatientData,
 		});
+
 		return new Response(JSON.stringify(newPatient), {
 			status: 201,
 			headers: {
@@ -72,18 +124,18 @@ export async function POST(request) {
 // Méthode PUT pour mettre à jour un patient par e-mail
 export async function PUT(request) {
 	const patientData = await request.json();
-	const email = patientData.email; // Récupérer l'email pour identifier le patient
+	const email = patientData.email;
 
 	if (!email) {
 		return new Response("Email is required", { status: 400 });
 	}
 
 	try {
+		const formattedPatientData = formatPatientData(patientData);
+
 		const updatedPatient = await prisma.patient.update({
 			where: { email: email },
-			data: {
-				...patientData,
-			},
+			data: formattedPatientData,
 		});
 		return new Response(JSON.stringify(updatedPatient), {
 			status: 200,

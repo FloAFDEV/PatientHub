@@ -32,7 +32,10 @@
 		"next": "^14.2.15",
 		"next-themes": "^0.3.0",
 		"react": "^18",
+		"react-datepicker": "^7.5.0",
 		"react-dom": "^18",
+		"react-hook-form": "^7.53.1",
+		"react-phone-input-2": "^2.15.1",
 		"tailwind-merge": "^2.5.4",
 		"xml2js": "^0.6.2"
 	},

@@ -56,7 +56,7 @@ const PatientDetails = ({ patient, onClose }) => {
 	}
 
 	return (
-		<div className="p-4 w-full mx-auto">
+		<div className="p-4 w-full mx-auto dark:text-gray-300">
 			<button className="mb-4 text-red-500" onClick={onClose}>
 				&times; Fermer
 			</button>

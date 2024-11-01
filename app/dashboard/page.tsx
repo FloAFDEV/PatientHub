@@ -18,6 +18,7 @@ import { cn } from "@/components/lib/utils";
 import { signOut } from "@/app/logout/actions";
 import { createClient } from "@/utils/supabase/client";
 import PatientList from "@/components/PatientList/PatientList";
+import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import { User } from "@supabase/supabase-js";
 
 const supabase = createClient();
@@ -203,7 +204,7 @@ export const Logo = () => {
 			<motion.span
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
-				className="font-semibold text-xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-300 dark:to-purple-400 whitespace-pre"
+				className="font-semibold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-300 dark:to-purple-400 whitespace-pre"
 			>
 				PatientHub
 			</motion.span>
@@ -245,7 +246,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					Voici un aperçu de votre tableau de bord
 				</p>
 			</div>
-
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
 				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
@@ -283,7 +283,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					</p>
 				</div>
 			</div>
-
 			<div className="mt-6 sm:mt-8">
 				<h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4">
 					Actions rapides
@@ -303,7 +302,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					</button>
 				</div>
 			</div>
-
 			<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg mt-4 sm:mt-6">
 				<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
 					Graphiques et autres visualisations
@@ -312,8 +310,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					Contenu supplémentaire, comme des graphiques, des
 					tableaux...
 				</p>
-				<PatientList initialPatients={undefined} user={user} />
 			</div>
+			<AddPatientForm />
 		</div>
 	);
 };
