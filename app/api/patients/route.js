@@ -9,7 +9,7 @@ function formatPatientData(data) {
 		email: data.email || null,
 		phone: data.phone || null,
 		address: data.address || null,
-		gender: data.gender === "Homme" ? "Homme" : "Femme",
+		gender: data.gender === "Homme" ? "HOMME" : "FEMME",
 		maritalStatus:
 			data.maritalStatus === "Marié(e)"
 				? "MARRIED"
@@ -35,7 +35,7 @@ function formatPatientData(data) {
 		digestiveProblems: data.digestiveProblems || null,
 		digestiveDoctorName: data.digestiveDoctorName || null,
 		osteopathName: data.osteopathName || null,
-		osteopathId: data.osteopathId || 1, // ID ostéopathe par défaut
+		osteopathId: data.osteopathId || null,
 		userId: data.userId || null,
 		birthDate: data.birthDate ? new Date(data.birthDate) : null,
 		avatarUrl: data.avatarUrl || null,
@@ -52,7 +52,6 @@ function formatPatientData(data) {
 		updatedAt: new Date(),
 	};
 }
-
 // Méthode GET pour récupérer tous les patients ou un patient par e-mail
 export async function GET(request) {
 	const { searchParams } = new URL(request.url);

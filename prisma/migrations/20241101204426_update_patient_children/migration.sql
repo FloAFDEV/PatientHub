@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Patient" ALTER COLUMN "hasChildren" DROP NOT NULL,
+ALTER COLUMN "hasChildren" DROP DEFAULT,
+ALTER COLUMN "hasChildren" SET DATA TYPE TEXT;

@@ -261,7 +261,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
 				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
-						Rendez-vous aujourd'hui
+						Rendez-vous aujourd&apos;hui
 					</h2>
 					<p className="text-3xl font-bold text-green-600 dark:text-green-400">
 						8

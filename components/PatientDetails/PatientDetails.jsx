@@ -25,7 +25,7 @@ const PatientDetails = ({ patient, onClose }) => {
 	useEffect(() => {
 		// Validation initiale des données du patient
 		validatePatientData();
-	}, [patient]);
+	}, [patient, validatePatientData]);
 
 	const maritalStatusTranslations = {
 		SINGLE: "Célibataire",
@@ -61,7 +61,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				&times; Fermer
 			</button>
 			<div className="flex flex-col items-center mb-6">
-				<img
+				<Image
 					src={patient.avatarUrl || "default-avatar.png"} // Image par défaut
 					alt={`Avatar de ${patient.name || "inconnu"}`} // Gérer les noms inconnus
 					className="w-28 h-28 mb-4 rounded-lg border-2 border-gray-300"

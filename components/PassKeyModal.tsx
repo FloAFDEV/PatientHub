@@ -38,7 +38,6 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 	const router = useRouter();
 	const [passkey, setPasskey] = useState("");
 	const [error, setError] = useState("");
-	const [isKeyValid, setIsKeyValid] = useState(false);
 
 	const EXPIRATION_TIME = 5 * 60 * 1000; // 5 minutes en millisecondes
 
@@ -51,16 +50,12 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 				"accessKeyExpiration"
 			);
 
-			const isValidKey =
+			if (
 				accessKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY &&
 				expirationTimestamp &&
-				Date.now() < Number(expirationTimestamp);
-
-			if (isValidKey) {
-				setIsKeyValid(true);
+				Date.now() < Number(expirationTimestamp)
+			) {
 				router.push("/dashboard"); // Redirige vers le tableau de bord si la clé est valide
-			} else {
-				setIsKeyValid(false);
 			}
 		}
 	}, [router]);
@@ -85,12 +80,11 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 				expirationTimestamp.toString()
 			);
 
-			setIsKeyValid(true);
 			console.log("Validation réussie, redirection...");
 			closeModal(); // Ferme la modale
 			router.push(
 				`/success?message=${encodeURIComponent(
-					"Validation réussie, vous pouvez accéder tableau de bord et à \nvotre espace PatientHub"
+					"Validation réussie, vous pouvez accéder au tableau de bord et à \nvotre espace PatientHub"
 				)}`
 			);
 		} else {
