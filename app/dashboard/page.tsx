@@ -144,9 +144,11 @@ export default function SidebarDashboard() {
 								/>
 								<div>
 									<p className="ml-4 text-sm font-medium text-gray-800 dark:text-white">
-										{user.user_metadata?.first_name ||
+										{user.user_metadata?.user_metadata
+											?.first_name ||
 											"Nom non disponible"}{" "}
-										{user.user_metadata?.last_name ||
+										{user.user_metadata?.user_metadata
+											?.last_name ||
 											"Prénom non disponible"}
 									</p>
 									<p className="ml-4 text-xs text-gray-600 dark:text-gray-400">

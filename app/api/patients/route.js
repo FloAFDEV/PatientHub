@@ -64,6 +64,12 @@ export async function GET(request) {
 				include: {
 					cabinet: true,
 					osteopath: true,
+					user: {
+						select: {
+							first_name: true,
+							last_name: true,
+						},
+					},
 				},
 			});
 
@@ -82,6 +88,12 @@ export async function GET(request) {
 				include: {
 					cabinet: true,
 					osteopath: true,
+					user: {
+						select: {
+							first_name: true,
+							last_name: true,
+						},
+					},
 				},
 			});
 			return new Response(JSON.stringify(patients), {
@@ -103,6 +115,16 @@ export async function POST(request) {
 
 	try {
 		const formattedPatientData = formatPatientData(patientData);
+
+		if (formattedPatientData.userId) {
+			const user = await prisma.user.findUnique({
+				where: { id: formattedPatientData.userId },
+			});
+
+			if (!user) {
+				return new Response("User not found", { status: 404 });
+			}
+		}
 
 		const newPatient = await prisma.patient.create({
 			data: formattedPatientData,
