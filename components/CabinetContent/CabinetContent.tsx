@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
 import AddModal from "@/components/AddModal/AddModal";
+import EditModal from "@/components/EditModal/EditModal";
+import DeleteModal from "@/components/DeleteModal/DeleteModal";
+import {
+	MapPinIcon,
+	PhoneIcon,
+	PencilSquareIcon,
+	PlusIcon,
+	TrashIcon,
+} from "@heroicons/react/24/outline";
 
 interface CabinetInfo {
 	id?: number;
 	name: string;
 	address: string;
-	phone: string | null;
-	osteopathId: number | null;
+	phone: string | undefined;
+	osteopathId?: number | null;
 }
 
 const CabinetContent: React.FC = () => {
@@ -15,8 +24,11 @@ const CabinetContent: React.FC = () => {
 	const [error, setError] = useState<string | null>(null);
 	const [isEditMode, setIsEditMode] = useState(false);
 	const [isAddMode, setIsAddMode] = useState(false);
+	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 
 	const fetchCabinetInfo = async () => {
+		setLoading(true);
+		setError(null); // Reset error state
 		try {
 			const response = await fetch("/api/cabinet");
 			if (!response.ok)
@@ -64,94 +76,84 @@ const CabinetContent: React.FC = () => {
 		}
 	};
 
-	const handleDeleteCabinet = async () => {
-		if (!cabinetInfo?.id) return;
+	const deleteCabinet = async (id: number) => {
+		if (!id) return;
 		try {
-			const response = await fetch(`/api/cabinet?id=${cabinetInfo.id}`, {
+			const response = await fetch(`/api/cabinet?id=${id}`, {
 				method: "DELETE",
 			});
-			if (response.ok) setCabinetInfo(null);
+			if (response.ok) {
+				setCabinetInfo(null);
+			}
 		} catch (error) {
 			console.error("Erreur de suppression :", error);
 		}
 	};
 
-	if (loading) return <p>Chargement des informations...</p>;
-	if (error) return <p>Erreur : {error}</p>;
+	const handleDeleteCabinet = () => {
+		if (cabinetInfo?.id) {
+			setIsConfirmDeleteOpen(true);
+		}
+	};
 
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
-			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 sm:p-6 rounded-lg shadow-lg mb-4">
-				<h1 className="text-2xl sm:text-3xl font-bold mb-2">
+		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-6 overflow-y-auto">
+			<div className="mt-10 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg shadow-lg">
+				<h1 className="text-3xl font-bold mb-2">
 					Bienvenue dans votre Cabinet
 				</h1>
-				<h2 className="text-xl sm:text-2xl font-semibold mb-4">
+				<h2 className="text-2xl font-semibold mb-4">
 					{cabinetInfo
 						? cabinetInfo.name
 						: "Nom du Cabinet Non Disponible"}
 				</h2>
-				<p className="text-base sm:text-lg">
+				<p className="text-lg">
 					Voici des informations sur votre cabinet et vos paramètres.
 				</p>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-					<h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
-						Adresse
-					</h2>
-					<p className="text-sm text-gray-600 dark:text-gray-400">
-						<a
-							href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-								cabinetInfo?.address || ""
-							)}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-blue-500 hover:underline"
-						>
-							{cabinetInfo?.address || "Non disponible"}
-						</a>
-					</p>
-				</div>
+			{loading && <p>Chargement des informations du cabinet...</p>}
+			{error && <p className="text-red-500">{error}</p>}
 
-				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-					<h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
-						Téléphone
-					</h2>
-					<p className="text-sm text-gray-600 dark:text-gray-400">
-						<a
-							href={`tel:${cabinetInfo?.phone}`}
-							className="text-blue-500 hover:underline"
-						>
-							{cabinetInfo?.phone || "Non disponible"}
-						</a>
-					</p>
-				</div>
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<InfoCard
+					icon={<MapPinIcon className="h-6 w-6 text-blue-500" />}
+					title="Adresse"
+					content={cabinetInfo?.address}
+					link={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+						cabinetInfo?.address || ""
+					)}`}
+				/>
+				<InfoCard
+					icon={<PhoneIcon className="h-6 w-6 text-green-500" />}
+					title="Téléphone"
+					content={cabinetInfo?.phone}
+					link={`tel:${cabinetInfo?.phone}`}
+				/>
 			</div>
 
-			<div className="flex gap-4 mt-6">
-				<button
+			<div className="flex flex-wrap gap-4 mt-6">
+				<ActionButton
 					onClick={() => setIsEditMode(true)}
-					className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-				>
-					Modifier les Infos
-				</button>
-				<button
+					icon={<PencilSquareIcon className="h-5 w-5" />}
+					text="Modifier les Infos"
+					color="blue"
+				/>
+				<ActionButton
 					onClick={() => setIsAddMode(true)}
-					className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-				>
-					Ajouter un Cabinet
-				</button>
-				<button
+					icon={<PlusIcon className="h-5 w-5" />}
+					text="Ajouter un Cabinet"
+					color="green"
+				/>
+				<ActionButton
 					onClick={handleDeleteCabinet}
-					className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-				>
-					Supprimer le Cabinet
-				</button>
+					icon={<TrashIcon className="h-5 w-5" />}
+					text="Supprimer le Cabinet"
+					color="red"
+				/>
 			</div>
 
-			{/* Modal pour ajouter ou modifier les informations */}
-			{isEditMode && (
+			{isEditMode && cabinetInfo && (
 				<EditModal
 					initialData={cabinetInfo}
 					onSubmit={(data) => {
@@ -170,10 +172,66 @@ const CabinetContent: React.FC = () => {
 					onCancel={() => setIsAddMode(false)}
 				/>
 			)}
+			{isConfirmDeleteOpen && (
+				<DeleteModal
+					onDelete={() => {
+						if (cabinetInfo?.id) {
+							deleteCabinet(cabinetInfo.id);
+						}
+						setIsConfirmDeleteOpen(false);
+					}}
+					onCancel={() => setIsConfirmDeleteOpen(false)}
+				/>
+			)}
 		</div>
 	);
 };
 
-// Composants EditModal et AddModal non définis ici, à créer séparément avec des champs pour nom, adresse, téléphone, etc.
+// Composant pour afficher les informations du cabinet
+const InfoCard: React.FC<{
+	icon: React.ReactNode;
+	title: string;
+	content?: string | null;
+	link?: string;
+}> = ({ icon, title, content, link }) => (
+	<div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+		<div className="flex items-center mb-4">
+			{icon}
+			<h2 className="text-xl font-semibold text-gray-800 dark:text-white ml-2">
+				{title}
+			</h2>
+		</div>
+		<p className="text-gray-600 dark:text-gray-300">
+			{link ? (
+				<a
+					href={link}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="text-blue-500 hover:underline"
+				>
+					{content || "Non disponible"}
+				</a>
+			) : (
+				content || "Non disponible"
+			)}
+		</p>
+	</div>
+);
+
+// Composant pour les boutons d'action
+const ActionButton: React.FC<{
+	onClick: () => void;
+	icon: React.ReactNode;
+	text: string;
+	color: string;
+}> = ({ onClick, icon, text, color }) => (
+	<button
+		onClick={onClick}
+		className={`bg-${color}-500 hover:bg-${color}-600 text-white font-bold py-2 px-4 rounded flex items-center transition duration-300 ease-in-out transform hover:scale-105`}
+	>
+		{icon}
+		<span className="ml-2">{text}</span>
+	</button>
+);
 
 export default CabinetContent;

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
@@ -9,6 +8,10 @@ import {
 	IconContract,
 	IconSettings,
 	IconUserBolt,
+	IconUserPlus,
+	IconCalendar,
+	IconList,
+	IconChartBar,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -57,13 +60,16 @@ export default function SidebarDashboard() {
 	const handleLogout = async (e: React.MouseEvent) => {
 		e.preventDefault();
 		setIsLoggingOut(true);
+
 		const result = await signOut();
+
 		if (result.success) {
 			router.push("/login");
 		} else {
 			// You can create a state to manage error messages and show them in the UI
 			console.error(result.error || "Erreur lors de la déconnexion.");
 		}
+
 		setIsLoggingOut(false);
 	};
 
@@ -130,7 +136,6 @@ export default function SidebarDashboard() {
 							))}
 						</div>
 					</div>
-
 					<div className="bg-gray-100 dark:bg-neutral-800 rounded-md flex items-center gap-3">
 						{user ? (
 							<>
@@ -168,6 +173,7 @@ export default function SidebarDashboard() {
 				<div className="fixed z-50 top-4 left-4 md:top-4 md:right-4 md:left-auto">
 					<ModeToggle />
 				</div>
+
 				{/* Render the active tab's content */}
 				{activeTab === "dashboard" && <Dashboard user={user} />}
 				{activeTab === "patients" && (
@@ -188,6 +194,7 @@ export default function SidebarDashboard() {
 interface DashboardProps {
 	user: User | null;
 }
+
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	return (
 		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
@@ -203,6 +210,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					Voici un aperçu de votre tableau de bord
 				</p>
 			</div>
+
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
 				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
@@ -215,7 +223,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						+12% par rapport au mois dernier
 					</p>
 				</div>
-
 				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
 						Rendez-vous aujourd&apos;hui
@@ -227,7 +234,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						Prochain RDV à 14h30
 					</p>
 				</div>
-
 				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
 						Nouveaux patients
@@ -240,25 +246,31 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					</p>
 				</div>
 			</div>
+
 			<div className="mt-6 sm:mt-8">
 				<h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4">
 					Actions rapides
 				</h2>
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-					<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base">
+					<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base flex items-center justify-center">
+						<IconUserPlus className="mr-2" />
 						Ajouter un patient
 					</button>
-					<button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base">
+					<button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base flex items-center justify-center">
+						<IconCalendar className="mr-2" />
 						Voir les rendez-vous
 					</button>
-					<button className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base">
+					<button className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base flex items-center justify-center">
+						<IconList className="mr-2" />
 						Voir le listing patient
 					</button>
-					<button className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base">
+					<button className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base flex items-center justify-center">
+						<IconChartBar className="mr-2" />
 						Rapports mensuels
 					</button>
 				</div>
 			</div>
+
 			<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg mt-4 sm:mt-6">
 				<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
 					Graphiques et autres visualisations
@@ -268,6 +280,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					tableaux...
 				</p>
 			</div>
+
 			<AddPatientForm />
 		</div>
 	);

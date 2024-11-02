@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { IconGenderMale, IconGenderFemale } from "@tabler/icons-react";
+import {
+	IconGenderMale,
+	IconGenderFemale,
+	IconSearch,
+	IconPlus,
+	IconChevronLeft,
+	IconChevronRight,
+} from "@tabler/icons-react";
 import PatientDetails from "../PatientDetails/PatientDetails";
 
 const PatientList = ({ initialPatients, user }) => {
@@ -99,13 +106,19 @@ const PatientList = ({ initialPatients, user }) => {
 			</h2>
 
 			{/* Barre de recherche */}
-			<input
-				type="text"
-				placeholder="Rechercher par nom..."
-				className="mb-6 p-2 border border-blue-500 rounded-lg  max-w-sm shadow-md mx-auto"
-				value={searchTerm}
-				onChange={(e) => setSearchTerm(e.target.value)}
-			/>
+			<div className="relative max-w-sm mx-auto">
+				<input
+					type="text"
+					placeholder="Rechercher par nom..."
+					className="w-full p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+					value={searchTerm}
+					onChange={(e) => setSearchTerm(e.target.value)}
+				/>
+				<IconSearch
+					className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+					size={20}
+				/>
+			</div>
 
 			{/* Navigation alphabétique */}
 			<div className="hidden md:flex flex-wrap justify-center space-x-2 mb-4">
@@ -204,7 +217,8 @@ const PatientList = ({ initialPatients, user }) => {
 					Actions rapides
 				</h2>
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-					<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base">
+					<button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition duration-300 flex items-center">
+						<IconPlus className="mr-2" size={20} />
 						Ajouter un patient
 					</button>
 				</div>
@@ -224,14 +238,15 @@ const PatientList = ({ initialPatients, user }) => {
 					))}
 				</select>
 
-				<div className="flex">
+				<div className="flex justify-center space-x-4 mt-6">
 					<button
 						onClick={() =>
 							setCurrentPage((prev) => Math.max(prev - 1, 1))
 						}
 						disabled={currentPage === 1}
-						className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+						className="px-6 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 font-semibold rounded-full shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md flex items-center"
 					>
+						<IconChevronLeft className="mr-2" size={20} />
 						Précédent
 					</button>
 					<button
@@ -241,9 +256,10 @@ const PatientList = ({ initialPatients, user }) => {
 							)
 						}
 						disabled={currentPage === totalPages}
-						className="p-2 border border-blue-500 rounded-lg transition duration-300 hover:bg-blue-100 disabled:opacity-50"
+						className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md flex items-center"
 					>
 						Suivant
+						<IconChevronRight className="ml-2" size={20} />
 					</button>
 				</div>
 			</div>

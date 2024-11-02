@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 
-// Define the CabinetInfo type
 interface CabinetInfo {
+	id?: number;
 	name: string;
 	address: string;
-	phone?: string;
+	phone: string | undefined;
+	osteopathId?: number | null;
 }
 
 interface EditModalProps {
@@ -26,45 +27,49 @@ const EditModal: React.FC<EditModalProps> = ({
 	};
 
 	return (
-		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-			<div className="bg-white dark:bg-neutral-800 p-6 rounded-lg w-80 sm:w-96">
-				<h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-					Modifier Cabinet
-				</h2>
-				<input
-					type="text"
-					name="name"
-					value={formData.name}
-					onChange={handleChange}
-					placeholder="Nom du cabinet"
-					className="w-full mb-4 p-2 rounded border border-gray-300"
-				/>
-				<input
-					type="text"
-					name="address"
-					value={formData.address}
-					onChange={handleChange}
-					placeholder="Adresse"
-					className="w-full mb-4 p-2 rounded border border-gray-300"
-				/>
-				<input
-					type="tel"
-					name="phone"
-					value={formData.phone || ""}
-					onChange={handleChange}
-					placeholder="Téléphone"
-					className="w-full mb-4 p-2 rounded border border-gray-300"
-				/>
-				<div className="flex justify-end gap-2">
+		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+			<div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+				<div className="p-6">
+					<h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+						Modifier Cabinet
+					</h2>
+					<form className="space-y-4">
+						<input
+							type="text"
+							name="name"
+							value={formData.name}
+							onChange={handleChange}
+							placeholder="Nom du cabinet"
+							className="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200"
+						/>
+						<input
+							type="text"
+							name="address"
+							value={formData.address}
+							onChange={handleChange}
+							placeholder="Adresse"
+							className="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200"
+						/>
+						<input
+							type="tel"
+							name="phone"
+							value={formData.phone || ""}
+							onChange={handleChange}
+							placeholder="Téléphone"
+							className="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200"
+						/>
+					</form>
+				</div>
+				<div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
 					<button
 						onClick={onCancel}
-						className="bg-gray-400 text-white px-4 py-2 rounded"
+						className="px-4 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-200"
 					>
 						Annuler
 					</button>
 					<button
 						onClick={() => onSubmit(formData)}
-						className="bg-blue-600 text-white px-4 py-2 rounded"
+						className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
 					>
 						Enregistrer
 					</button>
