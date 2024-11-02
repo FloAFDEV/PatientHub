@@ -230,7 +230,7 @@ const PatientList = ({ initialPatients, user }) => {
 							setCurrentPage((prev) => Math.max(prev - 1, 1))
 						}
 						disabled={currentPage === 1}
-						className="p-2 border border-blue-500 rounded-lg mr-2 transition duration-300 hover:bg-blue-100 disabled:opacity-50"
+						className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
 					>
 						Précédent
 					</button>

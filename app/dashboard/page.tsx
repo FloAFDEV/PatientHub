@@ -18,6 +18,7 @@ import { createClient } from "@/utils/supabase/client";
 import PatientList from "@/components/PatientList/PatientList";
 import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import { User } from "@supabase/supabase-js";
+import CabinetContent from "@/components/CabinetContent/CabinetContent";
 import { Logo, LogoIcon } from "@/components/Logo/Logo";
 
 const supabase = createClient();
@@ -172,7 +173,7 @@ export default function SidebarDashboard() {
 				{activeTab === "patients" && (
 					<PatientList initialPatients={undefined} user={user} />
 				)}
-				{activeTab === "Cabinet" && <div>Contenu du cabinet</div>}
+				{activeTab === "Cabinet" && <CabinetContent />}
 
 				<footer className="bg-gray-200 dark:bg-neutral-900 text-center p-4 border-t border-neutral-300 dark:border-neutral-700">
 					<p className="text-sm text-gray-600 dark:text-gray-400">

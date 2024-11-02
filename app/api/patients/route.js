@@ -64,12 +64,6 @@ export async function GET(request) {
 				include: {
 					cabinet: true,
 					osteopath: true,
-					user: {
-						select: {
-							first_name: true,
-							last_name: true,
-						},
-					},
 				},
 			});
 
@@ -88,12 +82,6 @@ export async function GET(request) {
 				include: {
 					cabinet: true,
 					osteopath: true,
-					user: {
-						select: {
-							first_name: true,
-							last_name: true,
-						},
-					},
 				},
 			});
 			return new Response(JSON.stringify(patients), {
