@@ -17,6 +17,29 @@ const PatientList = ({ initialPatients, user }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
 
+	const calculateAge = (birthDate) => {
+		if (!birthDate) {
+			return "N/A"; // Retourne "N/A" si la date est absente
+		}
+
+		const dateOfBirth = new Date(birthDate);
+		if (isNaN(dateOfBirth.getTime())) {
+			return "N/A"; // Retourne "N/A" si la date est invalide
+		}
+
+		const today = new Date();
+		let age = today.getFullYear() - dateOfBirth.getFullYear();
+		const monthDifference = today.getMonth() - dateOfBirth.getMonth();
+
+		if (
+			monthDifference < 0 ||
+			(monthDifference === 0 && today.getDate() < dateOfBirth.getDate())
+		) {
+			age--;
+		}
+		return age;
+	};
+
 	// État de pagination
 	const [currentPage, setCurrentPage] = useState(1);
 	const [patientsPerPage] = useState(15);
@@ -29,6 +52,7 @@ const PatientList = ({ initialPatients, user }) => {
 					throw new Error("Erreur dans le chargement des données.");
 				}
 				const patientsData = await response.json();
+				// console.log("Patients data received:", patientsData);
 				patientsData.sort((a, b) => a.name.localeCompare(b.name));
 				setPatients(patientsData);
 			} catch (err) {
@@ -196,8 +220,20 @@ const PatientList = ({ initialPatients, user }) => {
 										{patient.name}
 									</h2>
 								</div>
-								<div className="text-gray-600 dark:text-gray-300 text-sm ml-4">
-									<p>Téléphone: {patient.phone}</p>
+								<div className="text-gray-600 dark:text-gray-300 text-sm ml-4 font-semibold">
+									<p>
+										Âge: {calculateAge(patient.birthDate)}{" "}
+										ans
+									</p>
+									<p>
+										Téléphone:{" "}
+										<a
+											href={`tel:${patient.phone}`}
+											className="text-blue-500 hover:underline"
+										>
+											{patient.phone}
+										</a>
+									</p>
 								</div>
 							</div>
 							{selectedPatientId === patient.id && (

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { toast } from "react-toastify";
 
 // Define mappings
 const genderOptions = {
@@ -65,7 +66,7 @@ const AddPatientForm = () => {
 	const onSubmit = async (data) => {
 		const finalData = {
 			...data,
-			gender: data.gender === "Homme" ? "Homme" : "Femme",
+
 			childrenAges: hasChildren
 				? childrenAges.filter((age) => age > 0)
 				: [],
@@ -79,18 +80,22 @@ const AddPatientForm = () => {
 				},
 				body: JSON.stringify(finalData),
 			});
+
+			// Vérifiez si la réponse est correcte
 			if (!response.ok) {
 				throw new Error(
 					"Une erreur est survenue lors de la création du patient."
 				);
 			}
+
+			// Traitez la réponse si tout s'est bien passé
 			const newPatient = await response.json();
-			setMessage(`Patient créé avec succès : ${newPatient.name}`);
+			toast.success(`Patient créé avec succès : ${newPatient.name}`);
 			reset();
 			setChildrenAges([0]); // Réinitialiser les âges des enfants
 		} catch (error) {
 			console.error("Erreur lors de l'envoi du formulaire :", error);
-			setMessage("Erreur lors de la création du patient.");
+			toast.error("Erreur lors de la création du patient.");
 		}
 	};
 

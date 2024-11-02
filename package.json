@@ -37,6 +37,7 @@
 		"react-dom": "^18",
 		"react-hook-form": "^7.53.1",
 		"react-phone-input-2": "^2.15.1",
+		"react-toastify": "^10.0.6",
 		"tailwind-merge": "^2.5.4",
 		"xml2js": "^0.6.2"
 	},
