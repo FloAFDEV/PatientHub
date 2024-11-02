@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import AddModal from "@/components/AddModal/AddModal";
 
 interface CabinetInfo {
 	id?: number;
