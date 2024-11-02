@@ -88,14 +88,15 @@ const AddPatientForm = () => {
 				);
 			}
 
-			// Traitez la réponse si tout s'est bien passé
 			const newPatient = await response.json();
 			toast.success(`Patient créé avec succès : ${newPatient.name}`);
 			reset();
-			setChildrenAges([0]); // Réinitialiser les âges des enfants
+			setChildrenAges([0]);
+			setMessage("Patient ajouté avec succès !");
 		} catch (error) {
 			console.error("Erreur lors de l'envoi du formulaire :", error);
 			toast.error("Erreur lors de la création du patient.");
+			setMessage("Erreur lors de l'ajout du patient.");
 		}
 	};
 

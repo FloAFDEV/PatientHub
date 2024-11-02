@@ -97,25 +97,30 @@ const CabinetContent: React.FC = () => {
 	};
 
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-6 overflow-y-auto">
-			<div className="mt-10 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg shadow-lg">
-				<h1 className="text-3xl font-bold mb-2">
+		<div className="flex flex-col flex-1 p-4 bg-gray-100 dark:bg-gray-900 overflow-y-auto min-h-screen">
+			<div className="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 sm:p-6 rounded-lg shadow-lg">
+				<h1 className="text-2xl sm:text-3xl font-bold mb-2">
 					Bienvenue dans votre Cabinet
 				</h1>
-				<h2 className="text-2xl font-semibold mb-4">
+				<h2 className="text-xl sm:text-2xl font-semibold mb-4">
 					{cabinetInfo
 						? cabinetInfo.name
 						: "Nom du Cabinet Non Disponible"}
 				</h2>
-				<p className="text-lg">
+				<p className="text-base sm:text-lg">
 					Voici des informations sur votre cabinet et vos paramètres.
 				</p>
 			</div>
 
-			{loading && <p>Chargement des informations du cabinet...</p>}
-			{error && <p className="text-red-500">{error}</p>}
+			{loading && (
+				<p className="text-center">
+					Chargement des informations du cabinet...
+				</p>
+			)}
+			{error && <p className="text-red-500 text-center">{error}</p>}
 
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+			{/* Flex container for Info Cards */}
+			<div className="flex flex-col sm:flex-row justify-between gap-4 mt-6">
 				<InfoCard
 					icon={<MapPinIcon className="h-6 w-6 text-blue-500" />}
 					title="Adresse"
@@ -132,7 +137,8 @@ const CabinetContent: React.FC = () => {
 				/>
 			</div>
 
-			<div className="flex flex-wrap gap-4 mt-6">
+			{/* Action Buttons */}
+			<div className="flex flex-col sm:flex-row gap-4 mt-6">
 				<ActionButton
 					onClick={() => setIsEditMode(true)}
 					icon={<PencilSquareIcon className="h-5 w-5" />}
@@ -153,6 +159,7 @@ const CabinetContent: React.FC = () => {
 				/>
 			</div>
 
+			{/* Modals for Edit, Add, Delete */}
 			{isEditMode && cabinetInfo && (
 				<EditModal
 					initialData={cabinetInfo}
@@ -187,21 +194,22 @@ const CabinetContent: React.FC = () => {
 	);
 };
 
-// Composant pour afficher les informations du cabinet
-const InfoCard: React.FC<{
+interface InfoCardProps {
 	icon: React.ReactNode;
 	title: string;
-	content?: string | null;
+	content: string | undefined;
 	link?: string;
-}> = ({ icon, title, content, link }) => (
-	<div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-		<div className="flex items-center mb-4">
+}
+
+const InfoCard: React.FC<InfoCardProps> = ({ icon, title, content, link }) => (
+	<div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 flex-1">
+		<div className="flex items-center mb-2 sm:mb-4">
 			{icon}
-			<h2 className="text-xl font-semibold text-gray-800 dark:text-white ml-2">
+			<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white ml-2">
 				{title}
 			</h2>
 		</div>
-		<p className="text-gray-600 dark:text-gray-300">
+		<p className="text-gray-600 dark:text-gray-300 break-words">
 			{link ? (
 				<a
 					href={link}
@@ -218,16 +226,22 @@ const InfoCard: React.FC<{
 	</div>
 );
 
-// Composant pour les boutons d'action
-const ActionButton: React.FC<{
+interface ActionButtonProps {
 	onClick: () => void;
 	icon: React.ReactNode;
 	text: string;
 	color: string;
-}> = ({ onClick, icon, text, color }) => (
+}
+
+const ActionButton: React.FC<ActionButtonProps> = ({
+	onClick,
+	icon,
+	text,
+	color,
+}) => (
 	<button
 		onClick={onClick}
-		className={`bg-${color}-500 hover:bg-${color}-600 text-white font-bold py-2 px-4 rounded flex items-center transition duration-300 ease-in-out transform hover:scale-105`}
+		className={`w-full sm:w-auto bg-${color}-500 hover:bg-${color}-600 text-white font-bold py-2 px-4 rounded flex items-center justify-center transition duration-300 ease-in-out`}
 	>
 		{icon}
 		<span className="ml-2">{text}</span>
