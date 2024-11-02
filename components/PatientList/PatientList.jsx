@@ -228,7 +228,12 @@ const PatientList = ({ initialPatients, user }) => {
 			<div className="flex flex-col md:flex-row justify-between items-center mt-4 w-full max-w-3xl mx-auto">
 				<select
 					value={currentPage}
-					onChange={(e) => setCurrentPage(Number(e.target.value))}
+					onChange={(e) => {
+						const newPage = Number(e.target.value);
+						if (newPage > 0 && newPage <= totalPages) {
+							setCurrentPage(newPage);
+						}
+					}}
 					className="mb-4 md:mb-0 p-2 border border-blue-500 rounded-lg shadow-md"
 				>
 					{Array.from({ length: totalPages }, (_, index) => (
@@ -240,9 +245,11 @@ const PatientList = ({ initialPatients, user }) => {
 
 				<div className="flex justify-center space-x-4 mt-6">
 					<button
-						onClick={() =>
-							setCurrentPage((prev) => Math.max(prev - 1, 1))
-						}
+						onClick={() => {
+							if (currentPage > 1) {
+								setCurrentPage((prev) => prev - 1);
+							}
+						}}
 						disabled={currentPage === 1}
 						className="px-6 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 font-semibold rounded-full shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md flex items-center"
 					>
@@ -250,11 +257,11 @@ const PatientList = ({ initialPatients, user }) => {
 						Précédent
 					</button>
 					<button
-						onClick={() =>
-							setCurrentPage((prev) =>
-								Math.min(prev + 1, totalPages)
-							)
-						}
+						onClick={() => {
+							if (currentPage < totalPages) {
+								setCurrentPage((prev) => prev + 1);
+							}
+						}}
 						disabled={currentPage === totalPages}
 						className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md flex items-center"
 					>

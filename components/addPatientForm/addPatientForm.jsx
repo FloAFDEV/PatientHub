@@ -11,10 +11,10 @@ const genderOptions = {
 
 const maritalStatusOptions = {
 	Single: "Célibataire",
-	Married: "Marié",
-	Divorced: "Divorcé",
-	Widowed: "Veuf",
-	Separated: "Séparé",
+	Married: "Marié(e)",
+	Divorced: "Divorcé(e)",
+	Widowed: "Veuf(ve)",
+	Separated: "Séparé(e)",
 };
 
 const handednessOptions = {
