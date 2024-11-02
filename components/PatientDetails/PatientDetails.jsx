@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import Image from "next/image"; // Ensure you have this if using Next.js
 
 const PatientDetails = ({ patient, onClose }) => {
 	const [error, setError] = useState(null);
@@ -13,14 +14,14 @@ const PatientDetails = ({ patient, onClose }) => {
 	};
 
 	// Vérifier si le patient a toutes les propriétés nécessaires
-	const validatePatientData = () => {
+	const validatePatientData = useCallback(() => {
 		if (!patient) {
 			setError("Aucune donnée patient disponible.");
 			return false;
 		}
 		setError(null);
 		return true;
-	};
+	}, [patient]);
 
 	useEffect(() => {
 		// Validation initiale des données du patient
@@ -65,6 +66,8 @@ const PatientDetails = ({ patient, onClose }) => {
 					src={patient.avatarUrl || "default-avatar.png"} // Image par défaut
 					alt={`Avatar de ${patient.name || "inconnu"}`} // Gérer les noms inconnus
 					className="w-28 h-28 mb-4 rounded-lg border-2 border-gray-300"
+					width={112} // Provide a width for Next.js <Image />
+					height={112} // Provide a height for Next.js <Image />
 				/>
 				<h1 className="text-3xl font-bold">
 					{patient.name || "Nom inconnu"}
