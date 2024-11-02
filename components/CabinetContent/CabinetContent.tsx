@@ -13,8 +13,8 @@ const CabinetContent: React.FC = () => (
 				Détails du Cabinet
 			</h2>
 			<p className="text-sm text-gray-600 dark:text-gray-400">
-				Informations sur le cabinet, telles que l'adresse, les horaires,
-				les contacts, etc.
+				Informations sur le cabinet, telles que l&apos;adresse, les
+				horaires, les contacts, etc.
 			</p>
 		</div>
 	</div>

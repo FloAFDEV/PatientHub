@@ -10,8 +10,6 @@ import {
 	IconSettings,
 	IconUserBolt,
 } from "@tabler/icons-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
 import { cn } from "@/components/lib/utils";
