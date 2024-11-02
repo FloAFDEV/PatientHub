@@ -95,7 +95,8 @@ const PatientList = ({ initialPatients, user }) => {
 	if (loading) {
 		return (
 			<div className="text-lg text-gray-500 mt-20 text-center">
-				Chargement des patients...
+				<p>Chargement des patients...</p>
+				<div className="spinner" />
 			</div>
 		);
 	}
@@ -103,7 +104,13 @@ const PatientList = ({ initialPatients, user }) => {
 	if (error) {
 		return (
 			<div className="text-lg text-red-500 text-center">
-				Erreur: {error}
+				<p>Erreur: {error}</p>
+				<button
+					onClick={fetchPatients}
+					className="text-blue-500 underline"
+				>
+					Réessayer
+				</button>
 			</div>
 		);
 	}
@@ -242,7 +249,9 @@ const PatientList = ({ initialPatients, user }) => {
 									</p>
 								</div>
 							</div>
-							{/* PatientDetails component would go here */}
+							{selectedPatientId && (
+								<PatientDetails patientId={selectedPatientId} />
+							)}
 						</li>
 					))
 				)}
