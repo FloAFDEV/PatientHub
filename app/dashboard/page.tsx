@@ -20,6 +20,7 @@ import { createClient } from "@/utils/supabase/client";
 import PatientList from "@/components/PatientList/PatientList";
 import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import { User } from "@supabase/supabase-js";
+import { Logo, LogoIcon } from "@/components/Logo/Logo";
 
 const supabase = createClient();
 
@@ -33,20 +34,22 @@ export default function SidebarDashboard() {
 
 	useEffect(() => {
 		const checkSession = async () => {
-			const { data, error } = await supabase.auth.getSession();
-			if (error) {
+			try {
+				const { data, error } = await supabase.auth.getSession();
+				if (error) throw new Error(error.message);
+				if (data.session) {
+					setUser(data.session.user);
+				} else {
+					router.push("/login");
+				}
+			} catch (error) {
 				console.error(
 					"Erreur lors de la récupération de la session :",
 					error
 				);
-				return;
+			} finally {
+				setLoadingUser(false);
 			}
-			if (data.session) {
-				setUser(data.session.user);
-			} else {
-				router.push("/login");
-			}
-			setLoadingUser(false);
 		};
 
 		checkSession();
@@ -59,10 +62,8 @@ export default function SidebarDashboard() {
 		if (result.success) {
 			router.push("/login");
 		} else {
-			alert(
-				result.error ||
-					"Erreur lors de la déconnexion. Veuillez réessayer."
-			);
+			// You can create a state to manage error messages and show them in the UI
+			console.error(result.error || "Erreur lors de la déconnexion.");
 		}
 		setIsLoggingOut(false);
 	};
@@ -92,7 +93,6 @@ export default function SidebarDashboard() {
 			),
 			onClick: () => setActiveTab("Cabinet"),
 		},
-
 		{
 			label: "Contact",
 			href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour%2C%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci%21",
@@ -144,11 +144,9 @@ export default function SidebarDashboard() {
 								/>
 								<div>
 									<p className="ml-4 text-sm font-medium text-gray-800 dark:text-white">
-										{user.user_metadata?.user_metadata
-											?.first_name ||
+										{user.user_metadata?.first_name ||
 											"Nom non disponible"}{" "}
-										{user.user_metadata?.user_metadata
-											?.last_name ||
+										{user.user_metadata?.last_name ||
 											"Prénom non disponible"}
 									</p>
 									<p className="ml-4 text-xs text-gray-600 dark:text-gray-400">
@@ -174,7 +172,7 @@ export default function SidebarDashboard() {
 				{activeTab === "patients" && (
 					<PatientList initialPatients={undefined} user={user} />
 				)}
-				{activeTab === "Cabinet"}
+				{activeTab === "Cabinet" && <div>Contenu du cabinet</div>}
 
 				<footer className="bg-gray-200 dark:bg-neutral-900 text-center p-4 border-t border-neutral-300 dark:border-neutral-700">
 					<p className="text-sm text-gray-600 dark:text-gray-400">
@@ -185,48 +183,6 @@ export default function SidebarDashboard() {
 		</div>
 	);
 }
-
-export const Logo = () => {
-	return (
-		<Link
-			href="#"
-			className="font-normal flex space-x-2 items-center text-sm py-1 relative z-20"
-		>
-			<div className="h-8 w-8 flex-shrink-0">
-				<Image
-					src="/assets/images/logo-full.svg"
-					alt="Logo de PatientHub"
-					width={32}
-					height={32}
-					className="object-contain rounded-md shadow-xl"
-				/>
-			</div>
-			<motion.span
-				initial={{ opacity: 0 }}
-				animate={{ opacity: 1 }}
-				className="font-semibold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-300 dark:to-purple-400 whitespace-pre"
-			>
-				PatientHub
-			</motion.span>
-		</Link>
-	);
-};
-
-export const LogoIcon = () => {
-	return (
-		<Link href="#" className="flex items-center justify-center py-2">
-			<div className="h-8 w-8">
-				<Image
-					src="/assets/images/logo-full.svg"
-					alt="Logo de PatientHub"
-					width={32}
-					height={32}
-					className="object-contain rounded-md shadow-md"
-				/>
-			</div>
-		</Link>
-	);
-};
 
 interface DashboardProps {
 	user: User | null;
