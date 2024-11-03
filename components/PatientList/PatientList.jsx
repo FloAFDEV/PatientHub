@@ -17,28 +17,25 @@ const PatientList = ({ initialPatients, user }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
 
-	const calculateAge = (birthDate) => {
-		if (!birthDate) {
-			return "N/A"; // Retourne "N/A" si la date est absente
-		}
-
-		const dateOfBirth = new Date(birthDate);
-		if (isNaN(dateOfBirth.getTime())) {
-			return "N/A"; // Retourne "N/A" si la date est invalide
-		}
-
-		const today = new Date();
-		let age = today.getFullYear() - dateOfBirth.getFullYear();
-		const monthDifference = today.getMonth() - dateOfBirth.getMonth();
-
-		if (
-			monthDifference < 0 ||
-			(monthDifference === 0 && today.getDate() < dateOfBirth.getDate())
-		) {
-			age--;
-		}
-		return age;
-	};
+	const calculateAge = useMemo(
+		() => (birthDate) => {
+			if (!birthDate) return "N/A";
+			const dateOfBirth = new Date(birthDate);
+			if (isNaN(dateOfBirth.getTime())) return "N/A";
+			const today = new Date();
+			let age = today.getFullYear() - dateOfBirth.getFullYear();
+			const monthDifference = today.getMonth() - dateOfBirth.getMonth();
+			if (
+				monthDifference < 0 ||
+				(monthDifference === 0 &&
+					today.getDate() < dateOfBirth.getDate())
+			) {
+				age--;
+			}
+			return age;
+		},
+		[]
+	);
 
 	// État de pagination
 	const [currentPage, setCurrentPage] = useState(1);
@@ -85,7 +82,10 @@ const PatientList = ({ initialPatients, user }) => {
 	}, [patients, searchTerm, searchLetter]);
 
 	// Logique de pagination
-	const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
+	const totalPages = useMemo(
+		() => Math.ceil(filteredPatients.length / patientsPerPage),
+		[filteredPatients, patientsPerPage]
+	);
 	const handlePageChange = (newPage) => {
 		if (newPage > 0 && newPage <= totalPages) {
 			setCurrentPage(newPage);
@@ -93,9 +93,10 @@ const PatientList = ({ initialPatients, user }) => {
 	};
 	const indexOfLastPatient = currentPage * patientsPerPage;
 	const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
-	const currentPatients = useMemo(() => {
-		return filteredPatients.slice(indexOfFirstPatient, indexOfLastPatient);
-	}, [filteredPatients, indexOfFirstPatient, indexOfLastPatient]);
+	const currentPatients = useMemo(
+		() => filteredPatients.slice(indexOfFirstPatient, indexOfLastPatient),
+		[filteredPatients, indexOfFirstPatient, indexOfLastPatient]
+	);
 
 	if (loading) {
 		return (
@@ -123,7 +124,7 @@ const PatientList = ({ initialPatients, user }) => {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 	return (
-		<div className="flex-1 p-4 bg-white dark:bg-neutral-900 flex flex-col gap-4 overflow-y-auto min-h-screen">
+		<div className="flex-1 p-4 bg-white dark:bg-neutral-900 flex flex-col gap-4 overflow-y-auto h-screen">
 			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg shadow-lg mb-4">
 				<h1 className="text-xl sm:text-2xl font-bold mb-2">
 					Bienvenue,{" "}
@@ -255,10 +256,18 @@ const PatientList = ({ initialPatients, user }) => {
 								</div>
 							</div>
 							{selectedPatientId === patient.id && (
-								<PatientDetails
-									patient={patient}
-									onClose={() => setSelectedPatientId(null)}
-								/>
+								<React.Suspense
+									fallback={
+										<div>Chargement des détails...</div>
+									}
+								>
+									<PatientDetails
+										patient={patient}
+										onClose={() =>
+											setSelectedPatientId(null)
+										}
+									/>
+								</React.Suspense>
 							)}
 						</li>
 					))

@@ -14,10 +14,17 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
 			<div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
 				<div className="p-6">
 					<h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
-						Supprimer Cabinet
+						Suppression Définitive du Cabinet
 					</h2>
 					<p className="text-gray-600 dark:text-gray-300 mb-6">
-						Êtes-vous sûr de vouloir supprimer ce cabinet ?
+						Attention : cette action est{" "}
+						<span className="font-semibold text-red-600">
+							irréversible
+						</span>{" "}
+						et entraînera la{" "}
+						<span className="font-semibold">perte permanente</span>{" "}
+						de toutes les données associées à ce cabinet. Êtes-vous
+						sûr de vouloir continuer ?
 					</p>
 				</div>
 				<div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
@@ -31,7 +38,7 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
 						onClick={onDelete}
 						className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition duration-200"
 					>
-						Supprimer
+						Supprimer définitivement
 					</button>
 				</div>
 			</div>

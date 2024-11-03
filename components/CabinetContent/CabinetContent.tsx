@@ -8,6 +8,7 @@ import {
 	PencilSquareIcon,
 	PlusIcon,
 	TrashIcon,
+	BuildingOfficeIcon,
 } from "@heroicons/react/24/outline";
 
 interface CabinetInfo {
@@ -97,30 +98,35 @@ const CabinetContent: React.FC = () => {
 	};
 
 	return (
-		<div className="flex flex-col flex-1 p-4 bg-gray-100 dark:bg-gray-900 overflow-y-auto min-h-screen">
+		<div className="flex flex-col flex-1 p-4 bg-gray-100 dark:bg-gray-900 overflow-y-auto">
 			<div className="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 sm:p-6 rounded-lg shadow-lg">
 				<h1 className="text-2xl sm:text-3xl font-bold mb-2">
-					Bienvenue dans votre Cabinet
+					Bienvenue sur la fiche de votre cabinet
 				</h1>
-				<h2 className="text-xl sm:text-2xl font-semibold mb-4">
-					{cabinetInfo
-						? cabinetInfo.name
-						: "Nom du Cabinet Non Disponible"}
-				</h2>
 				<p className="text-base sm:text-lg">
-					Voici des informations sur votre cabinet et vos paramètres.
+					Retrouvez ici les informations sur votre cabinet et vos
+					paramètres.
 				</p>
 			</div>
-
 			{loading && (
 				<p className="text-center">
 					Chargement des informations du cabinet...
 				</p>
 			)}
 			{error && <p className="text-red-500 text-center">{error}</p>}
-
 			{/* Flex container for Info Cards */}
 			<div className="flex flex-col sm:flex-row justify-between gap-4 mt-6">
+				<InfoCard
+					icon={
+						<BuildingOfficeIcon className="h-6 w-6 text-blue-500" />
+					} // Ajout de l'icône
+					title="Nom du Cabinet"
+					content={
+						cabinetInfo
+							? cabinetInfo.name
+							: "Nom du Cabinet Non Disponible"
+					}
+				/>
 				<InfoCard
 					icon={<MapPinIcon className="h-6 w-6 text-blue-500" />}
 					title="Adresse"
@@ -136,7 +142,6 @@ const CabinetContent: React.FC = () => {
 					link={`tel:${cabinetInfo?.phone}`}
 				/>
 			</div>
-
 			{/* Action Buttons */}
 			<div className="flex flex-col sm:flex-row gap-4 mt-6">
 				<ActionButton
@@ -158,7 +163,6 @@ const CabinetContent: React.FC = () => {
 					color="red"
 				/>
 			</div>
-
 			{/* Modals for Edit, Add, Delete */}
 			{isEditMode && cabinetInfo && (
 				<EditModal

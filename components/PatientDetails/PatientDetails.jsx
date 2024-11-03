@@ -63,8 +63,8 @@ const PatientDetails = ({ patient, onClose }) => {
 	};
 
 	const yesNoTranslations = {
-		YES: "Oui",
-		NO: "Non",
+		true: "Oui",
+		false: "Non",
 	};
 
 	if (error) {
@@ -81,7 +81,7 @@ const PatientDetails = ({ patient, onClose }) => {
 	}
 
 	return (
-		<div className="p-4 w-full min-h-screen mx-auto dark:text-gray-300">
+		<div className="p-4 w-full h-screen mx-auto dark:text-gray-300 overflow-y-auto">
 			<button className="mb-4 text-red-500" onClick={onClose}>
 				&times; Fermer
 			</button>
@@ -96,7 +96,7 @@ const PatientDetails = ({ patient, onClose }) => {
 					width={112}
 					height={112}
 				/>
-				<h1 className="text-3xl font-bold text-center">
+				<h1 className="text-2xl md:text-3xl font-bold text-center">
 					{patient.name || "Nom inconnu"}
 				</h1>
 			</div>
@@ -106,12 +106,14 @@ const PatientDetails = ({ patient, onClose }) => {
 					className="flex justify-between items-center w-full bg-gray-700 p-2 rounded-md hover:bg-gray-600 focus:outline-none text-gray-200"
 					onClick={() => toggleSection("basicInfo")}
 				>
-					<span className="font-semibold">Informations de base</span>
+					<span className="font-semibold text-sm md:text-base">
+						Informations de base
+					</span>
 					<span>{openSections.basicInfo ? "−" : "+"}</span>
 				</button>
 				{openSections.basicInfo && (
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Email:</strong>{" "}
 							<a
 								href={`mailto:${patient.email || ""}`}
@@ -120,7 +122,7 @@ const PatientDetails = ({ patient, onClose }) => {
 								{patient.email || "Email non disponible"}
 							</a>
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Téléphone:</strong>{" "}
 							<a
 								href={
@@ -137,7 +139,7 @@ const PatientDetails = ({ patient, onClose }) => {
 									"Téléphone non disponible"}
 							</a>
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Date de Naissance:</strong>{" "}
 							{patient.birthDate
 								? new Date(
@@ -145,11 +147,11 @@ const PatientDetails = ({ patient, onClose }) => {
 								  ).toLocaleDateString("fr-FR")
 								: "Inconnu"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Genre:</strong>{" "}
-							{patient.gender || "Inconnu"}
+							{patient.gender || "Non renseigné"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Adresse:</strong>{" "}
 							{patient.address ? (
 								<a
@@ -166,46 +168,48 @@ const PatientDetails = ({ patient, onClose }) => {
 								"Inconnue"
 							)}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Statut Marital:</strong>{" "}
 							{maritalStatusTranslations[patient.maritalStatus] ||
-								"Inconnu"}
+								"Non renseigné"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Métier:</strong>{" "}
-							{patient.occupation || "Inconnu"}
+							{patient.occupation || "Non renseigné"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Latéralité:</strong>{" "}
 							{handednessTranslations[patient.handedness] ||
-								"Inconnu"}
+								"Non renseigné"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Méthode de Contraception:</strong>{" "}
 							{contraceptionTranslations[patient.contraception] ||
-								"Inconnu"}
+								"Non renseigné"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Le patient a-t-il des enfants ?</strong>{" "}
 							{yesNoTranslations[patient.hasChildren] ||
-								"Inconnu"}
+								"Non renseigné"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Nom du médecin traitant:</strong>{" "}
-							{patient.generalPractitioner || "Inconnu"}
+							{patient.generalPractitioner || "Non renseigné"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Fumeur ?</strong>{" "}
-							{yesNoTranslations[patient.isSmoker] || "Inconnu"}
+							{yesNoTranslations[patient.isSmoker] ||
+								"Non renseigné"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Correction Visuelle ?</strong>{" "}
 							{yesNoTranslations[patient.hasVisionCorrection] ||
-								"Inconnu"}
+								"Non renseigné"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Le patient est-il décédé ?</strong>{" "}
-							{yesNoTranslations[patient.isDeceased] || "Inconnu"}
+							{yesNoTranslations[patient.isDeceased] ||
+								"Non spécifié"}
 						</p>
 					</div>
 				)}
@@ -216,42 +220,44 @@ const PatientDetails = ({ patient, onClose }) => {
 					className="flex justify-between items-center w-full bg-gray-700 p-2 rounded-md hover:bg-gray-600 focus:outline-none text-gray-200"
 					onClick={() => toggleSection("medicalProblems")}
 				>
-					<span className="font-semibold">Problèmes médicaux</span>
+					<span className="font-semibold text-sm md:text-base">
+						Problèmes médicaux
+					</span>
 					<span>{openSections.medicalProblems ? "−" : "+"}</span>
 				</button>
 				{openSections.medicalProblems && (
 					<div className="p-4">
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Problèmes ORL:</strong>{" "}
 							{patient.entProblems || "Aucun"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Nom du Médecin ORL:</strong>{" "}
-							{patient.entDoctorName || "Inconnu"}
+							{patient.entDoctorName || "Non renseigné"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Problèmes Digestifs:</strong>{" "}
 							{patient.digestiveProblems || "Aucun"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Traitement Actuel:</strong>{" "}
 							{patient.currentTreatment || "Aucun"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Antécédents Chirurgicaux:</strong>{" "}
 							{patient.surgicalHistory || "Aucun"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Antécédents Traumatiques:</strong>{" "}
 							{patient.traumaHistory || "Aucun"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Antécédents Rhumatologiques:</strong>{" "}
 							{patient.rheumatologicalHistory || "Aucun"}
 						</p>
-						<p>
+						<p className="text-sm md:text-base">
 							<strong>Informations HDLM:</strong>{" "}
-							{patient.hdlm || "Aucune"}
+							{patient.hdlm || "Non renseigné"}
 						</p>
 					</div>
 				)}
@@ -262,7 +268,9 @@ const PatientDetails = ({ patient, onClose }) => {
 					className="flex justify-between items-center w-full bg-gray-700 p-2 rounded-md hover:bg-gray-600 focus:outline-none text-gray-200"
 					onClick={() => toggleSection("medicalDocuments")}
 				>
-					<span className="font-semibold">Documents médicaux</span>
+					<span className="font-semibold text-sm md:text-base">
+						Documents médicaux
+					</span>
 					<span>{openSections.medicalDocuments ? "−" : "+"}</span>
 				</button>
 				{openSections.medicalDocuments && (
@@ -271,7 +279,10 @@ const PatientDetails = ({ patient, onClose }) => {
 							{patient.medicalDocuments &&
 							patient.medicalDocuments.length > 0 ? (
 								patient.medicalDocuments.map((doc) => (
-									<li key={doc.id}>
+									<li
+										key={doc.id}
+										className="text-sm md:text-base"
+									>
 										<a
 											href={doc.url}
 											target="_blank"
@@ -284,7 +295,9 @@ const PatientDetails = ({ patient, onClose }) => {
 									</li>
 								))
 							) : (
-								<li>Aucun document médical disponible.</li>
+								<li className="text-sm md:text-base">
+									Aucun document médical disponible.
+								</li>
 							)}
 						</ul>
 					</div>
@@ -296,7 +309,7 @@ const PatientDetails = ({ patient, onClose }) => {
 					className="flex justify-between items-center w-full bg-gray-700 p-2 rounded-md hover:bg-gray-600 focus:outline-none text-gray-200"
 					onClick={() => toggleSection("consultations")}
 				>
-					<span className="font-semibold">
+					<span className="font-semibold text-sm md:text-base">
 						Historique des consultations
 					</span>
 					<span>{openSections.consultations ? "-" : "+"}</span>
@@ -307,15 +320,21 @@ const PatientDetails = ({ patient, onClose }) => {
 							{patient.consultations &&
 							patient.consultations.length > 0 ? (
 								patient.consultations.map((consultation) => (
-									<li key={consultation.id}>
+									<li
+										key={consultation.id}
+										className="text-sm md:text-base"
+									>
 										{new Date(
 											consultation.date
 										).toLocaleDateString("fr-FR")}
-										: {consultation.notes || "Pas de notes"}
+										:{" "}
+										{consultation.notes || "Aucunes notes"}
 									</li>
 								))
 							) : (
-								<li>Aucune consultation disponible.</li>
+								<li className="text-sm md:text-base">
+									Aucune consultation disponible.
+								</li>
 							)}
 						</ul>
 					</div>
