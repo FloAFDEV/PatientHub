@@ -132,7 +132,7 @@ export default function SidebarDashboard() {
 	return (
 		<div
 			className={cn(
-				"flex flex-col overflow-y-auto h-full md:flex-row bg-gray-100 dark:bg-neutral-800 w-full border border-neutral-200 dark:border-neutral-700 overflow-hidden"
+				"flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 w-full h-screen border border-neutral-200 dark:border-neutral-700 overflow-hidden"
 			)}
 		>
 			<Sidebar open={open} setOpen={setOpen}>

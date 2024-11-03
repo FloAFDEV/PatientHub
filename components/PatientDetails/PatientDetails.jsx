@@ -81,7 +81,7 @@ const PatientDetails = ({ patient, onClose }) => {
 	}
 
 	return (
-		<div className="p-4 w-full mx-auto dark:text-gray-300">
+		<div className="p-4 w-full min-h-screen mx-auto dark:text-gray-300">
 			<button className="mb-4 text-red-500" onClick={onClose}>
 				&times; Fermer
 			</button>
@@ -299,7 +299,7 @@ const PatientDetails = ({ patient, onClose }) => {
 					<span className="font-semibold">
 						Historique des consultations
 					</span>
-					<span>{openSections.consultations ? "−" : "+"}</span>
+					<span>{openSections.consultations ? "-" : "+"}</span>
 				</button>
 				{openSections.consultations && (
 					<div className="p-4">

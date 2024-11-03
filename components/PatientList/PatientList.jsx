@@ -86,6 +86,11 @@ const PatientList = ({ initialPatients, user }) => {
 
 	// Logique de pagination
 	const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
+	const handlePageChange = (newPage) => {
+		if (newPage > 0 && newPage <= totalPages) {
+			setCurrentPage(newPage);
+		}
+	};
 	const indexOfLastPatient = currentPage * patientsPerPage;
 	const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
 	const currentPatients = useMemo(() => {
@@ -137,17 +142,17 @@ const PatientList = ({ initialPatients, user }) => {
 			</h2>
 
 			{/* Barre de recherche */}
-			<div className="relative max-w-sm mx-auto w-full">
+			<div className="relative max-w-sm mx-auto">
 				<input
 					type="text"
 					placeholder="Rechercher par nom..."
-					className="w-full p-2 sm:p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white text-sm sm:text-base"
+					className="w-full p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}
 				/>
 				<IconSearch
 					className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-					size={18}
+					size={20}
 				/>
 			</div>
 
@@ -249,8 +254,11 @@ const PatientList = ({ initialPatients, user }) => {
 									</p>
 								</div>
 							</div>
-							{selectedPatientId && (
-								<PatientDetails patientId={selectedPatientId} />
+							{selectedPatientId === patient.id && (
+								<PatientDetails
+									patient={patient}
+									onClose={() => setSelectedPatientId(null)}
+								/>
 							)}
 						</li>
 					))
@@ -274,12 +282,7 @@ const PatientList = ({ initialPatients, user }) => {
 			<div className="flex flex-col sm:flex-row justify-between items-center mt-4 w-full max-w-3xl mx-auto">
 				<select
 					value={currentPage}
-					onChange={(e) => {
-						const newPage = Number(e.target.value);
-						if (newPage > 0 && newPage <= totalPages) {
-							setCurrentPage(newPage);
-						}
-					}}
+					onChange={(e) => handlePageChange(Number(e.target.value))}
 					className="mb-4 sm:mb-0 p-2 border border-blue-500 rounded-lg shadow-md text-sm"
 				>
 					{Array.from({ length: totalPages }, (_, index) => (
@@ -288,31 +291,20 @@ const PatientList = ({ initialPatients, user }) => {
 						</option>
 					))}
 				</select>
-
 				<div className="flex justify-center space-x-2 sm:space-x-4">
 					<button
-						onClick={() => {
-							if (currentPage > 1) {
-								setCurrentPage((prev) => prev - 1);
-							}
-						}}
+						onClick={() => handlePageChange(currentPage - 1)}
 						disabled={currentPage === 1}
 						className="px-4 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 font-semibold rounded-full shadow-md hover:shadow-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm"
 					>
-						<IconChevronLeft className="mr-1" size={18} />
-						Précédent
+						<IconChevronLeft className="mr-1" size={18} /> Précédent
 					</button>
 					<button
-						onClick={() => {
-							if (currentPage < totalPages) {
-								setCurrentPage((prev) => prev + 1);
-							}
-						}}
+						onClick={() => handlePageChange(currentPage + 1)}
 						disabled={currentPage === totalPages}
 						className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm"
 					>
-						Suivant
-						<IconChevronRight className="ml-1" size={18} />
+						Suivant <IconChevronRight className="ml-1" size={18} />
 					</button>
 				</div>
 			</div>

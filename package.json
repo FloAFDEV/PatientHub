@@ -8,7 +8,9 @@
 		"start": "next start",
 		"lint": "next lint",
 		"clean": "rm -rf .next out",
-		"postinstall": "prisma generate --no-engine"
+		"postinstall": "prisma generate",
+		"prisma:generate": "prisma generate --no-engine"
+
 	},
 	"dependencies": {
 		"@fortawesome/free-solid-svg-icons": "^6.6.0",
