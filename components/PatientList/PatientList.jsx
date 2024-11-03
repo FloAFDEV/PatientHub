@@ -244,7 +244,7 @@ const PatientList = ({ initialPatients, user }) => {
 										ans
 									</p>
 									<p>
-										Téléphone:{" "}
+										Tél:{" "}
 										<a
 											href={`tel:${patient.phone}`}
 											className="text-blue-500 hover:underline"

@@ -11,24 +11,24 @@ const genderOptions = {
 };
 
 const maritalStatusOptions = {
-	Single: "Célibataire",
-	Married: "Marié(e)",
-	Divorced: "Divorcé(e)",
-	Widowed: "Veuf(ve)",
-	Separated: "Séparé(e)",
+	SINGLE: "Célibataire",
+	MARRIED: "Marié(e)",
+	DIVORCED: "Divorcé(e)",
+	WIDOWED: "Veuf(ve)",
+	SEPARATED: "Séparé(e)",
 };
 
 const handednessOptions = {
-	"Left-handed": "Gaucher",
-	"Right-handed": "Droitier",
-	Ambidextrous: "Ambidextre",
+	LEFT: "Gaucher",
+	RIGHT: "Droitier",
+	AMBIDEXTROUS: "Ambidextre",
 };
 
 const contraceptionOptions = {
-	None: "Aucun",
-	Pill: "Pilule",
-	Condoms: "Préservatifs",
-	Implant: "Implant",
+	NONE: "Aucun",
+	PILLS: "Pilule",
+	CONDOM: "Préservatifs",
+	IMPLANTS: "Implant",
 };
 
 const yesOptions = {
