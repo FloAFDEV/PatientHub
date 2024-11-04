@@ -75,10 +75,10 @@ export default function SidebarDashboard() {
 
 	const links = [
 		{
-			label: "Dashboard",
+			label: "Tableau de bord",
 			href: "#",
 			icon: (
-				<IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+				<IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 			),
 			onClick: () => {
 				setActiveTab("dashboard");
@@ -89,7 +89,7 @@ export default function SidebarDashboard() {
 			label: "Patients",
 			href: "#",
 			icon: (
-				<IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+				<IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 			),
 			onClick: () => {
 				setActiveTab("patients");
@@ -100,7 +100,7 @@ export default function SidebarDashboard() {
 			label: "Cabinet",
 			href: "#",
 			icon: (
-				<IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+				<IconSettings className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 			),
 			onClick: () => {
 				setActiveTab("Cabinet");
@@ -111,14 +111,14 @@ export default function SidebarDashboard() {
 			label: "Contact",
 			href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour%2C%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci%21",
 			icon: (
-				<IconContract className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+				<IconContract className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 			),
 		},
 		{
 			label: isLoggingOut ? "Déconnexion..." : "Se déconnecter",
 			href: "#",
 			icon: (
-				<IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5" />
+				<IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-7 w-7" />
 			),
 			onClick: handleLogout,
 			disabled: isLoggingOut,
@@ -206,7 +206,7 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-neutral-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
 			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mt-10 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6">
 				<h1 className="text-2xl sm:text-3xl font-bold mb-2">
 					Bienvenue,{" "}
@@ -221,7 +221,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+				<div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
 						Patients actifs
 					</h2>
@@ -232,7 +232,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						+12% par rapport au mois dernier
 					</p>
 				</div>
-				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+				<div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
 						Rendez-vous aujourd&apos;hui
 					</h2>
@@ -243,7 +243,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						Prochain RDV à 14h30
 					</p>
 				</div>
-				<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+				<div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
 						Nouveaux patients
 					</h2>
@@ -280,7 +280,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				</div>
 			</div>
 
-			<div className="bg-white dark:bg-neutral-800 p-4 sm:p-6 rounded-lg shadow-lg mt-4 sm:mt-6">
+			<div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-lg mt-4 sm:mt-6">
 				<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
 					Graphiques et autres visualisations
 				</h2>

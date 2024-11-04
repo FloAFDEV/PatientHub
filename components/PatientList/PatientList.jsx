@@ -124,7 +124,7 @@ const PatientList = ({ initialPatients, user }) => {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 	return (
-		<div className="flex-1 p-4 bg-white dark:bg-neutral-900 flex flex-col gap-4 overflow-y-auto h-screen">
+		<div className="flex-1 p-4 bg-white dark:bg-gray-900 flex flex-col gap-4 overflow-y-auto h-screen">
 			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-lg shadow-lg mb-4">
 				<h1 className="text-xl sm:text-2xl font-bold mb-2">
 					Bienvenue,{" "}
@@ -211,7 +211,7 @@ const PatientList = ({ initialPatients, user }) => {
 					currentPatients.map((patient) => (
 						<li
 							key={patient.id}
-							className="p-3 sm:p-4 border border-blue-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col dark:bg-stone-800"
+							className="p-3 sm:p-4 border border-blue-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col dark:bg-gray-800"
 						>
 							<div
 								className="flex flex-col sm:flex-row sm:items-center cursor-pointer justify-between"
@@ -248,7 +248,7 @@ const PatientList = ({ initialPatients, user }) => {
 										Tél:{" "}
 										<a
 											href={`tel:${patient.phone}`}
-											className="text-blue-500 hover:underline"
+											className="text-stone-900 hover:underline dark:text-green-400"
 										>
 											{patient.phone}
 										</a>

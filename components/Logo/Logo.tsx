@@ -11,7 +11,7 @@ export const Logo = () => {
 			href="#"
 			className="font-normal flex space-x-2 items-center text-sm py-1 relative z-20"
 		>
-			<div className="h-8 w-8 flex-shrink-0">
+			<div className="h-10 w-10 flex-shrink-0">
 				<Image
 					src="/assets/images/logo-full.svg"
 					alt="Logo de PatientHub"
@@ -34,7 +34,7 @@ export const Logo = () => {
 export const LogoIcon = () => {
 	return (
 		<Link href="#" className="flex items-center justify-center py-2">
-			<div className="h-8 w-8">
+			<div className="h-10 w-10">
 				<Image
 					src="/assets/images/logo-full.svg"
 					alt="Logo de PatientHub"

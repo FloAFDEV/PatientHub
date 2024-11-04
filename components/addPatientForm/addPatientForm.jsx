@@ -101,7 +101,7 @@ const AddPatientForm = () => {
 	};
 
 	return (
-		<div className="p-4 w-full max-w-full border border-blue-300 rounded-lg shadow-md bg-white dark:bg-neutral-900">
+		<div className="p-4 w-full max-w-full border border-blue-300 rounded-lg shadow-md bg-white dark:bg-slate-800">
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 				<h2 className="text-2xl font-bold mb-6 text-center">
 					Ajouter un Patient
@@ -115,7 +115,7 @@ const AddPatientForm = () => {
 					<h3 className="text-xl font-semibold mb-4 text-center">
 						Informations Personnelles
 					</h3>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
 						<FormField
 							name="name"
 							control={control}
@@ -158,7 +158,7 @@ const AddPatientForm = () => {
 										inputMode="numeric"
 										pattern="[0-9]*"
 										id="phone"
-										className={`w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-neutral-800 dark:text-gray-200 transition duration-200 ease-in-out ${
+										className={`w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out ${
 											field.value
 												? "bg-blue-100 dark:bg-zinc-900"
 												: ""
@@ -240,7 +240,7 @@ const AddPatientForm = () => {
 							placeholder="Entrez le métier"
 						/>
 
-						<label className="flex items-center mb-2">
+						<label className="flex items-center mb-2 ">
 							<input
 								type="checkbox"
 								checked={hasChildren}
@@ -272,7 +272,7 @@ const AddPatientForm = () => {
 													e
 												)
 											}
-											className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-neutral-800 dark:text-gray-200 transition duration-200 ease-in-out"
+											className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
 										/>
 										<button
 											type="button"
@@ -448,7 +448,7 @@ const FormField = ({
 					{...field}
 					id={name}
 					placeholder={placeholder}
-					className={`w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-neutral-800 dark:text-gray-200 transition duration-200 ease-in-out ${
+					className={`w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out ${
 						field.value ? "bg-blue-100 dark:bg-zinc-900" : ""
 					}`}
 				/>
@@ -474,7 +474,7 @@ const TextAreaField = ({ name, control, label, placeholder }) => (
 					{...field}
 					id={name}
 					placeholder={placeholder}
-					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-neutral-800 dark:text-gray-200 transition duration-200 ease-in-out"
+					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
 				/>
 			)}
 		/>
@@ -505,7 +505,7 @@ const SelectField = ({
 				<select
 					{...field}
 					id={name}
-					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-neutral-800 dark:text-gray-200 transition duration-200 ease-in-out"
+					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
 				>
 					<option value="">Sélectionnez une option</option>
 					{Object.entries(options).map(([value, label]) => (
@@ -538,7 +538,7 @@ const DatePickerField = ({ name, control, label, rules, error }) => (
 					onChange={onChange}
 					onBlur={onBlur}
 					dateFormat="dd/MM/yyyy"
-					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-neutral-800 dark:text-gray-200 transition duration-200 ease-in-out"
+					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
 					placeholderText="Sélectionnez une date"
 				/>
 			)}

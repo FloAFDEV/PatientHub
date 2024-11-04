@@ -92,7 +92,7 @@ const PatientDetails = ({ patient, onClose }) => {
 						"/assets/images/default-avatar.webp"
 					}
 					alt={`Avatar de ${patient.name || "inconnu"}`}
-					className="w-28 h-28 mb-4 rounded-lg border-2 border-gray-300"
+					className="w-28 h-28 mb-4 rounded-lg border-2 border-slate-950 shadow-md shadow-gray-400"
 					width={112}
 					height={112}
 				/>
