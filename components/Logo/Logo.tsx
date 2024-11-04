@@ -13,7 +13,7 @@ export const Logo = () => {
 		>
 			<div className="h-10 w-10 flex-shrink-0">
 				<Image
-					src="/assets/images/logo-full.svg"
+					src="/assets/icons/logo-full.svg"
 					alt="Logo de PatientHub"
 					width={32}
 					height={32}
@@ -36,7 +36,7 @@ export const LogoIcon = () => {
 		<Link href="#" className="flex items-center justify-center py-2">
 			<div className="h-10 w-10">
 				<Image
-					src="/assets/images/logo-full.svg"
+					src="/assets/icons/logo-full.svg"
 					alt="Logo de PatientHub"
 					width={32}
 					height={32}
