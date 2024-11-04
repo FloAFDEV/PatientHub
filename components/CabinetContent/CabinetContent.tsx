@@ -255,6 +255,8 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
 	)
 );
 
+InfoCard.displayName = "InfoCard";
+
 interface ActionButtonProps {
 	onClick: () => void;
 	icon: React.ReactNode;
