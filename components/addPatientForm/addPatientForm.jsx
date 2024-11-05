@@ -158,7 +158,7 @@ const AddPatientForm = () => {
 										inputMode="numeric"
 										pattern="[0-9]*"
 										id="phone"
-										className={`w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out ${
+										className={`w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-800 dark:text-gray-200 transition duration-200 ease-in-out ${
 											field.value
 												? "bg-blue-100 dark:bg-zinc-900"
 												: ""
@@ -272,7 +272,7 @@ const AddPatientForm = () => {
 													e
 												)
 											}
-											className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
+											className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-800 dark:text-gray-200 transition duration-200 ease-in-out"
 										/>
 										<button
 											type="button"
@@ -448,7 +448,7 @@ const FormField = ({
 					{...field}
 					id={name}
 					placeholder={placeholder}
-					className={`w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out ${
+					className={`w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-800 dark:text-gray-200 transition duration-200 ease-in-out ${
 						field.value ? "bg-blue-100 dark:bg-zinc-900" : ""
 					}`}
 				/>
@@ -474,7 +474,7 @@ const TextAreaField = ({ name, control, label, placeholder }) => (
 					{...field}
 					id={name}
 					placeholder={placeholder}
-					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
+					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-800 dark:text-gray-200 transition duration-200 ease-in-out"
 				/>
 			)}
 		/>
@@ -505,7 +505,7 @@ const SelectField = ({
 				<select
 					{...field}
 					id={name}
-					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
+					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-800 dark:text-gray-200 transition duration-200 ease-in-out"
 				>
 					<option value="">Sélectionnez une option</option>
 					{Object.entries(options).map(([value, label]) => (
@@ -538,7 +538,7 @@ const DatePickerField = ({ name, control, label, rules, error }) => (
 					onChange={onChange}
 					onBlur={onBlur}
 					dateFormat="dd/MM/yyyy"
-					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
+					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-800 dark:text-gray-200 transition duration-200 ease-in-out"
 					placeholderText="Sélectionnez une date"
 				/>
 			)}

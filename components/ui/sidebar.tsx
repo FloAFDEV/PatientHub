@@ -177,11 +177,9 @@ export const SidebarLink = ({
 		e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
 	) => {
 		if (link.disabled) {
-			e.preventDefault();
 			return;
 		}
 		if (link.onClick) {
-			e.preventDefault();
 			link.onClick(e);
 		}
 	};

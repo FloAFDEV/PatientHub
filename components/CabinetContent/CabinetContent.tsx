@@ -51,72 +51,85 @@ const CabinetContent: React.FC = () => {
 		fetchCabinetInfo();
 	}, [fetchCabinetInfo]);
 
-	const handleAddCabinet = async (cabinetData: CabinetInfo) => {
+	const handleAddCabinet = useCallback(async (cabinetData: CabinetInfo) => {
 		try {
 			const response = await fetch("/api/cabinet", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(cabinetData),
 			});
-			if (response.ok) fetchCabinetInfo();
+			if (response.ok) {
+				// Mettre à jour l'état localement sans refaire l'appel API
+				setCabinetInfo((prevState) => ({
+					...prevState,
+					name: cabinetData.name,
+					address: cabinetData.address,
+					phone: cabinetData.phone,
+					osteopathId: cabinetData.osteopathId,
+				}));
+			}
 		} catch (error) {
 			console.error("Erreur d'ajout :", error);
 			setError("Erreur lors de l'ajout du cabinet");
 		}
-	};
+	}, []);
 
-	const handleUpdateCabinet = async (updatedCabinet: CabinetInfo) => {
-		try {
-			const response = await fetch(`/api/cabinet`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(updatedCabinet),
-			});
-			if (response.ok) fetchCabinetInfo();
-		} catch (error) {
-			console.error("Erreur de mise à jour :", error);
-			setError("Erreur lors de la mise à jour du cabinet");
-		}
-	};
+	const handleUpdateCabinet = useCallback(
+		async (updatedCabinet: CabinetInfo) => {
+			try {
+				const response = await fetch(`/api/cabinet`, {
+					method: "PUT",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(updatedCabinet),
+				});
+				if (response.ok) {
+					// Mise à jour locale
+					setCabinetInfo(updatedCabinet);
+				}
+			} catch (error) {
+				console.error("Erreur de mise à jour :", error);
+				setError("Erreur lors de la mise à jour du cabinet");
+			}
+		},
+		[]
+	);
 
-	const deleteCabinet = async (id: number) => {
+	const deleteCabinet = useCallback(async (id: number) => {
 		if (!id) return;
 		try {
 			const response = await fetch(`/api/cabinet?id=${id}`, {
 				method: "DELETE",
 			});
-			if (response.ok) {
-				setCabinetInfo(null);
-			}
+			if (response.ok) setCabinetInfo(null);
 		} catch (error) {
 			console.error("Erreur de suppression :", error);
 			setError("Erreur lors de la suppression du cabinet");
 		}
-	};
+	}, []);
 
-	const handleDeleteCabinet = () => {
-		if (cabinetInfo?.id) {
-			setIsConfirmDeleteOpen(true);
-		}
-	};
+	const handleDeleteCabinet = useCallback(() => {
+		if (cabinetInfo?.id) setIsConfirmDeleteOpen(true);
+	}, [cabinetInfo]);
 
 	if (loading) {
 		return (
-			<p className="text-center">
-				Chargement des informations du cabinet...
+			<p className="text-center text-blue-500">
+				Chargement des informations...
 			</p>
 		);
 	}
 
 	if (error) {
-		return <p className="text-red-500 text-center">{error}</p>;
+		return (
+			<p className="text-center text-red-500 font-semibold">{error}</p>
+		);
 	}
 
 	return (
-		<div className="flex flex-col flex-1 p-4 bg-gray-100 dark:bg-gray-900 overflow-y-auto">
+		<div className="flex flex-col flex-1 bg-gray-100 dark:bg-gray-800 overflow-y-auto">
 			{/* En-tête */}
 			<header className="mb-6">
-				<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 sm:p-6 rounded-lg shadow-lg">
+				<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mb-10 mt-10 sm:p-6 rounded-lg shadow-lg">
 					<h1 className="text-2xl sm:text-3xl font-bold mb-2">
 						Bienvenue sur la fiche de votre cabinet
 					</h1>
@@ -128,14 +141,7 @@ const CabinetContent: React.FC = () => {
 			</header>
 
 			{/* Contenu principal */}
-			<main className="flex-grow">
-				{loading && (
-					<p className="text-center text-gray-600 dark:text-gray-400">
-						Chargement des informations du cabinet...
-					</p>
-				)}
-				{error && <p className="text-red-500 text-center">{error}</p>}
-
+			<main className="flex-grow p-4">
 				{/* Cartes d'information */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
 					<InfoCard
@@ -143,23 +149,24 @@ const CabinetContent: React.FC = () => {
 							<BuildingOfficeIcon className="h-6 w-6 text-blue-500" />
 						}
 						title="Nom du Cabinet"
-						content={
-							cabinetInfo ? cabinetInfo.name : "Non Disponible"
-						}
+						content={cabinetInfo?.name || "Non Disponible"}
+						image="/assets/images/cabinetGratentour.webp"
 					/>
 					<InfoCard
 						icon={<MapPinIcon className="h-6 w-6 text-amber-500" />}
 						title="Adresse"
-						content={cabinetInfo?.address}
+						content={cabinetInfo?.address || "Non Disponible"}
 						link={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
 							cabinetInfo?.address || ""
 						)}`}
+						image="/assets/images/adresseGratentour.webp"
 					/>
 					<InfoCard
 						icon={<PhoneIcon className="h-6 w-6 text-green-500" />}
 						title="Téléphone"
-						content={cabinetInfo?.phone}
+						content={cabinetInfo?.phone || "Non Disponible"}
 						link={`tel:${cabinetInfo?.phone}`}
+						image="/assets/images/phoneGratentour.webp"
 					/>
 				</div>
 
@@ -209,9 +216,7 @@ const CabinetContent: React.FC = () => {
 			{isConfirmDeleteOpen && (
 				<DeleteModal
 					onDelete={() => {
-						if (cabinetInfo?.id) {
-							deleteCabinet(cabinetInfo.id);
-						}
+						if (cabinetInfo?.id) deleteCabinet(cabinetInfo.id);
 						setIsConfirmDeleteOpen(false);
 					}}
 					onCancel={() => setIsConfirmDeleteOpen(false)}
@@ -221,62 +226,83 @@ const CabinetContent: React.FC = () => {
 	);
 };
 
+export default CabinetContent;
+
 interface InfoCardProps {
 	icon: React.ReactNode;
 	title: string;
+	image: string;
 	content: string | undefined;
 	link?: string;
 }
 
 const InfoCard: React.FC<InfoCardProps> = React.memo(
-	({ icon, title, content, link }) => (
-		<div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 flex-1">
-			<div className="flex items-center mb-2 sm:mb-4">
-				{icon}
-				<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white ml-2">
-					{title}
-				</h2>
+	({ icon, title, content, link, image }) => (
+		<div className="bg-white dark:bg-slate-700 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col overflow-hidden">
+			<img
+				src={image}
+				alt={title}
+				className="w-full h-32 object-cover rounded-md"
+			/>
+			<div className="p-4 flex flex-col flex-grow">
+				<div className="flex items-center mb-2">
+					{icon}
+					<h2 className="text-base font-semibold text-gray-800 dark:text-white ml-2">
+						{title}
+					</h2>
+				</div>
+				<p className="text-gray-600 text-lg font-light dark:text-white break-words flex-grow">
+					{link ? (
+						<a
+							href={link}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="dark:text-white hover:underline"
+						>
+							{content}
+						</a>
+					) : (
+						content
+					)}
+				</p>
 			</div>
-			<p className="text-gray-600 text-lg dark:text-amber-300 break-words">
-				{link ? (
-					<a
-						href={link}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="dark:text-amber-300 hover:underline"
-					>
-						{content || "Non disponible"}
-					</a>
-				) : (
-					content || "Non disponible"
-				)}
-			</p>
 		</div>
 	)
 );
-
 InfoCard.displayName = "InfoCard";
 
 interface ActionButtonProps {
 	onClick: () => void;
 	icon: React.ReactNode;
 	text: string;
-	color: string;
+	color: "blue" | "green" | "red";
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({
-	onClick,
-	icon,
-	text,
-	color,
-}) => (
-	<button
-		onClick={onClick}
-		className={`w-full sm:w-auto bg-${color}-500 hover:bg-${color}-600 text-slate-900 font-bold py-2 px-4 rounded flex items-center justify-center transition duration-300 ease-in-out`}
-	>
-		{icon}
-		<span className="ml-2">{text}</span>
-	</button>
-);
+const ActionButton: React.FC<ActionButtonProps> = React.memo(
+	({ onClick, icon, text, color }) => {
+		const getColorClasses = (color: string) => {
+			switch (color) {
+				case "blue":
+					return "border border-blue-500 hover:bg-blue-600";
+				case "green":
+					return "border border-green-500 hover:bg-green-600";
+				case "red":
+					return "border border-red-500 hover:bg-red-600";
+				default:
+					return "bg-gray-500 hover:bg-gray-600";
+			}
+		};
 
-export default CabinetContent;
+		return (
+			<button
+				onClick={onClick}
+				className={`${getColorClasses(
+					color
+				)} w-full sm:w-auto max-w-xs dark:text-white font-light text-zinc-700 hover:text-white py-2 px-4 rounded flex items-center justify-center transition duration-300 ease-in-out`}
+			>
+				{icon}
+				<span className="ml-2">{text}</span>
+			</button>
+		);
+	}
+);
