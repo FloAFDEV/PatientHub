@@ -315,3 +315,4 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
 		);
 	}
 );
+ActionButton.displayName = "ActionButton";
