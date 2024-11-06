@@ -33,31 +33,63 @@ const EditModal: React.FC<EditModalProps> = ({
 					<h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
 						Modifier Cabinet
 					</h2>
-					<form className="space-y-4">
-						<input
-							type="text"
-							name="name"
-							value={formData.name}
-							onChange={handleChange}
-							placeholder="Nom du cabinet"
-							className="w-full p-3 rounded-md border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200"
-						/>
-						<input
-							type="text"
-							name="address"
-							value={formData.address}
-							onChange={handleChange}
-							placeholder="Adresse"
-							className="w-full p-3 rounded-md border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200"
-						/>
-						<input
-							type="tel"
-							name="phone"
-							value={formData.phone || ""}
-							onChange={handleChange}
-							placeholder="Téléphone"
-							className="w-full p-3 rounded-md border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200"
-						/>
+					<form className="space-y-6">
+						{/** Nom du Cabinet */}
+						<div className="relative">
+							<input
+								id="name"
+								type="text"
+								name="name"
+								value={formData.name}
+								onChange={handleChange}
+								className="peer w-full p-3 rounded-md border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200 placeholder-transparent"
+								placeholder="Nom du cabinet"
+							/>
+							<label
+								htmlFor="name"
+								className="absolute left-3 -top-3.5 text-sm font-medium text-gray-500 dark:text-gray-400 transition-all duration-200 transform -translate-y-1 peer-placeholder-shown:top-3 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-blue-500"
+							>
+								Nom du cabinet
+							</label>
+						</div>
+
+						{/** Adresse */}
+						<div className="relative">
+							<input
+								id="address"
+								type="text"
+								name="address"
+								value={formData.address}
+								onChange={handleChange}
+								className="peer w-full p-3 rounded-md border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200 placeholder-transparent"
+								placeholder="Adresse"
+							/>
+							<label
+								htmlFor="address"
+								className="absolute left-3 -top-3.5 text-sm font-medium text-gray-500 dark:text-gray-400 transition-all duration-200 transform -translate-y-1 peer-placeholder-shown:top-3 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-blue-500"
+							>
+								Adresse
+							</label>
+						</div>
+
+						{/** Téléphone */}
+						<div className="relative">
+							<input
+								id="phone"
+								type="tel"
+								name="phone"
+								value={formData.phone || ""}
+								onChange={handleChange}
+								className="peer w-full p-3 rounded-md border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200 placeholder-transparent"
+								placeholder="Téléphone"
+							/>
+							<label
+								htmlFor="phone"
+								className="absolute left-3 -top-3.5 text-sm font-medium text-gray-500 dark:text-gray-400 transition-all duration-200 transform -translate-y-1 peer-placeholder-shown:top-3 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:-top-3.5 peer-focus:text-sm peer-focus:text-blue-500"
+							>
+								Téléphone
+							</label>
+						</div>
 					</form>
 				</div>
 				<div className="bg-gray-50 dark:bg-gray-700 px-4 sm:px-6 py-3 sm:py-4 rounded-b-lg flex justify-end space-x-3">
