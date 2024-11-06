@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
 	IconGenderMale,
 	IconGenderFemale,
@@ -43,30 +43,33 @@ const PatientList = ({ initialPatients, user }) => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [patientsPerPage] = useState(15);
 
-	useEffect(() => {
-		const fetchPatients = async () => {
-			try {
-				const response = await fetch("/api/patients");
-				if (!response.ok) {
-					throw new Error("Erreur dans le chargement des données.");
-				}
-				const patientsData = await response.json();
-				// console.log("Patients data received:", patientsData);
-				patientsData.sort((a, b) => a.name.localeCompare(b.name));
-				setPatients(patientsData);
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
+	// Fonction pour charger les patients
+	const fetchPatients = useCallback(async () => {
+		try {
+			const response = await fetch("/api/patients");
+			if (!response.ok) {
+				throw new Error("Erreur dans le chargement des données.");
 			}
-		};
+			const patientsData = await response.json();
+			// Trier les patients par nom
+			patientsData.sort((a, b) => a.name.localeCompare(b.name));
+			setPatients(patientsData);
+		} catch (err) {
+			setError(err.message);
+		} finally {
+			setLoading(false);
+		}
+	}, []);
+
+	// Chargement des patients si non fournis initialement
+	useEffect(() => {
 		if (!initialPatients) {
 			fetchPatients();
 		} else {
 			initialPatients.sort((a, b) => a.name.localeCompare(b.name));
 			setPatients(initialPatients);
 		}
-	}, [initialPatients]);
+	}, [initialPatients, fetchPatients]);
 
 	// Filtrage des patients
 	const filteredPatients = useMemo(() => {
@@ -305,7 +308,7 @@ const PatientList = ({ initialPatients, user }) => {
 					<button
 						onClick={() => handlePageChange(currentPage - 1)}
 						disabled={currentPage === 1}
-						className="px-4 py-2 bg-white dark:bg-gray-900text-blue-600 dark:text-blue-400 font-semibold rounded-full shadow-md hover:shadow-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm"
+						className="px-4 py-2 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-400 font-semibold rounded-full shadow-md hover:shadow-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm"
 					>
 						<IconChevronLeft className="mr-1" size={18} /> Précédent
 					</button>
