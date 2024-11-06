@@ -1,16 +1,19 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
+import { createSupabaseClient } from "@/utils/supabase/server";
 
 export default async function PrivatePage() {
-	const supabase = createClient();
+	const supabase = await createSupabaseClient(); // Assurez-vous d'attendre la création du client
 
 	try {
+		// Récupérer la session de l'utilisateur
 		const {
 			data: { session },
 			error,
 		} = await supabase.auth.getSession();
 
 		if (error) throw error;
+
+		// Si pas de session, rediriger vers la page de connexion
 		if (!session) {
 			console.log(
 				"Aucune session trouvée, redirection vers la page de connexion"
@@ -18,7 +21,7 @@ export default async function PrivatePage() {
 			redirect("/login");
 		}
 
-		// Récupérer les informations de l'utilisateur depuis la base de données
+		// Récupérer les informations de l'utilisateur
 		const { data: userData, error: userError } = await supabase
 			.from("users")
 			.select("email, name, role")
@@ -27,6 +30,7 @@ export default async function PrivatePage() {
 
 		if (userError) throw userError;
 
+		// Si les données utilisateur sont manquantes, rediriger vers la page de connexion
 		if (!userData) {
 			console.log(
 				"Données utilisateur non trouvées, redirection vers la page de connexion"
@@ -34,6 +38,7 @@ export default async function PrivatePage() {
 			redirect("/login");
 		}
 
+		// Retourner le rendu de la page si tout est valide
 		return (
 			<div>
 				<h1>Page Privée</h1>
@@ -48,6 +53,6 @@ export default async function PrivatePage() {
 			"Erreur d'authentification ou de récupération des données:",
 			error
 		);
-		redirect("/login");
+		redirect("/login"); // Rediriger en cas d'erreur
 	}
 }

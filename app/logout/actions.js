@@ -1,25 +1,30 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
+import { createSupabaseClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers"; // Assurez-vous d'importer la méthode cookies
 
 export async function signOut() {
-	const supabase = createClient();
-	const cookieStore = cookies();
+	// Utilisez createSupabaseClient pour obtenir le client Supabase
+	const supabase = await createSupabaseClient();
+
+	const cookieStore = cookies(); // Cookies côté serveur
 
 	try {
+		// Tentative de déconnexion de l'utilisateur
 		const { error } = await supabase.auth.signOut();
+
 		if (error) {
+			// Si une erreur survient lors de la déconnexion
 			return { success: false, error: "Erreur lors de la déconnexion" };
 		}
 
-		// Effacement des cookies d'authentification
+		// Effacer les cookies d'authentification
 		const cookiesToClear = ["sb-access-token", "sb-refresh-token"];
 		cookiesToClear.forEach((cookieName) => {
-			cookieStore.delete(cookieName);
+			cookieStore.delete(cookieName); // Effacement du cookie
 		});
 
-		// Retour du statut de succès, la redirection se fera côté client
+		// Retourner un statut de succès
 		return { success: true };
 	} catch (error) {
 		console.error("Erreur de déconnexion", error);
