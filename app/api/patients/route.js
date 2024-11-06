@@ -55,40 +55,43 @@ function formatPatientData(data) {
 // Méthode GET pour récupérer tous les patients ou un patient par e-mail
 export async function GET(request) {
 	const { searchParams } = new URL(request.url);
-	const email = searchParams.get("email");
+
+	const name = searchParams.get("name");
+	const page = parseInt(searchParams.get("page")) || 1;
+	const pageSize = 15; // Nombre d'éléments par page
 
 	try {
-		if (email) {
-			const patient = await prisma.patient.findUnique({
-				where: { email: email },
-				include: {
-					cabinet: true,
-					osteopath: true,
-				},
-			});
+		const whereCondition = name
+			? {
+					OR: [
+						{ name: { contains: name, mode: "insensitive" } },
+						{ firstName: { contains: name, mode: "insensitive" } },
+					],
+			  }
+			: {}; // Si pas de nom fourni, on récupère tous les patients
 
-			if (patient) {
-				return new Response(JSON.stringify(patient), {
-					status: 200,
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
-			} else {
-				return new Response("Patient not found", { status: 404 });
-			}
-		} else {
-			const patients = await prisma.patient.findMany({
-				include: {
-					cabinet: true,
-					osteopath: true,
-				},
-			});
+		// Requête avec pagination et recherche
+		const patients = await prisma.patient.findMany({
+			where: whereCondition,
+			skip: (page - 1) * pageSize,
+			take: pageSize,
+			include: {
+				cabinet: true,
+				osteopath: true,
+			},
+		});
+
+		// Si des patients sont trouvés
+		if (patients.length > 0) {
 			return new Response(JSON.stringify(patients), {
 				status: 200,
 				headers: {
 					"Content-Type": "application/json",
 				},
+			});
+		} else {
+			return new Response("No patients found with the given criteria", {
+				status: 404,
 			});
 		}
 	} catch (error) {

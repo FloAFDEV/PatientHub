@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import cache from "memory-cache";
 
 const prisma = new PrismaClient();
 
@@ -19,39 +20,64 @@ export async function GET(request) {
 	const { searchParams } = new URL(request.url);
 	const id = parseInt(searchParams.get("id") || "");
 
+	// Vérifier si les données sont dans le cache
+	if (id) {
+		const cachedCabinet = cache.get(`cabinet_${id}`);
+		if (cachedCabinet) {
+			console.log("Récupération du cabinet depuis le cache");
+			return new Response(JSON.stringify(cachedCabinet), {
+				status: 200,
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+		}
+	} else {
+		const cachedCabinets = cache.get("all_cabinets");
+		if (cachedCabinets) {
+			console.log("Récupération des cabinets depuis le cache");
+			return new Response(JSON.stringify(cachedCabinets), {
+				status: 200,
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+		}
+	}
+
+	// Si pas de cache, effectuer la requête à la base de données
 	try {
+		let cabinets;
 		if (id) {
-			const cabinet = await prisma.cabinet.findUnique({
+			cabinets = await prisma.cabinet.findUnique({
 				where: { id: id },
 				include: {
 					osteopath: true,
 					patients: true,
 				},
 			});
-
-			if (cabinet) {
-				return new Response(JSON.stringify(cabinet), {
-					status: 200,
-					headers: {
-						"Content-Type": "application/json",
-					},
-				});
-			} else {
-				return new Response("Cabinet not found", { status: 404 });
-			}
+			// Mettre en cache le cabinet
+			cache.put(`cabinet_${id}`, cabinets, 60000); // Expiration après 1 minute
 		} else {
-			const cabinets = await prisma.cabinet.findMany({
+			cabinets = await prisma.cabinet.findMany({
 				include: {
 					osteopath: true,
 					patients: true,
 				},
 			});
+			// Mettre en cache tous les cabinets
+			cache.put("all_cabinets", cabinets, 60000); // Expiration après 1 minute
+		}
+
+		if (cabinets) {
 			return new Response(JSON.stringify(cabinets), {
 				status: 200,
 				headers: {
 					"Content-Type": "application/json",
 				},
 			});
+		} else {
+			return new Response("Cabinet not found", { status: 404 });
 		}
 	} catch (error) {
 		console.error("Error retrieving cabinets:", error);
@@ -79,6 +105,9 @@ export async function POST(request) {
 		const newCabinet = await prisma.cabinet.create({
 			data: formattedCabinetData,
 		});
+
+		// Invalidation du cache après ajout
+		cache.del("all_cabinets"); // Supprime tous les cabinets du cache
 
 		return new Response(JSON.stringify(newCabinet), {
 			status: 201,
@@ -108,9 +137,14 @@ export async function PUT(request) {
 			where: { id: id },
 			data: {
 				...formattedCabinetData,
-				updatedAt: new Date(), // Update the timestamp
+				updatedAt: new Date(), // Mise à jour du timestamp
 			},
 		});
+
+		// Invalidation du cache après mise à jour
+		cache.del("all_cabinets"); // Supprime tous les cabinets du cache
+		cache.del(`cabinet_${id}`); // Supprime le cabinet mis à jour du cache
+
 		return new Response(JSON.stringify(updatedCabinet), {
 			status: 200,
 			headers: {
@@ -136,6 +170,11 @@ export async function DELETE(request) {
 		await prisma.cabinet.delete({
 			where: { id: id },
 		});
+
+		// Invalidation du cache après suppression
+		cache.del("all_cabinets"); // Supprime tous les cabinets du cache
+		cache.del(`cabinet_${id}`); // Supprime le cabinet supprimé du cache
+
 		return new Response("Cabinet deleted successfully", { status: 204 });
 	} catch (error) {
 		console.error("Error deleting cabinet:", error);
