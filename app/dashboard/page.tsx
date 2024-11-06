@@ -145,7 +145,7 @@ export default function SidebarDashboard() {
 							))}
 						</div>
 					</div>
-					<div className="bg-gray-100 dark:bg-neutral-800 rounded-md flex items-center gap-3">
+					<div className="bg-gray-100 dark:bg-slate-800 rounded-md flex items-center gap-3">
 						{user ? (
 							<>
 								<Image
@@ -190,7 +190,7 @@ export default function SidebarDashboard() {
 				)}
 				{activeTab === "Cabinet" && <CabinetContent />}
 
-				<footer className="bg-gray-200 dark:bg-neutral-900 text-center p-4 border-t border-neutral-300 dark:border-neutral-700">
+				<footer className="bg-gray-200 dark:bg-slate-800 text-center p-4 border-t border-neutral-300 dark:border-neutral-700">
 					<p className="text-sm text-gray-600 dark:text-gray-400">
 						© 2024 - PatientHub. Tous droits réservés.
 					</p>
@@ -206,7 +206,7 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-gray-800 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
 			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mt-10 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6">
 				<h1 className="text-2xl sm:text-3xl font-bold mb-2">
 					Bienvenue,{" "}

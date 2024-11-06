@@ -10,6 +10,7 @@ import {
 	TrashIcon,
 	BuildingOfficeIcon,
 } from "@heroicons/react/24/outline";
+import Image from "next/image";
 
 interface CabinetInfo {
 	id?: number;
@@ -126,7 +127,7 @@ const CabinetContent: React.FC = () => {
 	}
 
 	return (
-		<div className="flex flex-col flex-1 bg-gray-100 dark:bg-gray-800 overflow-y-auto">
+		<div className="flex flex-col flex-1 p-8 bg-gray-100 dark:bg-gray-900 overflow-y-auto">
 			{/* En-tête */}
 			<header className="mb-6">
 				<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mb-10 mt-10 sm:p-6 rounded-lg shadow-lg">
@@ -143,7 +144,7 @@ const CabinetContent: React.FC = () => {
 			{/* Contenu principal */}
 			<main className="flex-grow p-4">
 				{/* Cartes d'information */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 ">
 					<InfoCard
 						icon={
 							<BuildingOfficeIcon className="h-6 w-6 text-blue-500" />
@@ -238,11 +239,19 @@ interface InfoCardProps {
 
 const InfoCard: React.FC<InfoCardProps> = React.memo(
 	({ icon, title, content, link, image }) => (
-		<div className="bg-white dark:bg-slate-700 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col overflow-hidden">
-			<img
+		<div
+			className="bg-white dark:bg-slate-700 rounded-lg shadow-md hover:shadow-2xl  
+                flex flex-col overflow-hidden border border-blue-300
+                hover:scale-105 hover:border-blue-500 transition-transform transform duration-300"
+		>
+			{" "}
+			<Image
 				src={image}
 				alt={title}
 				className="w-full h-32 object-cover rounded-md"
+				loading="lazy"
+				width={400}
+				height={200}
 			/>
 			<div className="p-4 flex flex-col flex-grow">
 				<div className="flex items-center mb-2">
