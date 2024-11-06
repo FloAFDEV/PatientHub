@@ -15,8 +15,8 @@ export const Logo = () => {
 				<Image
 					src="/assets/icons/logo-full.svg"
 					alt="Logo de PatientHub"
-					width={32}
-					height={32}
+					width={60}
+					height={60}
 					className="object-contain rounded-md shadow-xl"
 				/>
 			</div>
@@ -38,8 +38,8 @@ export const LogoIcon = () => {
 				<Image
 					src="/assets/icons/logo-full.svg"
 					alt="Logo de PatientHub"
-					width={32}
-					height={32}
+					width={60}
+					height={60}
 					className="object-contain rounded-md shadow-md"
 				/>
 			</div>

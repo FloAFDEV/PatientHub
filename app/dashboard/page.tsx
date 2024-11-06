@@ -145,7 +145,7 @@ export default function SidebarDashboard() {
 							))}
 						</div>
 					</div>
-					<div className="bg-gray-100 dark:bg-slate-800 rounded-md flex items-center gap-3">
+					<div className="bg-gray-200 dark:bg-slate-800 rounded-md flex items-center gap-3">
 						{user ? (
 							<>
 								<Image
