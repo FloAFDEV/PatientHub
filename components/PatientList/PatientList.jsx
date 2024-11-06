@@ -7,7 +7,9 @@ import {
 	IconChevronLeft,
 	IconChevronRight,
 } from "@tabler/icons-react";
-import PatientDetails from "../PatientDetails/PatientDetails";
+const PatientDetails = React.lazy(() =>
+	import("../PatientDetails/PatientDetails")
+);
 
 const PatientList = ({ initialPatients, user }) => {
 	const [patients, setPatients] = useState(initialPatients || []);
@@ -93,10 +95,9 @@ const PatientList = ({ initialPatients, user }) => {
 	};
 	const indexOfLastPatient = currentPage * patientsPerPage;
 	const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
-	const currentPatients = useMemo(
-		() => filteredPatients.slice(indexOfFirstPatient, indexOfLastPatient),
-		[filteredPatients, indexOfFirstPatient, indexOfLastPatient]
-	);
+	const currentPatients = useMemo(() => {
+		return filteredPatients.slice(indexOfFirstPatient, indexOfLastPatient);
+	}, [filteredPatients, indexOfFirstPatient, indexOfLastPatient]);
 
 	if (loading) {
 		return (
@@ -320,5 +321,7 @@ const PatientList = ({ initialPatients, user }) => {
 		</div>
 	);
 };
+
+PatientList.displayName = "PatientList";
 
 export default React.memo(PatientList);
