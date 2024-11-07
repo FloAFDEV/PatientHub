@@ -145,7 +145,7 @@ export default function SidebarDashboard() {
 							))}
 						</div>
 					</div>
-					<div className="bg-gray-200 dark:bg-slate-800 rounded-md flex items-center gap-3">
+					<div className="bg-gray-200 dark:bg-neutral-900 rounded-md flex items-center gap-3">
 						{user ? (
 							<>
 								<Image
@@ -156,7 +156,7 @@ export default function SidebarDashboard() {
 									alt="User Avatar"
 								/>
 								<div>
-									<p className="ml-4 text-sm font-medium text-gray-800 dark:text-white">
+									<p className="ml-4 text-sm font-medium text-gray-800 dark:text-white ">
 										{user.user_metadata?.user_metadata
 											?.first_name ||
 											"Nom non disponible"}{" "}
