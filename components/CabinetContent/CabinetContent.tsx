@@ -114,7 +114,7 @@ const CabinetContent: React.FC = () => {
 
 	if (loading) {
 		return (
-			<div className="flex items-center justify-center h-screen">
+			<div className="flex items-center justify-center h-screen bg-slate-800">
 				<div className="flex flex-col items-center justify-center">
 					<div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid mb-4"></div>
 					<p className="text-lg text-gray-500 dark:text-gray-400">
