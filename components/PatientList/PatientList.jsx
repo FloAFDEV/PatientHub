@@ -46,31 +46,64 @@ const PatientList = ({ initialPatients, user }) => {
 
 	// Fonction pour charger les patients
 	const fetchPatients = useCallback(async () => {
+		const cachedData = localStorage.getItem("patients");
+		if (cachedData) {
+			const { data, timestamp } = JSON.parse(cachedData);
+			if (Date.now() - timestamp < 5 * 60 * 1000) {
+				// 5 minutes
+				return data;
+			}
+		}
+
 		try {
 			const response = await fetch("/api/patients");
-			if (!response.ok) {
+			if (!response.ok)
 				throw new Error("Erreur dans le chargement des données.");
-			}
 			const patientsData = await response.json();
-			// Trier les patients par nom
 			patientsData.sort((a, b) => a.name.localeCompare(b.name));
-			setPatients(patientsData);
+
+			localStorage.setItem(
+				"patients",
+				JSON.stringify({
+					data: patientsData,
+					timestamp: Date.now(),
+				})
+			);
+
+			return patientsData;
 		} catch (err) {
-			setError(err.message);
-		} finally {
-			setLoading(false);
+			throw err;
 		}
 	}, []);
 
 	// Chargement des patients si non fournis initialement
 	useEffect(() => {
 		if (!initialPatients) {
-			fetchPatients();
+			setLoading(true);
+			const worker = new Worker("/patientWorker.js");
+			worker.postMessage("fetchPatients");
+			worker.onmessage = (e) => {
+				if (e.data.type === "success") {
+					setPatients(e.data.data);
+					setLoading(false);
+					localStorage.setItem(
+						"patients",
+						JSON.stringify({
+							data: e.data.data,
+							timestamp: Date.now(),
+						})
+					);
+				} else if (e.data.type === "error") {
+					setError(e.data.error);
+					setLoading(false);
+				}
+			};
+			return () => worker.terminate();
 		} else {
 			initialPatients.sort((a, b) => a.name.localeCompare(b.name));
 			setPatients(initialPatients);
 		}
-	}, [initialPatients, fetchPatients]);
+	}, [initialPatients]);
 
 	// Filtrage des patients
 	const filteredPatients = useMemo(() => {
@@ -105,9 +138,13 @@ const PatientList = ({ initialPatients, user }) => {
 
 	if (loading) {
 		return (
-			<div className="text-lg text-gray-500 mt-20 text-center">
-				<p>Chargement des patients...</p>
-				<div className="spinner" />
+			<div className="flex items-center justify-center h-screen">
+				<div className="flex flex-col items-center justify-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid mb-4"></div>
+					<p className="text-lg text-gray-500 dark:text-gray-400">
+						Chargement des patients...
+					</p>
+				</div>
 			</div>
 		);
 	}

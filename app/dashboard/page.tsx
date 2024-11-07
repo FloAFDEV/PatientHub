@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
 	IconArrowLeft,
-	IconBrandTabler,
 	IconContract,
 	IconSettings,
 	IconUserBolt,
@@ -12,6 +11,7 @@ import {
 	IconCalendar,
 	IconList,
 	IconChartBar,
+	IconDashboard,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -78,7 +78,7 @@ export default function SidebarDashboard() {
 			label: "Tableau de bord",
 			href: "#",
 			icon: (
-				<IconBrandTabler className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				<IconDashboard className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 			),
 			onClick: () => {
 				setActiveTab("dashboard");
