@@ -22,7 +22,7 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
 							irréversible
 						</span>{" "}
 						et entraînera la{" "}
-						<span className="font-semibold">perte permanente</span>
+						<span className="font-semibold">perte permanente </span>
 						de toutes les données associées à ce cabinet. Êtes-vous
 						sûr de vouloir continuer ?
 					</p>

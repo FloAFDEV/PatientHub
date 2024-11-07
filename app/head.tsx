@@ -6,14 +6,19 @@ export const metadata: Metadata = {
 	description:
 		"Application de suivi et de gestion de patients en ostéopathie",
 	keywords: "ostéopathie, gestion, patients, santé",
-	authors: [{ name: "Florent Perez", url: "https://example.com" }], // Remplace par ton URL
+	authors: [
+		{
+			name: "AfdevFlo",
+			url: "https://patient-hub-kappa.vercel.app/login",
+		},
+	],
 	viewport: "width=device-width, initial-scale=1",
-	robots: "noindex, nofollow", //  ne pas indexer
+	robots: "noindex, nofollow",
 	openGraph: {
 		title: "PatientHub",
 		description:
 			"Application de suivi et de gestion de patients en ostéopathie",
-		url: "https://example.com", // Remplace par l'URL de ton application
+		url: "https://patient-hub-kappa.vercel.app/login",
 		siteName: "PatientHub",
 		images: [
 			{
