@@ -8,6 +8,7 @@ import {
 	IconChevronLeft,
 	IconChevronRight,
 } from "@tabler/icons-react";
+
 const PatientDetails = React.lazy(() =>
 	import("../PatientDetails/PatientDetails")
 );
@@ -20,6 +21,7 @@ const PatientList = ({ initialPatients, user }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
 
+	// Fonction pour calculer l'âge
 	const calculateAge = useMemo(
 		() => (birthDate) => {
 			if (!birthDate) return "N/A";
@@ -42,7 +44,7 @@ const PatientList = ({ initialPatients, user }) => {
 
 	// État de pagination
 	const [currentPage, setCurrentPage] = useState(1);
-	const [patientsPerPage] = useState(15);
+	const patientsPerPage = 15;
 
 	// Fonction pour charger les patients
 	const fetchPatients = useCallback(async () => {
@@ -50,7 +52,7 @@ const PatientList = ({ initialPatients, user }) => {
 		if (cachedData) {
 			const { data, timestamp } = JSON.parse(cachedData);
 			if (Date.now() - timestamp < 5 * 60 * 1000) {
-				// 5 minutes
+				// Cache valide pour 5 minutes
 				return data;
 			}
 		}
@@ -61,15 +63,10 @@ const PatientList = ({ initialPatients, user }) => {
 				throw new Error("Erreur dans le chargement des données.");
 			const patientsData = await response.json();
 			patientsData.sort((a, b) => a.name.localeCompare(b.name));
-
 			localStorage.setItem(
 				"patients",
-				JSON.stringify({
-					data: patientsData,
-					timestamp: Date.now(),
-				})
+				JSON.stringify({ data: patientsData, timestamp: Date.now() })
 			);
-
 			return patientsData;
 		} catch (err) {
 			throw err;
@@ -80,30 +77,20 @@ const PatientList = ({ initialPatients, user }) => {
 	useEffect(() => {
 		if (!initialPatients) {
 			setLoading(true);
-			const worker = new Worker("/patientWorker.js");
-			worker.postMessage("fetchPatients");
-			worker.onmessage = (e) => {
-				if (e.data.type === "success") {
-					setPatients(e.data.data);
+			fetchPatients()
+				.then((data) => {
+					setPatients(data);
 					setLoading(false);
-					localStorage.setItem(
-						"patients",
-						JSON.stringify({
-							data: e.data.data,
-							timestamp: Date.now(),
-						})
-					);
-				} else if (e.data.type === "error") {
-					setError(e.data.error);
+				})
+				.catch((err) => {
+					setError(err.message);
 					setLoading(false);
-				}
-			};
-			return () => worker.terminate();
+				});
 		} else {
 			initialPatients.sort((a, b) => a.name.localeCompare(b.name));
 			setPatients(initialPatients);
 		}
-	}, [initialPatients]);
+	}, [initialPatients, fetchPatients]);
 
 	// Filtrage des patients
 	const filteredPatients = useMemo(() => {
@@ -121,17 +108,17 @@ const PatientList = ({ initialPatients, user }) => {
 	}, [patients, searchTerm, searchLetter]);
 
 	// Logique de pagination
-	const totalPages = useMemo(
-		() => Math.ceil(filteredPatients.length / patientsPerPage),
-		[filteredPatients, patientsPerPage]
-	);
+	const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
+
 	const handlePageChange = (newPage) => {
 		if (newPage > 0 && newPage <= totalPages) {
 			setCurrentPage(newPage);
 		}
 	};
+
 	const indexOfLastPatient = currentPage * patientsPerPage;
 	const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
+
 	const currentPatients = useMemo(() => {
 		return filteredPatients.slice(indexOfFirstPatient, indexOfLastPatient);
 	}, [filteredPatients, indexOfFirstPatient, indexOfLastPatient]);
@@ -178,11 +165,9 @@ const PatientList = ({ initialPatients, user }) => {
 							: "Utilisateur"}
 					</h1>
 					<p className="text-base sm:text-lg">
-						{" "}
 						Voici un aperçu de vos patients
 					</p>
 				</div>
-
 				{/* Logo à droite */}
 				<div className="flex-shrink-0 ml-4 relative">
 					<Image
@@ -204,7 +189,7 @@ const PatientList = ({ initialPatients, user }) => {
 				<input
 					type="text"
 					placeholder="Rechercher par nom..."
-					className="w-full p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900dark:text-white"
+					className="w-full p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white"
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}
 				/>
@@ -230,7 +215,7 @@ const PatientList = ({ initialPatients, user }) => {
 					</button>
 				))}
 				<button
-					className={`px-2 py-1 rounded-full transition duration-300 text-sm ${
+					className={`px-2 py-1 rounded-full transition duration=300 text-sm ${
 						searchLetter === ""
 							? "bg-blue-500 text-white"
 							: "hover:bg-blue-100 dark:hover:bg-gray-700"
@@ -268,7 +253,11 @@ const PatientList = ({ initialPatients, user }) => {
 					currentPatients.map((patient) => (
 						<li
 							key={patient.id}
-							className="p-3 sm:p-4 border border-blue-300 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col bg-white dark:bg-gray-800"
+							className={`p-3 sm:p-4 border rounded-lg shadow-md bg-slate-100 dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200 flex flex-col ${
+								patient.gender === "Homme"
+									? "text-blue-800"
+									: "text-pink-800"
+							} dark:bg-gray=800`}
 						>
 							<div
 								className="flex flex-col sm:flex-row sm:items-center cursor-pointer justify-between"
@@ -338,14 +327,15 @@ const PatientList = ({ initialPatients, user }) => {
 				</h2>
 				<div className="flex justify-center">
 					<button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center text-sm sm:text-base">
-						<IconPlus className="mr-2" size={18} />
-						Ajouter un patient
+						<IconPlus className="mr-2" size={18} /> Ajouter un
+						patient
 					</button>
 				</div>
 			</div>
 
 			{/* Contrôles de pagination */}
 			<div className="flex flex-col sm:flex-row justify-between items-center mt-4 w-full max-w-3xl mx-auto">
+				{/* Select pour la navigation de page */}
 				<select
 					value={currentPage}
 					onChange={(e) => handlePageChange(Number(e.target.value))}
@@ -357,20 +347,33 @@ const PatientList = ({ initialPatients, user }) => {
 						</option>
 					))}
 				</select>
+
+				{/* Navigation Buttons */}
 				<div className="flex justify-center space-x-2 sm:space-x-4">
 					<button
 						onClick={() => handlePageChange(currentPage - 1)}
 						disabled={currentPage === 1}
-						className="px-4 py-2 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-400 font-semibold rounded-full shadow-md hover:shadow-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm"
+						className={`px=4 py=2 ${
+							currentPage === 1
+								? "opacity50 cursor-notallowed"
+								: ""
+						}`}
 					>
-						<IconChevronLeft className="mr-1" size={18} /> Précédent
+						Précédent
+						<IconChevronLeft size={18} />
 					</button>
+
 					<button
 						onClick={() => handlePageChange(currentPage + 1)}
 						disabled={currentPage === totalPages}
-						className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:shadow-lg transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center text-sm"
+						className={`px=4 py=2 ${
+							currentPage === totalPages
+								? "opacity50 cursor-notallowed"
+								: ""
+						}`}
 					>
-						Suivant <IconChevronRight className="ml-1" size={18} />
+						Suivant
+						<IconChevronRight size={18} />
 					</button>
 				</div>
 			</div>
@@ -379,5 +382,4 @@ const PatientList = ({ initialPatients, user }) => {
 };
 
 PatientList.displayName = "PatientList";
-
 export default React.memo(PatientList);

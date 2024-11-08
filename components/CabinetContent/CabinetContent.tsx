@@ -18,6 +18,7 @@ interface CabinetInfo {
 	address: string;
 	phone: string | undefined;
 	osteopathId?: number | null;
+	patientsCount?: number;
 }
 
 const CabinetContent: React.FC = () => {
@@ -27,22 +28,42 @@ const CabinetContent: React.FC = () => {
 	const [isEditMode, setIsEditMode] = useState(false);
 	const [isAddMode, setIsAddMode] = useState(false);
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+	const [patientCount, setPatientCount] = useState<number>(0);
 
 	const fetchCabinetInfo = useCallback(async () => {
 		setLoading(true);
 		setError(null);
+
+		// Vérification dans le cache local
+		const cachedData = localStorage.getItem("cabinetInfo");
+		if (cachedData) {
+			setCabinetInfo(JSON.parse(cachedData));
+			setLoading(false);
+			return;
+		}
+
 		try {
 			const response = await fetch("/api/cabinet");
-			if (!response.ok)
-				throw new Error("Erreur de récupération du cabinet");
+			if (!response.ok) {
+				const errorMessage = `Erreur de récupération du cabinet : ${response.status} ${response.statusText}`;
+				throw new Error(errorMessage);
+			}
 			const data = await response.json();
-			setCabinetInfo(data[0]);
+
+			if (data && data.patientsCount !== undefined) {
+				setCabinetInfo(data);
+				setPatientCount(data.patientsCount); // Utilisation du patientsCount retourné par l'API
+			} else {
+				throw new Error(
+					"Les données du cabinet sont dans un format inattendu"
+				);
+			}
 		} catch (error) {
-			setError(
+			const errorMessage =
 				error instanceof Error
 					? error.message
-					: "Une erreur inconnue s'est produite"
-			);
+					: "Une erreur inconnue s'est produite";
+			setError(errorMessage);
 		} finally {
 			setLoading(false);
 		}
@@ -54,24 +75,19 @@ const CabinetContent: React.FC = () => {
 
 	const handleAddCabinet = useCallback(async (cabinetData: CabinetInfo) => {
 		try {
-			const response = await fetch("/api/cabinet", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(cabinetData),
-			});
-			if (response.ok) {
-				// Mettre à jour l'état localement sans refaire l'appel API
-				setCabinetInfo((prevState) => ({
-					...prevState,
-					name: cabinetData.name,
-					address: cabinetData.address,
-					phone: cabinetData.phone,
-					osteopathId: cabinetData.osteopathId,
-				}));
-			}
+			const response = await fetch("/api/cabinet");
+			if (!response.ok)
+				throw new Error("Erreur de récupération du cabinet");
+			const data = await response.json();
+			setCabinetInfo(data[0]); // Assurez-vous que data[0] contient bien les informations souhaitées
 		} catch (error) {
-			console.error("Erreur d'ajout :", error);
-			setError("Erreur lors de l'ajout du cabinet");
+			setError(
+				error instanceof Error
+					? error.message
+					: "Une erreur inconnue s'est produite"
+			);
+		} finally {
+			setLoading(false);
 		}
 	}, []);
 
@@ -118,7 +134,7 @@ const CabinetContent: React.FC = () => {
 				<div className="flex flex-col items-center justify-center">
 					<div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid mb-4"></div>
 					<p className="text-lg text-gray-500 dark:text-gray-400">
-						Chargement des informations...
+						Chargement des patients...
 					</p>
 				</div>
 			</div>
@@ -132,10 +148,10 @@ const CabinetContent: React.FC = () => {
 	}
 
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
-			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mt-10 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6 flex items-center justify-between">
-				{/* Texte de bienvenue */}
-				<div className="flex flex-col max-w-[75%]">
+		<div className="flex flex-col flex-1 p-8 bg-gray-100 dark:bg-gray-900 overflow-y-auto">
+			{/* En-tête */}
+			<header className="mb-6">
+				<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mb-10 mt-10 sm:p-6 rounded-lg shadow-lg">
 					<h1 className="text-2xl sm:text-3xl font-bold mb-2">
 						Bienvenue sur la fiche de votre cabinet
 					</h1>
@@ -144,23 +160,19 @@ const CabinetContent: React.FC = () => {
 						paramètres.
 					</p>
 				</div>
-
-				{/* Logo à droite */}
-				<div className="flex-shrink-0 ml-4 relative">
-					<Image
-						src="/assets/icons/logo-full.svg"
-						alt="Logo"
-						width={200}
-						height={200}
-						className="object-contain rounded-xl w-[100px] sm:w-[180px] md:w-[200px] lg:w-[210px] xl:w-[200px] md:ml-4"
-					/>
-				</div>
-			</div>
+			</header>
 
 			{/* Contenu principal */}
 			<main className="flex-grow p-4">
 				{/* Cartes d'information */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 ">
+					<div className="cabinet-info">
+						<h2>{cabinetInfo?.name}</h2>
+						<p>{cabinetInfo?.address}</p>
+						<p>{cabinetInfo?.phone}</p>
+						{/* Affichage du nombre de patients */}
+						<p>Nombre de patients : {patientCount}</p>
+					</div>
 					<InfoCard
 						icon={
 							<BuildingOfficeIcon className="h-6 w-6 text-blue-500" />
@@ -184,6 +196,18 @@ const CabinetContent: React.FC = () => {
 						content={cabinetInfo?.phone || "Non Disponible"}
 						link={`tel:${cabinetInfo?.phone}`}
 						image="/assets/images/phoneGratentour.webp"
+					/>
+					<InfoCard
+						icon={
+							<BuildingOfficeIcon className="h-6 w-6 text-purple-500" />
+						}
+						title="Nombre de Patients"
+						content={
+							patientCount
+								? patientCount.toString()
+								: "Aucune donnée disponible"
+						}
+						image="/assets/images/cabinetGratentour.webp"
 					/>
 				</div>
 

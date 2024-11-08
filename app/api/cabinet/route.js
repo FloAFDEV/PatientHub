@@ -2,6 +2,10 @@ import { PrismaClient } from "@prisma/client";
 import cache from "memory-cache";
 
 const prisma = new PrismaClient();
+// Options pour les en-têtes JSON de réponse
+const jsonHeaders = {
+	"Content-Type": "application/json",
+};
 
 // Fonction pour formater les données du cabinet
 function formatCabinetData(data) {
@@ -98,7 +102,10 @@ export async function POST(request) {
 			});
 
 			if (!osteopath) {
-				return new Response("Osteopath not found", { status: 404 });
+				return new Response(
+					JSON.stringify({ error: "Osteopath not found" }),
+					{ status: 404, headers: jsonHeaders }
+				);
 			}
 		}
 
@@ -107,17 +114,18 @@ export async function POST(request) {
 		});
 
 		// Invalidation du cache après ajout
-		cache.del("all_cabinets"); // Supprime tous les cabinets du cache
+		cache.del("all_cabinets");
 
 		return new Response(JSON.stringify(newCabinet), {
 			status: 201,
-			headers: {
-				"Content-Type": "application/json",
-			},
+			headers: jsonHeaders,
 		});
 	} catch (error) {
 		console.error("Error creating cabinet:", error);
-		return new Response("Could not create cabinet", { status: 500 });
+		return new Response(
+			JSON.stringify({ error: "Could not create cabinet" }),
+			{ status: 500, headers: jsonHeaders }
+		);
 	}
 }
 
@@ -126,8 +134,11 @@ export async function PUT(request) {
 	const cabinetData = await request.json();
 	const id = cabinetData.id;
 
-	if (!id) {
-		return new Response("ID is required", { status: 400 });
+	if (!id || Number.isNaN(id)) {
+		return new Response(JSON.stringify({ error: "Valid ID is required" }), {
+			status: 400,
+			headers: jsonHeaders,
+		});
 	}
 
 	try {
@@ -137,23 +148,24 @@ export async function PUT(request) {
 			where: { id: id },
 			data: {
 				...formattedCabinetData,
-				updatedAt: new Date(), // Mise à jour du timestamp
+				updatedAt: new Date(),
 			},
 		});
 
 		// Invalidation du cache après mise à jour
-		cache.del("all_cabinets"); // Supprime tous les cabinets du cache
-		cache.del(`cabinet_${id}`); // Supprime le cabinet mis à jour du cache
+		cache.del("all_cabinets");
+		cache.del(`cabinet_${id}`);
 
 		return new Response(JSON.stringify(updatedCabinet), {
 			status: 200,
-			headers: {
-				"Content-Type": "application/json",
-			},
+			headers: jsonHeaders,
 		});
 	} catch (error) {
 		console.error("Error updating cabinet:", error);
-		return new Response("Could not update cabinet", { status: 500 });
+		return new Response(
+			JSON.stringify({ error: "Could not update cabinet" }),
+			{ status: 500, headers: jsonHeaders }
+		);
 	}
 }
 
@@ -162,8 +174,11 @@ export async function DELETE(request) {
 	const { searchParams } = new URL(request.url);
 	const id = parseInt(searchParams.get("id") || "");
 
-	if (!id) {
-		return new Response("ID is required", { status: 400 });
+	if (!id || Number.isNaN(id)) {
+		return new Response(JSON.stringify({ error: "Valid ID is required" }), {
+			status: 400,
+			headers: jsonHeaders,
+		});
 	}
 
 	try {
@@ -172,12 +187,21 @@ export async function DELETE(request) {
 		});
 
 		// Invalidation du cache après suppression
-		cache.del("all_cabinets"); // Supprime tous les cabinets du cache
-		cache.del(`cabinet_${id}`); // Supprime le cabinet supprimé du cache
+		cache.del("all_cabinets");
+		cache.del(`cabinet_${id}`);
 
-		return new Response("Cabinet deleted successfully", { status: 204 });
+		return new Response(
+			JSON.stringify({ message: "Cabinet deleted successfully" }),
+			{
+				status: 204,
+				headers: jsonHeaders,
+			}
+		);
 	} catch (error) {
 		console.error("Error deleting cabinet:", error);
-		return new Response("Could not delete cabinet", { status: 500 });
+		return new Response(
+			JSON.stringify({ error: "Could not delete cabinet" }),
+			{ status: 500, headers: jsonHeaders }
+		);
 	}
 }

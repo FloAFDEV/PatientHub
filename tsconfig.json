@@ -1,42 +1,50 @@
 {
-	"compilerOptions": {
-		"lib": ["dom", "dom.iterable", "esnext"],
-		"allowJs": true,
-		"skipLibCheck": true,
-		"strict": true,
-		"noEmit": true,
-		"esModuleInterop": true,
-		"module": "esnext",
-		"moduleResolution": "bundler",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"jsx": "preserve",
-		"incremental": true,
-		"plugins": [
-			{
-				"name": "next"
-			}
-		],
-		"paths": {
-			"@/*": ["./*"]
-		}
-	},
-	"include": [
-		"next-env.d.ts",
-		"**/*.tsx",
-		".next/types/**/*.ts",
-		"utils/supabase/server.ts",
-		"utils/supabase/middleware.ts",
-		"app/layout.js",
-		"middleware.js",
-		"utils/supabase/client.ts",
-		"app/logout/actions.js",
-		"node_modules/@prisma/client/index.d.ts",
-		"components/lib/prisma.js"
-	],
-	"exclude": ["node_modules"],
-	"scripts": {
-		"prisma:generate": "prisma generate --no-engine",
-		"vercel-build": "npm run prisma:generate && next build"
-	}
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "utils/supabase/server.ts",
+    "utils/supabase/middleware.ts",
+    "app/layout.js",
+    "middleware.js",
+    "utils/supabase/client.ts",
+    "app/logout/actions.js",
+    "node_modules/@prisma/client/index.d.ts",
+    "components/lib/prisma.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "scripts": {
+    "prisma:generate": "prisma generate --no-engine",
+    "vercel-build": "npm run prisma:generate && next build"
+  }
 }

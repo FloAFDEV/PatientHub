@@ -70,29 +70,35 @@ export async function GET(request) {
 			  }
 			: {};
 
-		const patients = await prisma.patient.findMany({
+		// On récupère le cabinet, avec tous les patients associés
+		const cabinetInfo = await prisma.cabinet.findFirst({
 			where: whereCondition,
-			skip: (page - 1) * pageSize,
-			take: pageSize,
 			include: {
-				cabinet: true,
-				osteopath: true,
+				patients: true, // Inclut les patients pour les compter
 			},
 		});
 
-		if (patients.length > 0) {
-			return new Response(JSON.stringify(patients), {
-				status: 200,
-				headers: { "Content-Type": "application/json" },
-			});
+		if (cabinetInfo) {
+			// On compte le nombre de patients associés à ce cabinet
+			const patientsCount = cabinetInfo.patients.length;
+
+			// On renvoie les informations du cabinet, y compris le nombre de patients
+			return new Response(
+				JSON.stringify({
+					...cabinetInfo,
+					patientsCount, // Ajoute le nombre de patients dans la réponse
+				}),
+				{
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				}
+			);
 		} else {
-			return new Response("No patients found with the given criteria", {
-				status: 404,
-			});
+			return new Response("Cabinet non trouvé", { status: 404 });
 		}
 	} catch (error) {
-		console.error("Error retrieving patients:", error);
-		return new Response("Could not retrieve patients", { status: 500 });
+		console.error("Erreur lors de la récupération du cabinet :", error);
+		return new Response("Erreur interne du serveur", { status: 500 });
 	}
 }
 
