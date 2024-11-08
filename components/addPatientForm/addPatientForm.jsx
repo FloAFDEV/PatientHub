@@ -66,10 +66,11 @@ const AddPatientForm = () => {
 	const onSubmit = async (data) => {
 		const finalData = {
 			...data,
-
+			gender: data.gender,
 			childrenAges: hasChildren
 				? childrenAges.filter((age) => age > 0)
 				: [],
+			activityLevel: data.activityLevel,
 		};
 
 		try {
@@ -88,9 +89,9 @@ const AddPatientForm = () => {
 				);
 			}
 
-			const newPatient = await response.json();
-			toast.success(`Patient créé avec succès : ${newPatient.name}`);
-			reset();
+			const result = await response.json();
+			toast.success("Patient créé avec succès !");
+			reset(); // Réinitialiser le formulaire après soumission réussie
 			setChildrenAges([0]);
 			setMessage("Patient ajouté avec succès !");
 		} catch (error) {
@@ -310,7 +311,6 @@ const AddPatientForm = () => {
 							rules={{ required: "La latéralité est requise" }}
 							error={errors.handedness?.message}
 						/>
-
 						<SelectField
 							name="contraception"
 							control={control}
@@ -358,6 +358,16 @@ const AddPatientForm = () => {
 							required
 							rules={{ required: "Le statut est requis" }}
 							error={errors.isDeceased?.message}
+						/>{" "}
+						<FormField
+							name="activityLevel"
+							control={control}
+							label="Activité physique"
+							placeholder="Indiquez votre activité physique"
+							rules={{
+								required: "L'activité physique est requise",
+							}}
+							error={errors.activityLevel?.message}
 						/>
 						<TextAreaField
 							name="entProblems"
@@ -376,6 +386,12 @@ const AddPatientForm = () => {
 							control={control}
 							label="Problèmes Digestifs"
 							placeholder="Décrire les problèmes digestifs"
+						/>
+						<FormField
+							name="digestiveDoctorName"
+							control={control}
+							label="Nom du Médecin Digestif"
+							placeholder="Entrez le nom du médecin digestif"
 						/>
 						<TextAreaField
 							name="currentTreatment"

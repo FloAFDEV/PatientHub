@@ -79,12 +79,14 @@ model Patient {
   entProblems            String? // Problèmes ORL
   entDoctorName          String? // Nom du médecin ORL
   digestiveProblems      String? // Problèmes digestifs
+  digestiveDoctorName    String? // Nom du médecin digestif (gastro-entérologue)
   hdlm                   String? // Informations HDLM
   isDeceased             Boolean           @default(false) // Indique si le patient est décédé
   hasChildren            String? // Indique si le patient a des enfants
   childrenAges           Int[] // Liste des âges des enfants, peut être null si pas d'enfants
-  osteopath              Osteopath         @relation(fields: [osteopathId], references: [id]) // Relation avec l'ostéopathe
+  physicalActivity       String? // Activité physique
   osteopathId            Int // Clé étrangère vers l'ostéopathe
+  osteopath              Osteopath         @relation(fields: [osteopathId], references: [id]) // Relation avec l'ostéopathe
   cabinet                Cabinet?          @relation(fields: [cabinetId], references: [id]) // Relation avec le cabinet
   cabinetId              Int? // Clé étrangère optionnelle vers le cabinet
   medicalDocuments       MedicalDocument[] // Documents médicaux associés
