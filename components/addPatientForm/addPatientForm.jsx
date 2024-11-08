@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -266,12 +266,23 @@ const AddPatientForm = () => {
 											type="number"
 											placeholder="Âge en années"
 											value={age}
-											onChange={(e) =>
-												handleChildrenAgesChange(
-													index,
-													e
-												)
-											}
+											onChange={(e) => {
+												const value = parseInt(
+													e.target.value,
+													10
+												);
+												if (
+													!isNaN(value) &&
+													value >= 0
+												) {
+													handleChildrenAgesChange(
+														index,
+														e
+													);
+												} else if (isNaN(value)) {
+													return;
+												}
+											}}
 											className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
 										/>
 										<button
