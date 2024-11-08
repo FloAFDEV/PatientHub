@@ -19,7 +19,7 @@ function formatPatientData(data) {
 			? data.maritalStatus.toUpperCase()
 			: null,
 		occupation: data.occupation || null,
-		hasChildren: data.hasChildren || null,
+		hasChildren: "true",
 		childrenAges: data.childrenAges || [],
 		physicalActivity: data.physicalActivity || null,
 		isSmoker: data.isSmoker === "true",
@@ -38,7 +38,6 @@ function formatPatientData(data) {
 		surgicalHistory: data.surgicalHistory || null,
 		digestiveProblems: data.digestiveProblems || null,
 		digestiveDoctorName: data.digestiveDoctorName || null,
-		osteopathId: data.osteopathId || null,
 		birthDate: data.birthDate ? new Date(data.birthDate) : null,
 		avatarUrl: data.avatarUrl || null,
 		traumaHistory: data.traumaHistory || null,
@@ -49,7 +48,6 @@ function formatPatientData(data) {
 		entDoctorName: data.entDoctorName || null,
 		hdlm: data.hdlm || null,
 		isDeceased: data.isDeceased === "true",
-		cabinetId: null,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
@@ -100,69 +98,77 @@ export async function GET(request) {
 
 export async function POST(request) {
 	const patientData = await request.json();
+
 	try {
+		// Formater les données du patient
 		const formattedPatientData = formatPatientData(patientData);
 
-		// Vérifiez si l'ID de l'ostéopathe est disponible
-		const currentUserId = "user-id-from-session-or-token"; // Remplacez par votre logique d'authentification réelle
-		if (currentUserId) {
-			// Associez l'ostéopathe au patient via la relation
-			formattedPatientData.osteopath = {
-				connect: {
-					id: currentUserId, // L'ID de l'ostéopathe récupéré depuis la session ou le token
-				},
-			};
-		} else {
-			return new Response("Osteopath (user) not found", { status: 400 });
+		// Valeur d'ostéopathe, ici elle est en dur pour tester
+		const osteopathId = 1;
+		if (!osteopathId) {
+			return new Response("Osteopath ID is required", { status: 400 });
 		}
 
-		// Si un cabinet est fourni, associez-le également au patient
+		// Connexion de l'ostéopathe à la donnée du patient
+		formattedPatientData.osteopath = {
+			connect: {
+				id: osteopathId,
+			},
+		};
+
+		// Vérification de l'ID du cabinet si fourni
+		if (
+			patientData.cabinetId &&
+			isNaN(parseInt(patientData.cabinetId, 10))
+		) {
+			return new Response("Invalid cabinet ID", { status: 400 });
+		}
+
+		// Si un cabinet ID est fourni, on l'ajoute à la donnée patient
 		if (patientData.cabinetId) {
 			formattedPatientData.cabinet = {
 				connect: {
-					id: patientData.cabinetId, // L'ID du cabinet fourni dans la requête
+					id: patientData.cabinetId,
 				},
 			};
-		} else {
-			formattedPatientData.cabinet = null; // Ou vous pouvez définir une valeur par défaut si nécessaire
 		}
 
-		// Créez le patient avec les données formatées
+		// Traitement de `hasChildren` : Conversion en booléen si nécessaire
+		if (patientData.hasChildren === "true") {
+			formattedPatientData.hasChildren = true;
+		} else if (patientData.hasChildren === "false") {
+			formattedPatientData.hasChildren = false;
+		}
+
+		// Vérification des âges des enfants si `hasChildren` est vrai
+		if (
+			patientData.hasChildren === "true" &&
+			Array.isArray(patientData.childrenAges)
+		) {
+			formattedPatientData.childrenAges = patientData.childrenAges.map(
+				(age) => parseInt(age, 10)
+			);
+		}
+
+		// Création d'un nouveau patient dans la base de données avec Prisma
 		const newPatient = await prisma.patient.create({
 			data: formattedPatientData,
 		});
 
+		// Retourner la réponse de création avec les données du patient
 		return new Response(JSON.stringify(newPatient), {
 			status: 201,
 			headers: { "Content-Type": "application/json" },
 		});
 	} catch (error) {
 		console.error("Error creating patient:", error);
-		return new Response("Could not create patient", { status: 500 });
-	}
-}
-
-// Méthode PUT pour mettre à jour un patient par e-mail
-export async function PUT(request) {
-	const patientData = await request.json();
-	const email = patientData.email;
-
-	if (!email) return new Response("Email is required", { status: 400 });
-
-	try {
-		const formattedPatientData = formatPatientData(patientData);
-		const updatedPatient = await prisma.patient.update({
-			where: { email: email },
-			data: formattedPatientData,
-		});
-
-		return new Response(JSON.stringify(updatedPatient), {
-			status: 200,
-			headers: { "Content-Type": "application/json" },
-		});
-	} catch (error) {
-		console.error("Error updating patient:", error);
-		return new Response("Could not update patient", { status: 500 });
+		return new Response(
+			JSON.stringify({
+				message: "Could not create patient",
+				error: error.message,
+			}),
+			{ status: 500, headers: { "Content-Type": "application/json" } }
+		);
 	}
 }
 

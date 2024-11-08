@@ -1,40 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { toast } from "react-toastify";
-
-// Define mappings
-const genderOptions = {
-	Homme: "Homme",
-	Femme: "Femme",
-};
-
-const maritalStatusOptions = {
-	SINGLE: "Célibataire",
-	MARRIED: "Marié(e)",
-	DIVORCED: "Divorcé(e)",
-	WIDOWED: "Veuf(ve)",
-	SEPARATED: "Séparé(e)",
-};
-
-const handednessOptions = {
-	LEFT: "Gaucher",
-	RIGHT: "Droitier",
-	AMBIDEXTROUS: "Ambidextre",
-};
-
-const contraceptionOptions = {
-	NONE: "Aucun",
-	PILLS: "Pilule",
-	CONDOM: "Préservatifs",
-	IMPLANTS: "Implant",
-};
-
-const yesOptions = {
-	Yes: "Oui",
-	No: "Non",
-};
+import { toast, ToastContainer } from "react-toastify";
 
 const AddPatientForm = () => {
 	const {
@@ -43,7 +11,7 @@ const AddPatientForm = () => {
 		reset,
 		formState: { errors, isSubmitting },
 	} = useForm();
-	const [message, setMessage] = useState("");
+
 	const [hasChildren, setHasChildren] = useState(false);
 	const [childrenAges, setChildrenAges] = useState([0]);
 
@@ -63,16 +31,54 @@ const AddPatientForm = () => {
 		setChildrenAges(updatedAges);
 	};
 
+	// Define mappings
+	const genderOptions = {
+		Homme: "Homme",
+		Femme: "Femme",
+	};
+
+	const maritalStatusOptions = {
+		SINGLE: "Célibataire",
+		MARRIED: "Marié(e)",
+		DIVORCED: "Divorcé(e)",
+		WIDOWED: "Veuf(ve)",
+		SEPARATED: "Séparé(e)",
+	};
+
+	const handednessOptions = {
+		LEFT: "Gaucher",
+		RIGHT: "Droitier",
+		AMBIDEXTROUS: "Ambidextre",
+	};
+
+	const contraceptionOptions = {
+		NONE: "Aucun",
+		PILLS: "Pilule",
+		CONDOM: "Préservatifs",
+		IMPLANTS: "Implant",
+	};
+
+	const yesOptions = {
+		Yes: "Oui",
+		No: "Non",
+	};
+
 	const onSubmit = async (data) => {
+		const validChildrenAges = childrenAges.filter((age) => age >= 0);
 		const finalData = {
 			...data,
 			gender: data.gender,
-			childrenAges: hasChildren
-				? childrenAges.filter((age) => age > 0)
-				: [],
-			activityLevel: data.activityLevel,
+			childrenAges: hasChildren ? validChildrenAges : [],
+			activityLevel: data.activityLevel || "",
+			hasVisionCorrection: data.hasVisionCorrection === "Yes",
+			isDeceased: data.isDeceased === "Yes",
+			isSmoker: data.isSmoker === "Yes",
+			birthDate: new Date(data.birthDate).toISOString(),
+			hasChildren: hasChildren,
+			generalPractitioner: data.generalPractitioner || "",
+			maritalStatus: data.maritalStatus || "",
+			osteopathId: data.osteopathId,
 		};
-
 		try {
 			const response = await fetch("/api/patients", {
 				method: "POST",
@@ -81,23 +87,20 @@ const AddPatientForm = () => {
 				},
 				body: JSON.stringify(finalData),
 			});
-
-			// Vérifiez si la réponse est correcte
 			if (!response.ok) {
-				throw new Error(
-					"Une erreur est survenue lors de la création du patient."
-				);
+				const textResponse = await response.text();
+				throw new Error(`Erreur serveur: ${textResponse}`);
 			}
-
 			const result = await response.json();
 			toast.success(`Patient créé avec succès: ${result.message}`);
-			reset(); // Réinitialiser le formulaire après soumission réussie
+			reset();
 			setChildrenAges([0]);
-			setMessage("Patient ajouté avec succès !");
+			setHasChildren(false);
 		} catch (error) {
-			console.error("Erreur lors de l'envoi du formulaire :", error);
-			toast.error("Erreur lors de la création du patient.");
-			setMessage("Erreur lors de l'ajout du patient.");
+			console.error("Erreur lors de la création du patient :", error);
+			toast.error(
+				`Erreur lors de la création du patient: ${error.message}`
+			);
 		}
 	};
 
@@ -107,11 +110,7 @@ const AddPatientForm = () => {
 				<h2 className="text-2xl font-bold mb-6 text-center">
 					Ajouter un Patient
 				</h2>
-				{message && (
-					<div className="text-center text-lg font-semibold mb-4">
-						{message}
-					</div>
-				)}
+
 				<div className="mb-8">
 					<h3 className="text-xl font-semibold mb-4 text-center">
 						Informations Personnelles
@@ -434,7 +433,12 @@ const AddPatientForm = () => {
 						{isSubmitting ? "Ajout en cours..." : "Ajouter Patient"}
 					</button>
 				</div>
-			</form>
+			</form>{" "}
+			<ToastContainer
+				position="top-center"
+				autoClose={5000}
+				hideProgressBar
+			/>
 		</div>
 	);
 };
