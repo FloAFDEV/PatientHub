@@ -43,7 +43,7 @@ function ErrorContent() {
 				)}
 				<p className="text-base text-gray-400">
 					Pas de panique, vous pouvez toujours retourner à la page
-					d'accueil !
+					d&apos;accueil !
 				</p>
 				<Link
 					href="/"

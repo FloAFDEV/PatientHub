@@ -59,7 +59,7 @@ export const Sidebar = ({
 	setOpen,
 	animate,
 }: {
-	children: React.ReactNode;
+	children?: React.ReactNode;
 	open?: boolean;
 	setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 	animate?: boolean;
@@ -168,7 +168,10 @@ export const SidebarLink = ({
 }: {
 	link: Links;
 	className?: string;
-	props?: LinkProps;
+	props?: Omit<
+		React.AnchorHTMLAttributes<HTMLAnchorElement>,
+		keyof LinkProps
+	>;
 }) => {
 	const { open, animate } = useSidebar();
 
@@ -176,6 +179,7 @@ export const SidebarLink = ({
 		e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
 	) => {
 		if (link.disabled) {
+			e.preventDefault();
 			return;
 		}
 		if (link.onClick) {
