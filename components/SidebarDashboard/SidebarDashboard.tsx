@@ -6,7 +6,6 @@ import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
 	ArrowLeftIcon,
 	DocumentIcon,
-	Cog6ToothIcon,
 	UserCircleIcon,
 	ChartBarIcon,
 	BuildingOfficeIcon,

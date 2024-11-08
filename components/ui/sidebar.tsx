@@ -208,7 +208,7 @@ export const SidebarLink = ({
 						: "inline-block",
 					opacity: animate ? (open ? 1 : 0) : 1,
 				}}
-				className="text-gray-700 dark:text-neutral-200 group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block text-lg !p-0 !m-0"
+				className="text-gray-700 dark:text-neutral-200 group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block text-md font-light !p-0 !m-0"
 			>
 				{link.label}
 			</motion.span>

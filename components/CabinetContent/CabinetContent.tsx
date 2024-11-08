@@ -132,10 +132,10 @@ const CabinetContent: React.FC = () => {
 	}
 
 	return (
-		<div className="flex flex-col flex-1 p-8 bg-gray-100 dark:bg-gray-900 overflow-y-auto">
-			{/* En-tête */}
-			<header className="mb-6">
-				<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mb-10 mt-10 sm:p-6 rounded-lg shadow-lg">
+		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mt-10 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6 flex items-center justify-between">
+				{/* Texte de bienvenue */}
+				<div className="flex flex-col max-w-[75%]">
 					<h1 className="text-2xl sm:text-3xl font-bold mb-2">
 						Bienvenue sur la fiche de votre cabinet
 					</h1>
@@ -144,7 +144,18 @@ const CabinetContent: React.FC = () => {
 						paramètres.
 					</p>
 				</div>
-			</header>
+
+				{/* Logo à droite */}
+				<div className="flex-shrink-0 ml-4 relative">
+					<Image
+						src="/assets/icons/logo-full.svg"
+						alt="Logo"
+						width={200}
+						height={200}
+						className="object-contain rounded-xl w-[100px] sm:w-[180px] md:w-[200px] lg:w-[210px] xl:w-[200px] md:ml-4"
+					/>
+				</div>
+			</div>
 
 			{/* Contenu principal */}
 			<main className="flex-grow p-4">
