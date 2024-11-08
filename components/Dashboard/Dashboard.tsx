@@ -17,7 +17,7 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-white dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
 			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mt-10 sm:p-6 rounded-lg shadow-lg mb-4 sm:mb-6 flex items-center justify-between">
 				<div className="flex flex-col max-w-[75%]">
 					<h1 className="text-2xl sm:text-3xl font-bold mb-2">

@@ -4,12 +4,13 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
-	IconArrowLeft,
-	IconContract,
-	IconSettings,
-	IconUserBolt,
-	IconDashboard,
-} from "@tabler/icons-react";
+	ArrowLeftIcon,
+	DocumentIcon,
+	Cog6ToothIcon,
+	UserCircleIcon,
+	ChartBarIcon,
+	BuildingOfficeIcon,
+} from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
 import { cn } from "@/components/lib/utils";
@@ -74,7 +75,7 @@ export default function SidebarDashboard({
 			label: "Tableau de bord",
 			href: "#",
 			icon: (
-				<IconDashboard className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				<ChartBarIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 			),
 			onClick: () => {
 				setActiveTab("dashboard");
@@ -85,7 +86,7 @@ export default function SidebarDashboard({
 			label: "Patients",
 			href: "#",
 			icon: (
-				<IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				<UserCircleIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 			),
 			onClick: () => {
 				setActiveTab("patients");
@@ -96,7 +97,7 @@ export default function SidebarDashboard({
 			label: "Cabinet",
 			href: "#",
 			icon: (
-				<IconSettings className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				<BuildingOfficeIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 			),
 			onClick: () => {
 				setActiveTab("Cabinet");
@@ -107,14 +108,14 @@ export default function SidebarDashboard({
 			label: "Contact",
 			href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour%2C%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci%21",
 			icon: (
-				<IconContract className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				<DocumentIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 			),
 		},
 		{
 			label: isLoggingOut ? "Déconnexion..." : "Se déconnecter",
 			href: "#",
 			icon: (
-				<IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-7 w-7" />
+				<ArrowLeftIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7" />
 			),
 			onClick: handleLogout,
 			disabled: isLoggingOut,
