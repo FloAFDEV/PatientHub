@@ -39,7 +39,6 @@ function formatPatientData(data) {
 		digestiveProblems: data.digestiveProblems || null,
 		digestiveDoctorName: data.digestiveDoctorName || null,
 		osteopathId: data.osteopathId || null,
-		// Retirer la ligne userId: null, ici
 		birthDate: data.birthDate ? new Date(data.birthDate) : null,
 		avatarUrl: data.avatarUrl || null,
 		traumaHistory: data.traumaHistory || null,

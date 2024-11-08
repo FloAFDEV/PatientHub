@@ -90,7 +90,7 @@ const AddPatientForm = () => {
 			}
 
 			const result = await response.json();
-			toast.success("Patient créé avec succès !");
+			toast.success(`Patient créé avec succès: ${result.message}`);
 			reset(); // Réinitialiser le formulaire après soumission réussie
 			setChildrenAges([0]);
 			setMessage("Patient ajouté avec succès !");
