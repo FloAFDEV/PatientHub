@@ -56,19 +56,29 @@ const PatientList = ({ initialPatients, user }) => {
 				return data;
 			}
 		}
-
 		try {
 			const response = await fetch("/api/patients");
 			if (!response.ok)
 				throw new Error("Erreur dans le chargement des données.");
-			const patientsData = await response.json();
-			patientsData.sort((a, b) => a.name.localeCompare(b.name));
+			const responseData = await response.json();
+			console.log("Données reçues de l'API :", responseData); // Affiche les données complètes
+			// Extraction de la liste des patients
+			const patientsData = responseData.patients;
+			// Vérification que patientsData est bien un tableau avant de trier
+			if (Array.isArray(patientsData)) {
+				patientsData.sort((a, b) => a.name.localeCompare(b.name));
+			} else {
+				throw new Error(
+					"Les données des patients ne sont pas au format attendu."
+				);
+			}
 			localStorage.setItem(
 				"patients",
 				JSON.stringify({ data: patientsData, timestamp: Date.now() })
 			);
 			return patientsData;
 		} catch (err) {
+			console.error("Erreur lors de la récupération des patients :", err);
 			throw err;
 		}
 	}, []);
