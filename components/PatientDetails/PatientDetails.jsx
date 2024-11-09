@@ -283,7 +283,7 @@ const PatientDetails = ({ patient, onClose }) => {
 								/>
 							))
 						) : (
-							<p>Pas d'enfants renseignés</p>
+							<p>Pas d&apos;enfants renseignés</p>
 						)}
 					</div>
 				)}
