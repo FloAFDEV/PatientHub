@@ -18,7 +18,7 @@ interface CabinetInfo {
 	address: string;
 	phone: string | undefined;
 	osteopathId?: number | null;
-	patientsCount?: number;
+	patientCount?: number;
 }
 
 const CabinetContent: React.FC = () => {
@@ -28,42 +28,28 @@ const CabinetContent: React.FC = () => {
 	const [isEditMode, setIsEditMode] = useState(false);
 	const [isAddMode, setIsAddMode] = useState(false);
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
-	const [patientCount, setPatientCount] = useState<number>(0);
 
 	const fetchCabinetInfo = useCallback(async () => {
 		setLoading(true);
 		setError(null);
 
-		// Vérification dans le cache local
-		const cachedData = localStorage.getItem("cabinetInfo");
-		if (cachedData) {
-			setCabinetInfo(JSON.parse(cachedData));
-			setLoading(false);
-			return;
-		}
-
 		try {
 			const response = await fetch("/api/cabinet");
 			if (!response.ok) {
-				const errorMessage = `Erreur de récupération du cabinet : ${response.status} ${response.statusText}`;
-				throw new Error(errorMessage);
-			}
-			const data = await response.json();
-
-			if (data && data.patientsCount !== undefined) {
-				setCabinetInfo(data);
-				setPatientCount(data.patientsCount); // Utilisation du patientsCount retourné par l'API
-			} else {
 				throw new Error(
-					"Les données du cabinet sont dans un format inattendu"
+					`Erreur de récupération du cabinet : ${response.status} ${response.statusText}`
 				);
 			}
+			const data = await response.json();
+			console.log("Cabinet info:", data[0]);
+			setCabinetInfo(data[0]); // Assurez-vous que data[0] contient bien les informations souhaitées
+			localStorage.setItem("cabinetInfo", JSON.stringify(data[0]));
 		} catch (error) {
-			const errorMessage =
+			setError(
 				error instanceof Error
 					? error.message
-					: "Une erreur inconnue s'est produite";
-			setError(errorMessage);
+					: "Une erreur inconnue s'est produite"
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -73,9 +59,13 @@ const CabinetContent: React.FC = () => {
 		fetchCabinetInfo();
 	}, [fetchCabinetInfo]);
 
-	const handleAddCabinet = useCallback(async (cabinetData: CabinetInfo) => {
+	const handleAddCabinet = useCallback(async (newCabinet: CabinetInfo) => {
 		try {
-			const response = await fetch("/api/cabinet");
+			const response = await fetch("/api/cabinet", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(newCabinet),
+			});
 			if (!response.ok)
 				throw new Error("Erreur de récupération du cabinet");
 			const data = await response.json();
@@ -171,8 +161,20 @@ const CabinetContent: React.FC = () => {
 						<p>{cabinetInfo?.address}</p>
 						<p>{cabinetInfo?.phone}</p>
 						{/* Affichage du nombre de patients */}
-						<p>Nombre de patients : {patientCount}</p>
+						<p>Nombre de patients : {cabinetInfo?.patientCount}</p>
 					</div>
+					{cabinetInfo && (
+						<div>
+							<h2>{cabinetInfo.name}</h2>
+							<p>Adresse: {cabinetInfo.address}</p>
+							<p>Téléphone: {cabinetInfo.phone}</p>
+							<p>
+								Nombre de patients :{" "}
+								{cabinetInfo?.patientCount || 0}
+							</p>
+							{/* Affichage du nombre de patients */}
+						</div>
+					)}
 					<InfoCard
 						icon={
 							<BuildingOfficeIcon className="h-6 w-6 text-blue-500" />
@@ -203,8 +205,8 @@ const CabinetContent: React.FC = () => {
 						}
 						title="Nombre de Patients"
 						content={
-							patientCount
-								? patientCount.toString()
+							cabinetInfo?.patientCount
+								? cabinetInfo.patientCount.toString()
 								: "Aucune donnée disponible"
 						}
 						image="/assets/images/cabinetGratentour.webp"
