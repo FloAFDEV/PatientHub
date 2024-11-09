@@ -61,7 +61,6 @@ const PatientList = ({ initialPatients, user }) => {
 			if (!response.ok)
 				throw new Error("Erreur dans le chargement des données.");
 			const responseData = await response.json();
-			console.log("Données reçues de l'API :", responseData); // Affiche les données complètes
 			// Extraction de la liste des patients
 			const patientsData = responseData.patients;
 			// Vérification que patientsData est bien un tableau avant de trier

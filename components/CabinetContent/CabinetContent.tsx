@@ -9,6 +9,7 @@ import {
 	PlusIcon,
 	TrashIcon,
 	BuildingOfficeIcon,
+	UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
@@ -41,8 +42,7 @@ const CabinetContent: React.FC = () => {
 				);
 			}
 			const data = await response.json();
-			console.log("Cabinet info:", data[0]);
-			setCabinetInfo(data[0]); // Assurez-vous que data[0] contient bien les informations souhaitées
+			setCabinetInfo(data[0]);
 			localStorage.setItem("cabinetInfo", JSON.stringify(data[0]));
 		} catch (error) {
 			setError(
@@ -69,7 +69,7 @@ const CabinetContent: React.FC = () => {
 			if (!response.ok)
 				throw new Error("Erreur de récupération du cabinet");
 			const data = await response.json();
-			setCabinetInfo(data[0]); // Assurez-vous que data[0] contient bien les informations souhaitées
+			setCabinetInfo(data[0]);
 		} catch (error) {
 			setError(
 				error instanceof Error
@@ -90,8 +90,11 @@ const CabinetContent: React.FC = () => {
 					body: JSON.stringify(updatedCabinet),
 				});
 				if (response.ok) {
-					// Mise à jour locale
 					setCabinetInfo(updatedCabinet);
+					localStorage.setItem(
+						"cabinetInfo",
+						JSON.stringify(updatedCabinet)
+					);
 				}
 			} catch (error) {
 				console.error("Erreur de mise à jour :", error);
@@ -139,6 +142,7 @@ const CabinetContent: React.FC = () => {
 
 	return (
 		<div className="flex flex-col flex-1 p-8 bg-gray-100 dark:bg-gray-900 overflow-y-auto">
+			{" "}
 			{/* En-tête */}
 			<header className="mb-6">
 				<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mb-10 mt-10 sm:p-6 rounded-lg shadow-lg">
@@ -151,30 +155,10 @@ const CabinetContent: React.FC = () => {
 					</p>
 				</div>
 			</header>
-
 			{/* Contenu principal */}
 			<main className="flex-grow p-4">
 				{/* Cartes d'information */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 ">
-					<div className="cabinet-info">
-						<h2>{cabinetInfo?.name}</h2>
-						<p>{cabinetInfo?.address}</p>
-						<p>{cabinetInfo?.phone}</p>
-						{/* Affichage du nombre de patients */}
-						<p>Nombre de patients : {cabinetInfo?.patientCount}</p>
-					</div>
-					{cabinetInfo && (
-						<div>
-							<h2>{cabinetInfo.name}</h2>
-							<p>Adresse: {cabinetInfo.address}</p>
-							<p>Téléphone: {cabinetInfo.phone}</p>
-							<p>
-								Nombre de patients :{" "}
-								{cabinetInfo?.patientCount || 0}
-							</p>
-							{/* Affichage du nombre de patients */}
-						</div>
-					)}
 					<InfoCard
 						icon={
 							<BuildingOfficeIcon className="h-6 w-6 text-blue-500" />
@@ -201,7 +185,7 @@ const CabinetContent: React.FC = () => {
 					/>
 					<InfoCard
 						icon={
-							<BuildingOfficeIcon className="h-6 w-6 text-purple-500" />
+							<UserGroupIcon className="h-6 w-6 text-purple-500" />
 						}
 						title="Nombre de Patients"
 						content={
@@ -209,7 +193,7 @@ const CabinetContent: React.FC = () => {
 								? cabinetInfo.patientCount.toString()
 								: "Aucune donnée disponible"
 						}
-						image="/assets/images/cabinetGratentour.webp"
+						image="/assets/images/NombrePatients.webp"
 					/>
 				</div>
 
@@ -235,7 +219,6 @@ const CabinetContent: React.FC = () => {
 					/>
 				</div>
 			</main>
-
 			{/* Modales */}
 			{isEditMode && cabinetInfo && (
 				<EditModal

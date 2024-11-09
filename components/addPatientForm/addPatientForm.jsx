@@ -3,6 +3,17 @@ import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+toast.success("Patient créé avec succès", {
+	position: "top-center",
+	autoClose: 5000,
+	hideProgressBar: false,
+	closeOnClick: true,
+	pauseOnHover: true,
+	draggable: true,
+	progress: undefined,
+});
 
 const AddPatientForm = () => {
 	const {
@@ -22,9 +33,7 @@ const AddPatientForm = () => {
 		setChildrenAges(updatedAges);
 	};
 
-	const addChildAgeField = () => {
-		setChildrenAges([...childrenAges, 0]);
-	};
+	const addChildAgeField = () => setChildrenAges([...childrenAges, 0]);
 
 	const removeChildAgeField = (index) => {
 		const updatedAges = childrenAges.filter((_, i) => i !== index);
@@ -63,6 +72,8 @@ const AddPatientForm = () => {
 		No: "Non",
 	};
 
+	const cabinetId = 3;
+
 	const onSubmit = async (data) => {
 		const validChildrenAges = childrenAges.filter((age) => age >= 0);
 		const finalData = {
@@ -78,26 +89,25 @@ const AddPatientForm = () => {
 			generalPractitioner: data.generalPractitioner || "",
 			maritalStatus: data.maritalStatus || "",
 			osteopathId: data.osteopathId,
+			cabinetId: cabinetId,
 		};
 		try {
 			const response = await fetch("/api/patients", {
 				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(finalData),
 			});
-			if (!response.ok) {
-				const textResponse = await response.text();
-				throw new Error(`Erreur serveur: ${textResponse}`);
-			}
+			if (!response.ok)
+				throw new Error(`Erreur serveur: ${await response.text()}`);
 			const result = await response.json();
-			toast.success(`Patient créé avec succès: ${result.message}`);
+			toast.success(
+				`Patient créé avec succès: ${result.message}` ||
+					"Patient créé avec succès"
+			);
 			reset();
 			setChildrenAges([0]);
 			setHasChildren(false);
 		} catch (error) {
-			console.error("Erreur lors de la création du patient :", error);
 			toast.error(
 				`Erreur lors de la création du patient: ${error.message}`
 			);
@@ -449,6 +459,8 @@ const AddPatientForm = () => {
 				position="top-center"
 				autoClose={5000}
 				hideProgressBar
+				toastClassName="text-md p-2"
+				bodyClassName="text-md p-2"
 			/>
 		</div>
 	);

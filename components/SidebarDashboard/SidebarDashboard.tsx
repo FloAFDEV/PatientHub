@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import {
@@ -23,23 +23,50 @@ import { User } from "@supabase/supabase-js";
 
 const supabase = createClient();
 
-export default function SidebarDashboard({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+const MemoizedDashboard = React.memo(Dashboard);
+const MemoizedPatientList = React.memo(PatientList);
+const MemoizedCabinetContent = React.memo(CabinetContent);
+
+function SidebarDashboard({ children }: { children: React.ReactNode }) {
 	const [open, setOpen] = useState(false);
 	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const [user, setUser] = useState<User | null>(null);
-	const [loadingUser, setLoadingUser] = useState(true);
 	const [activeTab, setActiveTab] = useState("dashboard");
+	const [isReady, setIsReady] = useState(false);
 	const router = useRouter();
 
-	useEffect(() => {
+	const handleLogout = useCallback(
+		async (e: React.MouseEvent) => {
+			e.preventDefault();
+			setIsLoggingOut(true);
+			try {
+				const result = await signOut();
+				if (result.success) {
+					router.push("/login");
+				} else {
+					throw new Error(
+						result.error || "Erreur lors de la déconnexion."
+					);
+				}
+			} catch (error) {
+				console.error("Erreur lors de la déconnexion:", error);
+			} finally {
+				setIsLoggingOut(false);
+			}
+		},
+		[router]
+	);
+
+	const handleTabChange = useCallback((tab: string) => {
+		setActiveTab(tab);
+		setOpen(false);
+	}, []);
+
+	useLayoutEffect(() => {
 		const checkSession = async () => {
 			try {
 				const { data, error } = await supabase.auth.getSession();
-				if (error) throw new Error(error.message);
+				if (error) throw error;
 				if (data.session) {
 					setUser(data.session.user);
 				} else {
@@ -50,78 +77,79 @@ export default function SidebarDashboard({
 					"Erreur lors de la récupération de la session :",
 					error
 				);
+				router.push("/error");
 			} finally {
-				setLoadingUser(false);
+				setIsReady(true);
 			}
 		};
 		checkSession();
 	}, [router]);
 
-	const handleLogout = async (e: React.MouseEvent) => {
-		e.preventDefault();
-		setIsLoggingOut(true);
-		const result = await signOut();
-		if (result.success) {
-			router.push("/login");
-		} else {
-			console.error(result.error || "Erreur lors de la déconnexion.");
+	const links = useMemo(
+		() => [
+			{
+				label: "Tableau de bord",
+				href: "#",
+				icon: (
+					<ChartBarIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				),
+				onClick: () => handleTabChange("dashboard"),
+			},
+			{
+				label: "Patients",
+				href: "#",
+				icon: (
+					<UserCircleIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				),
+				onClick: () => handleTabChange("patients"),
+			},
+			{
+				label: "Cabinet",
+				href: "#",
+				icon: (
+					<BuildingOfficeIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				),
+				onClick: () => handleTabChange("Cabinet"),
+			},
+			{
+				label: "Contact",
+				href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour%2C%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci%21",
+				icon: (
+					<DocumentIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				),
+			},
+			{
+				label: isLoggingOut ? "Déconnexion..." : "Se déconnecter",
+				href: "#",
+				icon: (
+					<ArrowLeftIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7" />
+				),
+				onClick: handleLogout,
+				disabled: isLoggingOut,
+			},
+		],
+		[isLoggingOut, handleLogout, handleTabChange]
+	);
+
+	const activeComponent = useMemo(() => {
+		switch (activeTab) {
+			case "dashboard":
+				return <MemoizedDashboard user={user} />;
+			case "patients":
+				return (
+					<MemoizedPatientList
+						initialPatients={undefined}
+						user={user}
+					/>
+				);
+			case "Cabinet":
+				return <MemoizedCabinetContent />;
+			default:
+				return null;
 		}
-		setIsLoggingOut(false);
-	};
+	}, [activeTab, user]);
 
-	const links = [
-		{
-			label: "Tableau de bord",
-			href: "#",
-			icon: (
-				<ChartBarIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
-			),
-			onClick: () => {
-				setActiveTab("dashboard");
-				setOpen(false);
-			},
-		},
-		{
-			label: "Patients",
-			href: "#",
-			icon: (
-				<UserCircleIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
-			),
-			onClick: () => {
-				setActiveTab("patients");
-				setOpen(false);
-			},
-		},
-		{
-			label: "Cabinet",
-			href: "#",
-			icon: (
-				<BuildingOfficeIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
-			),
-			onClick: () => {
-				setActiveTab("Cabinet");
-				setOpen(false);
-			},
-		},
-		{
-			label: "Contact",
-			href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour%2C%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci%21",
-			icon: (
-				<DocumentIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
-			),
-		},
-		{
-			label: isLoggingOut ? "Déconnexion..." : "Se déconnecter",
-			href: "#",
-			icon: (
-				<ArrowLeftIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7" />
-			),
-			onClick: handleLogout,
-			disabled: isLoggingOut,
-		},
-	];
-
-	if (loadingUser) {
+	if (!isReady) {
 		return <p className="text-center text-gray-500">Chargement...</p>;
 	}
 
@@ -178,11 +206,7 @@ export default function SidebarDashboard({
 					<ModeToggle />
 				</div>
 				<main className="flex-1 overflow-auto p-4">
-					{activeTab === "dashboard" && <Dashboard user={user} />}
-					{activeTab === "patients" && (
-						<PatientList initialPatients={undefined} user={user} />
-					)}
-					{activeTab === "Cabinet" && <CabinetContent />}
+					{activeComponent}
 					{children}
 				</main>
 				<footer className="bg-gray-200 dark:bg-slate-800 text-center p-4 border-t border-neutral-300 dark:border-neutral-700">
@@ -194,3 +218,5 @@ export default function SidebarDashboard({
 		</div>
 	);
 }
+
+export default React.memo(SidebarDashboard);

@@ -70,23 +70,29 @@ export async function GET(request) {
 			  }
 			: {};
 
-		// On récupère le cabinet, avec tous les patients associés
+		// Récupérer le cabinet et les patients avec la pagination
 		const cabinetInfo = await prisma.cabinet.findFirst({
 			where: whereCondition,
 			include: {
-				patients: true, // Inclut les patients pour les compter
+				patients: {
+					skip: (page - 1) * pageSize,
+					take: pageSize,
+				},
 			},
 		});
 
 		if (cabinetInfo) {
-			// On compte le nombre de patients associés à ce cabinet
-			const patientsCount = cabinetInfo.patients.length;
+			const patientsOnPage = cabinetInfo.patients; // Liste des patients récupérés pour cette page
 
-			// On renvoie les informations du cabinet, y compris le nombre de patients
+			// Utiliser la longueur de la liste des patients pour afficher le nombre exact
+			const patientsCount = patientsOnPage.length;
+
 			return new Response(
 				JSON.stringify({
 					...cabinetInfo,
-					patientsCount, // Ajoute le nombre de patients dans la réponse
+					patientsCount, // Affichage du nombre exact de patients récupérés
+					page,
+					pageSize,
 				}),
 				{
 					status: 200,
