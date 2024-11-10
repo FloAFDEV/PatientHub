@@ -89,7 +89,7 @@ const AddPatientForm = () => {
 			});
 			if (!response.ok)
 				throw new Error(`Erreur serveur: ${await response.text()}`);
-			const result = await response.json();
+			await response.json();
 			toast.success(`Patient ${data.name} créé avec succès !`, {
 				position: "top-center",
 				autoClose: 5000,
