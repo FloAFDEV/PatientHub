@@ -136,10 +136,17 @@ const PatientDetails = ({ patient, onClose }) => {
 						{patient.name || "Nom inconnu"}
 					</h1>
 					<button
-						className="mt-4 bg-blue-500 text-white p-2 md:p-3 text-sm md:text-base rounded-lg hover:bg-blue-600 w-full md:w-auto"
+						className="mt-2 border border-green-500 hover:bg-green-600 hover:text-white p-1 md:p-1 text-sm md:text-base rounded-lg w-full md:w-auto"
 						onClick={() => alert("Édition du patient")}
 					>
 						Éditer le patient
+					</button>
+
+					<button
+						className="mt-4 border border-red-500 hover:bg-red-600 hover:text-white p-1 md:p-1 text-sm md:text-base rounded-lg  w-full md:w-auto"
+						onClick={() => alert("Édition du patient")}
+					>
+						Supprimer le patient
 					</button>
 				</div>
 			</div>

@@ -107,11 +107,10 @@ const PatientList = ({ initialPatients, user }) => {
 			const matchesSearch = patient.name
 				.toLowerCase()
 				.includes(searchTerm.toLowerCase());
-			const matchesLetter = searchLetter
-				? patient.name
-						.toLowerCase()
-						.startsWith(searchLetter.toLowerCase())
-				: true;
+			const matchesLetter =
+				searchLetter === "" ||
+				patient.name.charAt(0).toLowerCase() ===
+					searchLetter.toLowerCase();
 			return matchesSearch && matchesLetter;
 		});
 	}, [patients, searchTerm, searchLetter]);

@@ -90,22 +90,48 @@ const AddPatientForm = () => {
 			if (!response.ok)
 				throw new Error(`Erreur serveur: ${await response.text()}`);
 			const result = await response.json();
-			toast.success(
-				`Patient créé avec succès: ${result.message}` ||
-					"Patient créé avec succès",
-				{
-					position: "top-center",
-					autoClose: 5000,
-					hideProgressBar: false,
-					closeOnClick: true,
-					pauseOnHover: true,
-					draggable: true,
-					progress: undefined,
-				}
-			);
-			reset();
-			setChildrenAges([0]);
+			toast.success(`Patient ${data.name} créé avec succès !`, {
+				position: "top-center",
+				autoClose: 5000,
+				hideProgressBar: false,
+				closeOnClick: true,
+				pauseOnHover: true,
+				draggable: true,
+				progress: undefined,
+			});
+			reset({
+				name: "",
+				email: "",
+				phone: "",
+				address: "",
+				birthDate: null,
+				gender: "",
+				maritalStatus: "",
+				occupation: "",
+				handedness: "",
+				contraception: "",
+				generalPractitioner: "",
+				isSmoker: "",
+				hasVisionCorrection: "",
+				isDeceased: "",
+				activityLevel: "",
+				entProblems: "",
+				entDoctorName: "",
+				digestiveProblems: "",
+				digestiveDoctorName: "",
+				currentTreatment: "",
+				surgicalHistory: "",
+				traumaHistory: "",
+				rheumatologicalHistory: "",
+				hdlm: "",
+			});
+
+			// Réinitialisation des états locaux
 			setHasChildren(false);
+			setChildrenAges([0]);
+
+			// Réinitialisation des champs qui ne sont pas directement gérés par react-hook-form
+			setValue("birthDate", null);
 		} catch (error) {
 			toast.error(
 				`Erreur lors de la création du patient: ${error.message}`
