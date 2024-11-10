@@ -202,15 +202,15 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 				</SidebarBody>
 			</Sidebar>
 			<div className="flex-1 flex flex-col">
-				<div className="fixed z-50 top-4 left-4 md:top-4 md:right-4 md:left-auto">
+				<div className="fixed z-50 top-1 left-2 md:top-4 md:right-4 md:left-auto">
 					<ModeToggle />
 				</div>
-				<main className="flex-1 overflow-auto p-4">
+				<main className="flex-1 overflow-auto p-1">
 					{activeComponent}
 					{children}
 				</main>
-				<footer className="bg-gray-200 dark:bg-slate-800 text-center p-4 border-t border-neutral-300 dark:border-neutral-700">
-					<p className="text-sm text-gray-600 dark:text-gray-400">
+				<footer className="bg-gray-200 dark:bg-slate-800 text-center p-2 border-t border-neutral-300 dark:border-neutral-700">
+					<p className="text-sm font-extralight text-gray-600 dark:text-gray-400">
 						© 2024 - PatientHub. Tous droits réservés.
 					</p>
 				</footer>

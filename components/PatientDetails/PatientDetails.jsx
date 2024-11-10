@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
+import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 
 const PatientDetails = ({ patient, onClose }) => {
 	const [error, setError] = useState(null);
@@ -65,17 +66,25 @@ const PatientDetails = ({ patient, onClose }) => {
 	};
 
 	const SectionToggle = ({ title, isOpen, onToggle, children }) => (
-		<div className="mb-4">
+		<div className="mb-4 border rounded-lg overflow-hidden">
 			<button
-				className="flex justify-between items-center w-full bg-gray-700 p-2 rounded-md hover:bg-gray-600 text-gray-200"
+				className="flex justify-between items-center w-full bg-gray-200 dark:bg-gray-700 p-2 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
 				onClick={onToggle}
 			>
-				<span className="font-semibold text-sm md:text-base">
-					{title}
-				</span>
-				<span>{isOpen ? "−" : "+"}</span>
+				<span className="font-semibold">{title}</span>
+				{isOpen ? (
+					<ChevronUpIcon className="h-5 w-5" />
+				) : (
+					<ChevronDownIcon className="h-5 w-5" />
+				)}
 			</button>
-			{isOpen && <div className="p-4">{children}</div>}
+			<div
+				className={`transition-all duration-300 ease-in-out overflow-hidden ${
+					isOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+				}`}
+			>
+				<div className="p-4 bg-white dark:bg-gray-800">{children}</div>
+			</div>
 		</div>
 	);
 
@@ -93,9 +102,13 @@ const PatientDetails = ({ patient, onClose }) => {
 	}
 
 	const DetailItem = ({ label, value }) => (
-		<div className="flex justify-between items-center py-2 border-b border-gray-300">
-			<span className="font-semibold text-sm">{label}:</span>
-			<span className="text-sm">{value}</span>
+		<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-2 border-b border-gray-300 dark:border-gray-700">
+			<span className="font-semibold text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 sm:mb-0">
+				{label}
+			</span>
+			<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words sm:text-right sm:max-w-[60%]">
+				{value}
+			</p>
 		</div>
 	);
 
@@ -114,9 +127,9 @@ const PatientDetails = ({ patient, onClose }) => {
 						"/assets/images/default-avatar.webp"
 					}
 					alt={`Avatar de ${patient.name || "inconnu"}`}
-					className="w-32 h-32 md:w-36 md:h-36 rounded-lg border-2 border-slate-950 shadow-md shadow-gray-400"
-					width={144}
-					height={144}
+					className="w-24 h-24 sm:w-32 sm:h-32 rounded-lg border-2 border-slate-950 shadow-md"
+					width={128}
+					height={128}
 				/>
 				<div className="flex flex-col items-center md:items-start">
 					<h1 className="text-2xl md:text-3xl font-bold text-center md:text-left">
@@ -137,7 +150,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				isOpen={openSections.basicInfo}
 				onToggle={() => toggleSection("basicInfo")}
 			>
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
 					<DetailItem
 						label="Email"
 						value={patient.email || "Non renseigné"}
@@ -271,7 +284,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				/>
 				{patient.childrenAges && (
 					<div>
-						<h4 className="text-md font-semibold m-2 mt-4">
+						<h4 className="text-sm font-normal m-2 mt-4">
 							Âges des enfants
 						</h4>
 						{patient.childrenAges.length > 0 ? (
@@ -310,42 +323,44 @@ const PatientDetails = ({ patient, onClose }) => {
 			</SectionToggle>
 
 			{/* Documents médicaux et consultations */}
-			<div className="mb-4">
-				<h3 className="text-lg font-semibold">
-					Documents et consultations
-				</h3>
-				<DetailItem
-					label="Documents médicaux"
-					value={`${
-						patient.medicalDocuments?.length || 0
-					} document(s)`}
-				/>
-				<DetailItem
-					label="Consultations"
-					value={`${
-						patient.consultations?.length || 0
-					} consultation(s)`}
-				/>
-				<DetailItem
-					label="Rendez-vous"
-					value={`${patient.appointments?.length || 0} rendez-vous`}
-				/>
-			</div>
-
-			{/* Dates de création et de mise à jour */}
-			<div className="mb-4">
-				<DetailItem
-					label="Créé le"
-					value={new Date(patient.createdAt).toLocaleDateString(
-						"fr-FR"
-					)}
-				/>
-				<DetailItem
-					label="Mis à jour le"
-					value={new Date(patient.updatedAt).toLocaleDateString(
-						"fr-FR"
-					)}
-				/>
+			<div className="mb-4 border rounded-lg overflow-hidden">
+				<div className="bg-gray-100 dark:bg-gray-700 p-3 text-gray-800 dark:text-gray-200">
+					<span className="font-semibold">
+						Documents médicaux et consultations
+					</span>
+				</div>
+				<div className="p-4 bg-white dark:bg-gray-800">
+					<DetailItem
+						label="Documents médicaux"
+						value={`${
+							patient.medicalDocuments?.length || 0
+						} document(s)`}
+					/>
+					<DetailItem
+						label="Consultations"
+						value={`${
+							patient.consultations?.length || 0
+						} consultation(s)`}
+					/>
+					<DetailItem
+						label="Rendez-vous"
+						value={`${
+							patient.appointments?.length || 0
+						} rendez-vous`}
+					/>
+					<DetailItem
+						label="Créé le"
+						value={new Date(patient.createdAt).toLocaleDateString(
+							"fr-FR"
+						)}
+					/>
+					<DetailItem
+						label="Mis à jour le"
+						value={new Date(patient.updatedAt).toLocaleDateString(
+							"fr-FR"
+						)}
+					/>
+				</div>
 			</div>
 		</div>
 	);

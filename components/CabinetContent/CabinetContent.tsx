@@ -125,9 +125,9 @@ const CabinetContent: React.FC = () => {
 		return (
 			<div className="flex items-center justify-center h-screen bg-slate-800">
 				<div className="flex flex-col items-center justify-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid mb-4"></div>
+					<div className="animate-spin rounded-full h-12 w-full border-t-4 border-blue-500 border-solid mb-4"></div>
 					<p className="text-lg text-gray-500 dark:text-gray-400">
-						Chargement des patients...
+						Chargement des informations...
 					</p>
 				</div>
 			</div>
@@ -141,20 +141,29 @@ const CabinetContent: React.FC = () => {
 	}
 
 	return (
-		<div className="flex flex-col flex-1 p-8 bg-gray-100 dark:bg-gray-900 overflow-y-auto">
-			{" "}
-			{/* En-tête */}
-			<header className="mb-6">
-				<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 mb-10 mt-10 sm:p-6 rounded-lg shadow-lg">
-					<h1 className="text-2xl sm:text-3xl font-bold mb-2">
+		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
+				<div className="flex flex-col flex-grow pr-2">
+					<h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
 						Bienvenue sur la fiche de votre cabinet
 					</h1>
-					<p className="text-base sm:text-lg">
+					<p className="text-sm sm:text-base">
 						Retrouvez ici les informations sur votre cabinet et vos
 						paramètres.
 					</p>
 				</div>
-			</header>
+				<div className="flex-shrink-0 ml-2 sm:ml-4">
+					<Image
+						src="/assets/icons/logo-full.svg"
+						alt="Logo"
+						width={100}
+						height={100}
+						className="object-contain rounded-xl w-[60px] sm:w-[80px] md:w-[100px]"
+						priority
+					/>
+				</div>
+			</div>
+
 			{/* Contenu principal */}
 			<main className="flex-grow p-4">
 				{/* Cartes d'information */}

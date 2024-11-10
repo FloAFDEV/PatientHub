@@ -5,16 +5,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-toast.success("Patient créé avec succès", {
-	position: "top-center",
-	autoClose: 5000,
-	hideProgressBar: false,
-	closeOnClick: true,
-	pauseOnHover: true,
-	draggable: true,
-	progress: undefined,
-});
-
 const AddPatientForm = () => {
 	const {
 		control,
@@ -102,7 +92,16 @@ const AddPatientForm = () => {
 			const result = await response.json();
 			toast.success(
 				`Patient créé avec succès: ${result.message}` ||
-					"Patient créé avec succès"
+					"Patient créé avec succès",
+				{
+					position: "top-center",
+					autoClose: 5000,
+					hideProgressBar: false,
+					closeOnClick: true,
+					pauseOnHover: true,
+					draggable: true,
+					progress: undefined,
+				}
 			);
 			reset();
 			setChildrenAges([0]);
