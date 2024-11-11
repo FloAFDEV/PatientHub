@@ -91,7 +91,7 @@ export default function LoginPage() {
 	};
 
 	return (
-		<div className="flex h-screen max-h-screen">
+		<div className="flex h-screen max-h-screen flex-col lg:flex-row">
 			<BackgroundBeamsWithCollision className="flex-grow">
 				<div
 					suppressHydrationWarning
@@ -101,15 +101,18 @@ export default function LoginPage() {
 					{isModalOpen && (
 						<PasskeyModal open={isModalOpen} onClose={closeModal} />
 					)}
-					<div className="flex-1 flex flex-col items-center justify-center p-4">
+					<div className="flex-1 flex flex-col items-center justify-center p-2">
+						{/* Toggle du mode d'affichage si monté */}
 						{isMounted && (
 							<div className="absolute top-4 right-4 z-10">
 								<ModeToggle />
 							</div>
 						)}
-						<div className="mx-auto max-w-md w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 lg:py-16 mt-28">
+
+						{/* Texte d'accueil */}
+						<div className="mx-auto max-w-md w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 lg:py-16 mt-20 lg:mt-28">
 							<div className="text-center">
-								<h1 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
+								<h1 className="text-3xl font-bold tracking-tight mt-10 sm:text-3xl md:text-4xl lg:text-5xl">
 									Votre espace dédié aux ostéopathes
 								</h1>
 								<p className="mt-4 text-base leading-7 sm:mt-6 sm:text-lg">
@@ -118,11 +121,13 @@ export default function LoginPage() {
 								</p>
 							</div>
 						</div>
-						<h1 className="absolute top-4 left-4 text-lg sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-violet-500 to-pink-500">
+						<h1 className="absolute top-4 left-4 text-3xl sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-violet-500 to-pink-500">
 							PatientHub
 						</h1>
-						<div className="w-full max-w-md text-card-foreground border p-4 shadow-lg rounded-lg mt-6 mb-12 sm:mb-24">
-							<h2 className="text-lg font-bold text-center mb-10">
+
+						{/* Formulaire de connexion */}
+						<div className="w-full max-w-md text-card-foreground border p-8 shadow-lg rounded-lg mt-6 mb-12 sm:mb-24 bg-slate-100">
+							<h2 className="text-lg font-bold text-center mb-2">
 								Connexion
 							</h2>
 							<form onSubmit={handleSubmit} className="space-y-4">
@@ -149,6 +154,7 @@ export default function LoginPage() {
 										aria-describedby="email-error"
 									/>
 								</div>
+
 								{/* Champ Mot de Passe */}
 								<div>
 									<label
@@ -172,11 +178,13 @@ export default function LoginPage() {
 										aria-describedby="password-error"
 									/>
 								</div>
+
 								<input
 									type="hidden"
 									name="hiddenField"
 									value={hiddenField}
 								/>
+
 								{/* Bouton de soumission */}
 								<button
 									type="submit"
@@ -190,6 +198,7 @@ export default function LoginPage() {
 										? "Connexion en cours..."
 										: "Se connecter"}
 								</button>
+
 								{/* Message d'erreur */}
 								{error && (
 									<p
@@ -199,6 +208,7 @@ export default function LoginPage() {
 										{error}
 									</p>
 								)}
+
 								<p className="text-sm text-muted-foreground text-center">
 									Vous n&apos;avez pas accès ?{" "}
 									<Link
@@ -212,6 +222,7 @@ export default function LoginPage() {
 							</form>
 						</div>
 
+						{/* Informations supplémentaires */}
 						<div className="hidden md:block mt-4 text-center text-muted-foreground px-4">
 							<p className="text-base leading-tight">
 								La plateforme conçue pour faciliter la gestion
@@ -226,13 +237,15 @@ export default function LoginPage() {
 					</div>
 				</div>
 			</BackgroundBeamsWithCollision>
+
+			{/* Image latérale */}
 			<Image
 				src="/assets/images/onboarding-img.png"
 				height={1000}
 				width={1000}
 				priority
 				alt="Image d'accueil"
-				className="side-img max-w-[50%] hidden md:block"
+				className="side-img max-w-[50%] hidden lg:block object-cover"
 			/>
 		</div>
 	);

@@ -169,7 +169,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 							))}
 						</div>
 					</div>
-					<div className="bg-white dark:bg-slate-800 flex items-center gap-3 rounded-xl">
+					<div className="dark:bg-slate-800 flex items-center gap-3 rounded-xl">
 						{user ? (
 							<>
 								<Image
@@ -179,8 +179,8 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 									height={40}
 									alt="User Avatar"
 								/>
-								<div>
-									<p className="ml-4 text-sm font-medium text-gray-800 dark:text-white">
+								<div className="flex-1 min-w-0">
+									<p className="text-sm font-medium text-gray-800 dark:text-white truncate">
 										{user.user_metadata?.user_metadata
 											?.first_name ||
 											"Nom non disponible"}{" "}
@@ -188,7 +188,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 											?.last_name ||
 											"Prénom non disponible"}
 									</p>
-									<p className="ml-4 text-xs text-gray-600 dark:text-gray-400">
+									<p className="text-xs text-gray-600 dark:text-gray-400 truncate">
 										{user.email || "Email non disponible"}
 									</p>
 								</div>

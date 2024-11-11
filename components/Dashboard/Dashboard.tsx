@@ -9,7 +9,6 @@ import {
 	IconList,
 	IconChartBar,
 } from "@tabler/icons-react";
-import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 
 interface DashboardProps {
 	user: User | null;
@@ -139,8 +138,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					tableaux...
 				</p>
 			</div>
-
-			<AddPatientForm />
 		</div>
 	);
 };

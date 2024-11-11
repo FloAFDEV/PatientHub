@@ -123,25 +123,26 @@ const CabinetContent: React.FC = () => {
 
 	if (loading) {
 		return (
-			<div className="flex items-center justify-center h-screen bg-slate-800">
-				<div className="flex flex-col items-center justify-center">
-					<div className="animate-spin rounded-full h-12 w-full border-t-4 border-blue-500 border-solid mb-4"></div>
-					<p className="text-lg text-gray-500 dark:text-gray-400">
-						Chargement des informations...
-					</p>
-				</div>
+			<div className="flex items-center justify-center min-h-screen bg-slate-800">
+				<div className="animate-spin h-16 w-16 border-t-4 border-blue-500 rounded-full mb-6"></div>{" "}
+				<p className="text-xl text-gray-300 mt-6">
+					{" "}
+					Chargement en cours...
+				</p>
 			</div>
 		);
 	}
 
 	if (error) {
 		return (
-			<p className="text-center text-red-500 font-semibold">{error}</p>
+			<div className="text-center text-red-500 font-bold p-4">
+				<p>{error}</p>
+			</div>
 		);
 	}
 
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+		<div className="flex-1 p-4 sm:p-6 md:p-10 mr-4 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
 			<div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
 				<div className="flex flex-col flex-grow pr-2">
 					<h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
@@ -163,7 +164,6 @@ const CabinetContent: React.FC = () => {
 					/>
 				</div>
 			</div>
-
 			{/* Contenu principal */}
 			<main className="flex-grow p-4">
 				{/* Cartes d'information */}
@@ -344,7 +344,7 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
 				)} w-full sm:w-auto max-w-xs dark:text-white font-light text-zinc-700 hover:text-white py-2 px-4 rounded flex items-center justify-center transition duration-300 ease-in-out`}
 			>
 				{icon}
-				<span className="ml-2">{text}</span>
+				<span className="ml-4">{text}</span>
 			</button>
 		);
 	}

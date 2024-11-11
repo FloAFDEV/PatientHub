@@ -1,5 +1,12 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, {
+	useEffect,
+	useState,
+	useMemo,
+	useCallback,
+	Suspense,
+} from "react";
 import Image from "next/image";
+import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import {
 	IconGenderMale,
 	IconGenderFemale,
@@ -10,7 +17,7 @@ import {
 } from "@tabler/icons-react";
 
 const PatientDetails = React.lazy(() =>
-	import("../PatientDetails/PatientDetails")
+	import("@/components/PatientDetails/PatientDetails")
 );
 
 const PatientList = ({ initialPatients, user }) => {
@@ -20,6 +27,7 @@ const PatientList = ({ initialPatients, user }) => {
 	const [selectedPatientId, setSelectedPatientId] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
+	const [showAddFormPatient, setShowAddFormPatient] = useState(false);
 
 	// Fonction pour calculer l'âge
 	const calculateAge = useMemo(
@@ -117,29 +125,25 @@ const PatientList = ({ initialPatients, user }) => {
 
 	// Logique de pagination
 	const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
-
 	const handlePageChange = (newPage) => {
 		if (newPage > 0 && newPage <= totalPages) {
 			setCurrentPage(newPage);
 		}
 	};
-
 	const indexOfLastPatient = currentPage * patientsPerPage;
 	const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
-
 	const currentPatients = useMemo(() => {
 		return filteredPatients.slice(indexOfFirstPatient, indexOfLastPatient);
 	}, [filteredPatients, indexOfFirstPatient, indexOfLastPatient]);
 
 	if (loading) {
 		return (
-			<div className="flex items-center justify-center h-screen bg-slate-800">
-				<div className="flex flex-col items-center justify-center">
-					<div className="animate-spin rounded-full h-12 w-full border-t-4 border-blue-500 border-solid mb-4"></div>
-					<p className="text-lg text-gray-500 dark:text-gray-400">
-						Chargement des patients...
-					</p>
-				</div>
+			<div className="flex items-center justify-center min-h-screen bg-slate-800">
+				<div className="animate-spin h-16 w-16 border-t-4 border-blue-500 rounded-full mb-6"></div>{" "}
+				<p className="text-xl text-gray-300 mt-6">
+					{" "}
+					Chargement en cours...{" "}
+				</p>
 			</div>
 		);
 	}
@@ -191,20 +195,46 @@ const PatientList = ({ initialPatients, user }) => {
 				Recherche de patients
 			</h2>
 
-			{/* Barre de recherche */}
-			<div className="relative max-w-sm mx-auto">
-				<input
-					type="text"
-					placeholder="Rechercher par nom..."
-					className="w-full p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white"
-					value={searchTerm}
-					onChange={(e) => setSearchTerm(e.target.value)}
-				/>
-				<IconSearch
-					className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-					size={20}
-				/>
+			<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-6">
+				{/* Zone de recherche */}
+				<div className="relative max-w-sm w-full">
+					<input
+						type="text"
+						placeholder="Rechercher par nom..."
+						className="w-full p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white"
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+					/>
+					<IconSearch
+						className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+						size={20}
+					/>
+				</div>
+
+				{/* Bouton Ajouter un patient */}
+				<div>
+					<button
+						onClick={() => setShowAddFormPatient(true)}
+						className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center text-sm sm:text-base"
+					>
+						<IconPlus className="mr-2" size={18} />
+						Ajouter un patient
+					</button>
+				</div>
 			</div>
+
+			{/* Lazy-loaded component */}
+			{showAddFormPatient && (
+				<Suspense fallback={<div>Loading...</div>}>
+					<AddPatientForm
+						onClose={() => setShowAddFormPatient(false)}
+						onAddPatient={(newPatient) => {
+							setPatients([...patients, newPatient]);
+							setShowAddFormPatient(true);
+						}}
+					/>
+				</Suspense>
+			)}
 
 			{/* Navigation alphabétique */}
 			<div className="hidden md:flex flex-wrap justify-center gap-1 mb-4">
@@ -222,7 +252,7 @@ const PatientList = ({ initialPatients, user }) => {
 					</button>
 				))}
 				<button
-					className={`px-2 py-1 rounded-full transition duration=300 text-sm ${
+					className={`px-2 py-1 rounded-full transition duration-300 text-sm ${
 						searchLetter === ""
 							? "bg-blue-500 text-white"
 							: "hover:bg-blue-100 dark:hover:bg-gray-700"
@@ -251,7 +281,7 @@ const PatientList = ({ initialPatients, user }) => {
 			</select>
 
 			{/* Liste des patients */}
-			<ul className="space-y-3 w-full max-w-4xl mx-auto">
+			<ul className="space-y-3 w-full max-w-5xl mx-auto">
 				{currentPatients.length === 0 ? (
 					<li className="text-base sm:text-lg text-gray-500 text-center">
 						Aucun patient trouvé.
@@ -260,11 +290,11 @@ const PatientList = ({ initialPatients, user }) => {
 					currentPatients.map((patient) => (
 						<li
 							key={patient.id}
-							className={`p-3 sm:p-4 border rounded-lg shadow-md bg-slate-100 dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200 flex flex-col ${
+							className={`p-3 sm:p-4 border rounded-lg shadow-md bg-gray-50 dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200 flex flex-col ${
 								patient.gender === "Homme"
 									? "text-blue-800"
 									: "text-pink-800"
-							} dark:bg-gray=800`}
+							} dark:bg-gray-800`}
 						>
 							<div
 								className="flex flex-col sm:flex-row sm:items-center cursor-pointer justify-between"
@@ -292,19 +322,25 @@ const PatientList = ({ initialPatients, user }) => {
 										{patient.name}
 									</h2>
 								</div>
-								<div className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm font-semibold">
+								<div className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm font-semibold flex space-x-6">
 									<p>
 										Âge: {calculateAge(patient.birthDate)}{" "}
 										ans
 									</p>
 									<p>
 										Tél:{" "}
-										<a
-											href={`tel:${patient.phone}`}
-											className="text-stone-900 hover:underline dark:text-green-400"
-										>
-											{patient.phone}
-										</a>
+										{patient.phone ? (
+											<a
+												href={`tel:${patient.phone}`}
+												className="text-stone-900 hover:underline dark:text-green-400"
+											>
+												{patient.phone}
+											</a>
+										) : (
+											<span className="text-stone-900 dark:text-gray-400">
+												Numéro non renseigné
+											</span>
+										)}
 									</p>
 								</div>
 							</div>
@@ -327,19 +363,6 @@ const PatientList = ({ initialPatients, user }) => {
 				)}
 			</ul>
 
-			{/* Actions rapides */}
-			<div className="mt-6">
-				<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-4 text-center">
-					Actions rapides
-				</h2>
-				<div className="flex justify-center">
-					<button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center text-sm sm:text-base">
-						<IconPlus className="mr-2" size={18} /> Ajouter un
-						patient
-					</button>
-				</div>
-			</div>
-
 			{/* Contrôles de pagination */}
 			<div className="flex flex-col sm:flex-row justify-between items-center mt-4 w-full max-w-3xl mx-auto">
 				{/* Select pour la navigation de page */}
@@ -360,7 +383,7 @@ const PatientList = ({ initialPatients, user }) => {
 					<button
 						onClick={() => handlePageChange(currentPage - 1)}
 						disabled={currentPage === 1}
-						className={`px=4 py=2 ${
+						className={`px-4 py-2 ${
 							currentPage === 1
 								? "opacity50 cursor-notallowed"
 								: ""
@@ -373,7 +396,7 @@ const PatientList = ({ initialPatients, user }) => {
 					<button
 						onClick={() => handlePageChange(currentPage + 1)}
 						disabled={currentPage === totalPages}
-						className={`px=4 py=2 ${
+						className={`px-4 py-2 ${
 							currentPage === totalPages
 								? "opacity50 cursor-notallowed"
 								: ""

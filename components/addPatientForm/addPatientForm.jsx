@@ -4,8 +4,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
-const AddPatientForm = () => {
+const AddPatientForm = ({ onClose }) => {
 	const {
 		control,
 		handleSubmit,
@@ -129,6 +130,7 @@ const AddPatientForm = () => {
 			// Réinitialisation des états locaux
 			setHasChildren(false);
 			setChildrenAges([0]);
+			onClose();
 
 			// Réinitialisation des champs qui ne sont pas directement gérés par react-hook-form
 			setValue("birthDate", null);
@@ -140,13 +142,21 @@ const AddPatientForm = () => {
 	};
 
 	return (
-		<div className="p-4 w-full max-w-full border border-blue-300 rounded-lg shadow-md bg-white dark:bg-slate-800">
+		<div className="p-4 w-full max-w-full border border-blue-300 rounded-lg shadow-md bg-white dark:bg-slate-800 relative">
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 				<h2 className="text-2xl font-bold mb-6 text-center">
 					Ajouter un Patient
 				</h2>
 
 				<div className="mb-8">
+					<button
+						type="button"
+						onClick={onClose}
+						className="absolute top-2 right-2 text-red-600 hover:text-gray-800"
+					>
+						{/* Icône de fermeture */}
+						<XMarkIcon className="h-6 w-6" />
+					</button>
 					<h3 className="text-xl font-semibold mb-4 text-center">
 						Informations Personnelles
 					</h3>

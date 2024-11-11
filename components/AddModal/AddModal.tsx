@@ -28,7 +28,7 @@ const AddModal: React.FC<AddModalProps> = ({ onSubmit, onCancel }) => {
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-6 sm:p-10">
-			<div className="bg-white dark:bg-slate-700 rounded-lg shadow-xl w-full max-w-md">
+			<div className="bg-white border-4 border-green-400 dark:bg-slate-700 rounded-lg shadow-xl w-full max-w-md">
 				<div className="p-6 sm:p-8">
 					<h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4 sm:mb-6">
 						Ajouter Cabinet
@@ -42,7 +42,7 @@ const AddModal: React.FC<AddModalProps> = ({ onSubmit, onCancel }) => {
 								name="name"
 								value={formData.name}
 								onChange={handleChange}
-								className="peer w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200 placeholder-transparent"
+								className="peer w-full p-3 rounded-md border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200 placeholder-transparent"
 								placeholder="Nom du cabinet"
 							/>
 							<label
@@ -61,7 +61,7 @@ const AddModal: React.FC<AddModalProps> = ({ onSubmit, onCancel }) => {
 								name="address"
 								value={formData.address}
 								onChange={handleChange}
-								className="peer w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200 placeholder-transparent"
+								className="peer w-full p-3 rounded-md border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200 placeholder-transparent"
 								placeholder="Adresse"
 							/>
 							<label
@@ -80,7 +80,7 @@ const AddModal: React.FC<AddModalProps> = ({ onSubmit, onCancel }) => {
 								name="phone"
 								value={formData.phone || ""}
 								onChange={handleChange}
-								className="peer w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200 placeholder-transparent"
+								className="peer w-full p-3 rounded-md border border-blue-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 transition duration-200 placeholder-transparent"
 								placeholder="Téléphone"
 							/>
 							<label
@@ -101,7 +101,7 @@ const AddModal: React.FC<AddModalProps> = ({ onSubmit, onCancel }) => {
 					</button>
 					<button
 						onClick={() => onSubmit(formData)}
-						className="px-4 py-2 rounded-md text-sm bg-blue-600 text-white hover:bg-blue-700 transition duration-200"
+						className="px-4 py-2 rounded-md text-sm bg-green-600 text-white hover:bg-green-700 transition duration-200"
 					>
 						Ajouter
 					</button>

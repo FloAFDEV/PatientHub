@@ -28,8 +28,8 @@ const EditModal: React.FC<EditModalProps> = ({
 
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-6 sm:p-10">
-			<div className="bg-white dark:bg-slate-700 rounded-lg shadow-xl w-full max-w-md">
-				<div className="p-6 sm:p-8">
+			<div className="border-4 border-blue-400 bg-white dark:bg-slate-700 rounded-lg shadow-xl w-full max-w-md">
+				<div className="p-6 sm:p-8 ">
 					<h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
 						Modifier Cabinet
 					</h2>
