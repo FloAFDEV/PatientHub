@@ -108,7 +108,6 @@ export default function LoginPage() {
 								<ModeToggle />
 							</div>
 						)}
-
 						{/* Texte d'accueil */}
 						<div className="mx-auto max-w-md w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 lg:py-16 mt-20 lg:mt-28">
 							<div className="text-center">
@@ -121,11 +120,10 @@ export default function LoginPage() {
 								</p>
 							</div>
 						</div>
-						<h1 className="absolute top-4 left-4 text-3xl sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-violet-500 to-pink-500">
+						<h1 className="absolute top-4 left-4 text-3xl sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 ">
 							PatientHub
 						</h1>
-
-						{/* Formulaire de connexion */}
+						- -{/* Formulaire de connexion */}
 						<div className="w-full max-w-md text-card-foreground border p-8 shadow-lg rounded-lg mt-6 mb-12 sm:mb-24">
 							<h2 className="text-lg font-bold text-center mb-2">
 								Connexion
@@ -188,7 +186,7 @@ export default function LoginPage() {
 								{/* Bouton de soumission */}
 								<button
 									type="submit"
-									className={`w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-md hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+									className={`w-full bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500  text-white py-2 rounded-md hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
 										isLoading ? "opacity-50" : ""
 									}`}
 									disabled={isLoading}
@@ -221,7 +219,6 @@ export default function LoginPage() {
 								</p>
 							</form>
 						</div>
-
 						{/* Informations supplémentaires */}
 						<div className="hidden md:block mt-4 text-center text-muted-foreground px-4">
 							<p className="text-base leading-tight">

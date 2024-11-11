@@ -95,7 +95,7 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 	return (
 		<AlertDialog open={open} onOpenChange={onClose}>
 			<AlertDialogOverlay className="fixed inset-0 bg-transparent/5" />
-			<AlertDialogContent className="shad-alert-dialog max-w-lg w-full mx-auto p-6 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+			<AlertDialogContent className="shad-alert-dialog max-w-lg w-full mx-auto p-6 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 border-4">
 				<AlertDialogHeader>
 					<AlertDialogTitle className="flex items-start justify-between font-bold">
 						Vérification d&apos;accès administrateur
@@ -108,7 +108,7 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 							className="cursor-pointer hover:bg-red-500 rounded-xl bg-red-700"
 						/>
 					</AlertDialogTitle>
-					<AlertDialogDescription className="font-thin">
+					<AlertDialogDescription className="font-normal">
 						Pour accéder à la page admin, veuillez entrer le code
 						d&apos;accès.
 					</AlertDialogDescription>
@@ -124,7 +124,7 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 							{Array.from({ length: 6 }, (_, index) => (
 								<InputOTPSlot
 									key={index}
-									className="shad-otp-slot flex justify-center items-center text-2xl md:text-3xl font-bold border border-gray-500 rounded-lg w-10 md:w-12 h-10 md:h-12 gap-2 md:gap-4 text-green-500"
+									className="shad-otp-slot flex justify-center items-center text-2xl md:text-3xl font-bold border border-red-500 rounded-lg w-10 md:w-12 h-10 md:h-12 gap-2 md:gap-4 text-green-500"
 									index={index}
 								/>
 							))}

@@ -127,7 +127,14 @@ const PatientDetails = ({ patient, onClose }) => {
 						"/assets/images/default-avatar.webp"
 					}
 					alt={`Avatar de ${patient.name || "inconnu"}`}
-					className="w-24 h-24 sm:w-32 sm:h-32 rounded-lg border-2 border-slate-950 shadow-md"
+					// Ajoutez une classe conditionnelle en fonction du genre
+					className={`w-24 h-24 sm:w-32 sm:h-32 rounded-lg border-4 shadow-md ${
+						patient.gender === "Homme"
+							? "border-blue-500" // Bordure bleue pour un homme
+							: patient.gender === "Femme"
+							? "border-pink-500" // Bordure rose pour une femme
+							: "border-gray-300" // Bordure grise par défaut
+					}`}
 					width={128}
 					height={128}
 				/>
