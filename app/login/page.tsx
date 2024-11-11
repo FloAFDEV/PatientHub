@@ -126,7 +126,7 @@ export default function LoginPage() {
 						</h1>
 
 						{/* Formulaire de connexion */}
-						<div className="w-full max-w-md text-card-foreground border p-8 shadow-lg rounded-lg mt-6 mb-12 sm:mb-24 bg-slate-100">
+						<div className="w-full max-w-md text-card-foreground border p-8 shadow-lg rounded-lg mt-6 mb-12 sm:mb-24">
 							<h2 className="text-lg font-bold text-center mb-2">
 								Connexion
 							</h2>
