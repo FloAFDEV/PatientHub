@@ -152,7 +152,7 @@ const AddPatientForm = ({ onClose }) => {
 					<button
 						type="button"
 						onClick={onClose}
-						className="absolute top-2 right-2 text-red-600 hover:text-gray-800"
+						className="absolute top-2 right-2 text-red-500 hover:text-red-400"
 					>
 						{/* Icône de fermeture */}
 						<XMarkIcon className="h-6 w-6" />
