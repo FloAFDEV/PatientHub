@@ -15,6 +15,8 @@ import {
 	IconChevronLeft,
 	IconChevronRight,
 } from "@tabler/icons-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PatientDetails = React.lazy(() =>
 	import("@/components/PatientDetails/PatientDetails")
@@ -28,6 +30,9 @@ const PatientList = ({ initialPatients, user }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
 	const [showAddFormPatient, setShowAddFormPatient] = useState(false);
+	const showToast = () => {
+		toast.success("Test Toast Message!");
+	};
 
 	// Fonction pour calculer l'âge
 	const calculateAge = useMemo(
@@ -59,7 +64,7 @@ const PatientList = ({ initialPatients, user }) => {
 		const cachedData = localStorage.getItem("patients");
 		if (cachedData) {
 			const { data, timestamp } = JSON.parse(cachedData);
-			if (Date.now() - timestamp < 5 * 60 * 1000) {
+			if (Date.now() - timestamp < 1 * 60 * 1000) {
 				// Cache valide pour 5 minutes
 				return data;
 			}
@@ -139,9 +144,8 @@ const PatientList = ({ initialPatients, user }) => {
 	if (loading) {
 		return (
 			<div className="flex items-center justify-center min-h-screen bg-slate-800">
-				<div className="animate-spin h-16 w-16 border-t-4 border-blue-500 rounded-full mb-6"></div>{" "}
+				<div className="animate-spin h-16 w-16 border-t-4 border-blue-500 rounded-full mb-6"></div>
 				<p className="text-xl text-gray-300 mt-6">
-					{" "}
 					Chargement en cours...{" "}
 				</p>
 			</div>
@@ -166,6 +170,20 @@ const PatientList = ({ initialPatients, user }) => {
 
 	return (
 		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+			{" "}
+			<ToastContainer
+				position="top-center"
+				autoClose={5000}
+				hideProgressBar
+				toastClassName="text-md p-2 border-2 border-green-500"
+				bodyClassName="text-md p-2"
+			/>
+			<button
+				onClick={showToast}
+				className="bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-md mb-4"
+			>
+				Show Test Toast
+			</button>
 			<div className="bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500  text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
 				<div className="flex flex-col flex-grow pr-2">
 					<h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
@@ -190,11 +208,9 @@ const PatientList = ({ initialPatients, user }) => {
 					/>
 				</div>
 			</div>
-
 			<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-4 text-center">
 				Recherche de patients
 			</h2>
-
 			<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-6">
 				{/* Zone de recherche */}
 				<div className="relative max-w-sm w-full">
@@ -222,7 +238,6 @@ const PatientList = ({ initialPatients, user }) => {
 					</button>
 				</div>
 			</div>
-
 			{/* Lazy-loaded component */}
 			{showAddFormPatient && (
 				<Suspense fallback={<div>Loading...</div>}>
@@ -235,7 +250,6 @@ const PatientList = ({ initialPatients, user }) => {
 					/>
 				</Suspense>
 			)}
-
 			{/* Navigation alphabétique */}
 			<div className="hidden md:flex flex-wrap justify-center gap-1 mb-4">
 				{alphabet.map((letter) => (
@@ -265,7 +279,6 @@ const PatientList = ({ initialPatients, user }) => {
 					Tous
 				</button>
 			</div>
-
 			{/* Select pour la navigation alphabétique sur mobile */}
 			<select
 				className="md:hidden mb-4 p-2 border border-blue-500 rounded-lg w-full max-w-sm shadow-md mx-auto text-sm"
@@ -279,7 +292,6 @@ const PatientList = ({ initialPatients, user }) => {
 					</option>
 				))}
 			</select>
-
 			{/* Liste des patients */}
 			<ul className="space-y-3 w-full max-w-5xl mx-auto">
 				{currentPatients.length === 0 ? (
@@ -362,7 +374,6 @@ const PatientList = ({ initialPatients, user }) => {
 					))
 				)}
 			</ul>
-
 			{/* Contrôles de pagination */}
 			<div className="flex flex-col sm:flex-row justify-between items-center mt-4 w-full max-w-3xl mx-auto">
 				{/* Select pour la navigation de page */}

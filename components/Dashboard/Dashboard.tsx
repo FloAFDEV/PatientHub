@@ -26,7 +26,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				const response = await fetch("/api/patients?page=1");
 				const data = await response.json();
 				if (isMounted) {
-					setPatientCount(data.patientsCount);
+					setPatientCount(data.totalPatients);
 				}
 			} catch (error) {
 				console.error(
