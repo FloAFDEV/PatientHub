@@ -25,16 +25,13 @@ const PatientDetails = React.lazy(() =>
 const PatientList = ({ initialPatients, user }) => {
 	const [patients, setPatients] = useState(initialPatients || []);
 	const [loading, setLoading] = useState(!initialPatients);
-	const [error, setError] = useState(null);
 	const [selectedPatientId, setSelectedPatientId] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
 	const [showAddFormPatient, setShowAddFormPatient] = useState(false);
-	const showToast = () => {
-		toast.success("Test Toast Message!");
-	};
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(1);
 
-	// Fonction pour calculer l'âge
 	const calculateAge = useMemo(
 		() => (birthDate) => {
 			if (!birthDate) return "N/A";
@@ -55,66 +52,29 @@ const PatientList = ({ initialPatients, user }) => {
 		[]
 	);
 
-	// État de pagination
-	const [currentPage, setCurrentPage] = useState(1);
-	const patientsPerPage = 15;
-
-	// Fonction pour charger les patients
-	const fetchPatients = useCallback(async () => {
-		const cachedData = localStorage.getItem("patients");
-		if (cachedData) {
-			const { data, timestamp } = JSON.parse(cachedData);
-			if (Date.now() - timestamp < 1 * 60 * 1000) {
-				// Cache valide pour 5 minutes
-				return data;
-			}
-		}
+	const fetchPatients = useCallback(async (page) => {
+		setLoading(true);
 		try {
-			const response = await fetch("/api/patients");
+			const response = await fetch(`/api/patients?page=${page}`);
 			if (!response.ok)
 				throw new Error("Erreur dans le chargement des données.");
-			const responseData = await response.json();
-			// Extraction de la liste des patients
-			const patientsData = responseData.patients;
-			// Vérification que patientsData est bien un tableau avant de trier
-			if (Array.isArray(patientsData)) {
-				patientsData.sort((a, b) => a.name.localeCompare(b.name));
-			} else {
-				throw new Error(
-					"Les données des patients ne sont pas au format attendu."
-				);
-			}
-			localStorage.setItem(
-				"patients",
-				JSON.stringify({ data: patientsData, timestamp: Date.now() })
+			const data = await response.json();
+			setPatients(data.patients);
+			setTotalPages(data.totalPages);
+			setLoading(false);
+		} catch (error) {
+			console.error(
+				"Erreur lors de la récupération des patients :",
+				error
 			);
-			return patientsData;
-		} catch (err) {
-			console.error("Erreur lors de la récupération des patients :", err);
-			throw err;
+			setLoading(false);
 		}
 	}, []);
 
-	// Chargement des patients si non fournis initialement
 	useEffect(() => {
-		if (!initialPatients) {
-			setLoading(true);
-			fetchPatients()
-				.then((data) => {
-					setPatients(data);
-					setLoading(false);
-				})
-				.catch((err) => {
-					setError(err.message);
-					setLoading(false);
-				});
-		} else {
-			initialPatients.sort((a, b) => a.name.localeCompare(b.name));
-			setPatients(initialPatients);
-		}
-	}, [initialPatients, fetchPatients]);
+		fetchPatients(currentPage);
+	}, [currentPage, fetchPatients]);
 
-	// Filtrage des patients
 	const filteredPatients = useMemo(() => {
 		return patients.filter((patient) => {
 			const matchesSearch = patient.name
@@ -128,40 +88,29 @@ const PatientList = ({ initialPatients, user }) => {
 		});
 	}, [patients, searchTerm, searchLetter]);
 
-	// Logique de pagination
-	const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
-	const handlePageChange = (newPage) => {
-		if (newPage > 0 && newPage <= totalPages) {
-			setCurrentPage(newPage);
+	const handleNextPage = () => {
+		if (currentPage < totalPages) {
+			setCurrentPage(currentPage + 1);
 		}
 	};
-	const indexOfLastPatient = currentPage * patientsPerPage;
-	const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
-	const currentPatients = useMemo(() => {
-		return filteredPatients.slice(indexOfFirstPatient, indexOfLastPatient);
-	}, [filteredPatients, indexOfFirstPatient, indexOfLastPatient]);
+
+	const handlePrevPage = () => {
+		if (currentPage > 1) {
+			setCurrentPage(currentPage - 1);
+		}
+	};
+
+	const handlePageChange = (newPage) => {
+		setCurrentPage(Number(newPage));
+	};
 
 	if (loading) {
 		return (
 			<div className="flex items-center justify-center min-h-screen bg-slate-800">
 				<div className="animate-spin h-16 w-16 border-t-4 border-blue-500 rounded-full mb-6"></div>
 				<p className="text-xl text-gray-300 mt-6">
-					Chargement en cours...{" "}
+					Chargement en cours...
 				</p>
-			</div>
-		);
-	}
-
-	if (error) {
-		return (
-			<div className="text-lg text-red-500 text-center">
-				<p>Erreur: {error}</p>
-				<button
-					onClick={fetchPatients}
-					className="text-blue-500 underline"
-				>
-					Réessayer
-				</button>
 			</div>
 		);
 	}
@@ -170,21 +119,15 @@ const PatientList = ({ initialPatients, user }) => {
 
 	return (
 		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
-			{" "}
 			<ToastContainer
 				position="top-center"
-				autoClose={5000}
-				hideProgressBar
-				toastClassName="text-md p-2 border-2 border-green-500"
+				autoClose={3000}
+				hideProgressBar={false}
+				toastClassName="bg-blue-600 text-white font-semibold text-lg p-3 rounded-lg"
 				bodyClassName="text-md p-2"
 			/>
-			<button
-				onClick={showToast}
-				className="bg-green-600 text-white font-bold py-2 px-4 rounded-full shadow-md mb-4"
-			>
-				Show Test Toast
-			</button>
-			<div className="bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500  text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
+
+			<div className="bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
 				<div className="flex flex-col flex-grow pr-2">
 					<h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
 						Bienvenue,{" "}
@@ -208,11 +151,17 @@ const PatientList = ({ initialPatients, user }) => {
 					/>
 				</div>
 			</div>
+			<button
+				onClick={() => toast.success("Toast de test réussi !")}
+				className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300"
+			>
+				Montrer le toast
+			</button>
 			<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-4 text-center">
 				Recherche de patients
 			</h2>
+
 			<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-6">
-				{/* Zone de recherche */}
 				<div className="relative max-w-sm w-full">
 					<input
 						type="text"
@@ -226,8 +175,6 @@ const PatientList = ({ initialPatients, user }) => {
 						size={20}
 					/>
 				</div>
-
-				{/* Bouton Ajouter un patient */}
 				<div>
 					<button
 						onClick={() => setShowAddFormPatient(true)}
@@ -238,19 +185,19 @@ const PatientList = ({ initialPatients, user }) => {
 					</button>
 				</div>
 			</div>
-			{/* Lazy-loaded component */}
+
 			{showAddFormPatient && (
 				<Suspense fallback={<div>Loading...</div>}>
 					<AddPatientForm
 						onClose={() => setShowAddFormPatient(false)}
 						onAddPatient={(newPatient) => {
 							setPatients([...patients, newPatient]);
-							setShowAddFormPatient(true);
+							setShowAddFormPatient(false);
 						}}
 					/>
 				</Suspense>
 			)}
-			{/* Navigation alphabétique */}
+
 			<div className="hidden md:flex flex-wrap justify-center gap-1 mb-4">
 				{alphabet.map((letter) => (
 					<button
@@ -279,7 +226,7 @@ const PatientList = ({ initialPatients, user }) => {
 					Tous
 				</button>
 			</div>
-			{/* Select pour la navigation alphabétique sur mobile */}
+
 			<select
 				className="md:hidden mb-4 p-2 border border-blue-500 rounded-lg w-full max-w-sm shadow-md mx-auto text-sm"
 				value={searchLetter}
@@ -292,14 +239,14 @@ const PatientList = ({ initialPatients, user }) => {
 					</option>
 				))}
 			</select>
-			{/* Liste des patients */}
+
 			<ul className="space-y-3 w-full max-w-5xl mx-auto">
-				{currentPatients.length === 0 ? (
+				{filteredPatients.length === 0 ? (
 					<li className="text-base sm:text-lg text-gray-500 text-center">
 						Aucun patient trouvé.
 					</li>
 				) : (
-					currentPatients.map((patient) => (
+					filteredPatients.map((patient) => (
 						<li
 							key={patient.id}
 							className={`p-3 sm:p-4 border rounded-lg shadow-md bg-gray-50 dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200 flex flex-col ${
@@ -374,9 +321,8 @@ const PatientList = ({ initialPatients, user }) => {
 					))
 				)}
 			</ul>
-			{/* Contrôles de pagination */}
+
 			<div className="flex flex-col sm:flex-row justify-between items-center mt-4 w-full max-w-3xl mx-auto">
-				{/* Select pour la navigation de page */}
 				<select
 					value={currentPage}
 					onChange={(e) => handlePageChange(Number(e.target.value))}
@@ -388,32 +334,27 @@ const PatientList = ({ initialPatients, user }) => {
 						</option>
 					))}
 				</select>
-
-				{/* Navigation Buttons */}
-				<div className="flex justify-center space-x-2 sm:space-x-4">
+				<div className="flex justify-center items-center space-x-2 sm:space-x-4">
 					<button
-						onClick={() => handlePageChange(currentPage - 1)}
+						onClick={handlePrevPage}
 						disabled={currentPage === 1}
 						className={`px-4 py-2 ${
 							currentPage === 1
-								? "opacity50 cursor-notallowed"
-								: ""
-						}`}
+								? "opacity-50 cursor-not-allowed"
+								: "bg-blue-600 hover:bg-blue-700 text-white"
+						} rounded-lg transition`}
 					>
-						Précédent
 						<IconChevronLeft size={18} />
 					</button>
-
 					<button
-						onClick={() => handlePageChange(currentPage + 1)}
-						disabled={currentPage === totalPages}
+						onClick={handleNextPage}
+						disabled={currentPage >= totalPages}
 						className={`px-4 py-2 ${
-							currentPage === totalPages
-								? "opacity50 cursor-notallowed"
-								: ""
-						}`}
+							currentPage >= totalPages
+								? "opacity-50 cursor-not-allowed"
+								: "bg-blue-600 hover:bg-blue-700 text-white"
+						} rounded-lg transition`}
 					>
-						Suivant
 						<IconChevronRight size={18} />
 					</button>
 				</div>

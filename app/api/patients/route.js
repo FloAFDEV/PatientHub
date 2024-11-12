@@ -69,39 +69,33 @@ export async function GET(request) {
 					],
 			  }
 			: {};
-		// Récupérer le cabinet et les patients avec la pagination
-		const cabinetInfo = await prisma.cabinet.findFirst({
+
+		const totalPatients = await prisma.patient.count({
 			where: whereCondition,
-			include: {
-				patients: {
-					skip: (page - 1) * pageSize,
-					take: pageSize,
-				},
-			},
 		});
-		if (cabinetInfo) {
-			const patientsOnPage = cabinetInfo.patients; // Liste des patients récupérés pour cette page
-			// Récupérer le nombre total de patients dans la base de données
-			const totalPatients = await prisma.patient.count({
-				where: whereCondition, // Appliquez le même filtre de recherche s'il y en a un
-			});
-			return new Response(
-				JSON.stringify({
-					...cabinetInfo,
-					totalPatients, // Ajout du nombre total de patients
-					page,
-					pageSize,
-				}),
-				{
-					status: 200,
-					headers: { "Content-Type": "application/json" },
-				}
-			);
-		} else {
-			return new Response("Cabinet non trouvé", { status: 404 });
-		}
+		const totalPages = Math.ceil(totalPatients / pageSize);
+
+		const patients = await prisma.patient.findMany({
+			where: whereCondition,
+			skip: (page - 1) * pageSize,
+			take: pageSize,
+		});
+
+		return new Response(
+			JSON.stringify({
+				patients,
+				totalPatients,
+				totalPages,
+				currentPage: page,
+				pageSize,
+			}),
+			{
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			}
+		);
 	} catch (error) {
-		console.error("Erreur lors de la récupération du cabinet :", error);
+		console.error("Erreur lors de la récupération des patients :", error);
 		return new Response("Erreur interne du serveur", { status: 500 });
 	}
 }
@@ -112,44 +106,37 @@ export async function POST(request) {
 	try {
 		// Formater les données du patient
 		const formattedPatientData = formatPatientData(patientData);
-
 		// Valeur d'ostéopathe, ici elle est en dur pour tester
 		const osteopathId = 1;
 		if (!osteopathId) {
 			return new Response("Osteopath ID is required", { status: 400 });
 		}
-
 		// Connexion de l'ostéopathe à la donnée du patient
 		formattedPatientData.osteopath = {
 			connect: {
 				id: osteopathId,
 			},
 		};
-
 		// Vérification de l'ID du cabinet si fourni
-		if (
-			patientData.cabinetId &&
-			isNaN(parseInt(patientData.cabinetId, 10))
-		) {
-			return new Response("Invalid cabinet ID", { status: 400 });
-		}
-
-		// Si un cabinet ID est fourni, on l'ajoute à la donnée patient
 		if (patientData.cabinetId) {
+			const cabinetExists = await prisma.cabinet.findUnique({
+				where: { id: parseInt(patientData.cabinetId) },
+			});
+			if (!cabinetExists) {
+				return new Response("Cabinet not found", { status: 404 });
+			}
 			formattedPatientData.cabinet = {
 				connect: {
 					id: patientData.cabinetId,
 				},
 			};
 		}
-
 		// Traitement de `hasChildren` : Conversion en booléen si nécessaire
 		if (patientData.hasChildren === "true") {
 			formattedPatientData.hasChildren = true;
 		} else if (patientData.hasChildren === "false") {
 			formattedPatientData.hasChildren = false;
 		}
-
 		// Vérification des âges des enfants si `hasChildren` est vrai
 		if (
 			patientData.hasChildren === "true" &&
@@ -159,12 +146,10 @@ export async function POST(request) {
 				(age) => parseInt(age, 10)
 			);
 		}
-
 		// Création d'un nouveau patient dans la base de données avec Prisma
 		const newPatient = await prisma.patient.create({
 			data: formattedPatientData,
 		});
-
 		// Retourner la réponse de création avec les données du patient
 		return new Response(JSON.stringify(newPatient), {
 			status: 201,

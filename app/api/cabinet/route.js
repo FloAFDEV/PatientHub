@@ -19,6 +19,10 @@ function formatCabinetData(data) {
 export async function GET(request) {
 	const { searchParams } = new URL(request.url);
 	const id = parseInt(searchParams.get("id") || "");
+	const page = parseInt(searchParams.get("page") || "1"); // Page actuelle (défaut : 1)
+	const patientsPerPage = parseInt(
+		searchParams.get("patientsPerPage") || "15"
+	); // Nombre de patients par page (défaut : 15)
 
 	try {
 		let cabinets;
@@ -46,12 +50,31 @@ export async function GET(request) {
 					...cabinet,
 					patientCount: cabinet.patients.length,
 				};
-				// Mise en cache
-				cache.put(`cabinet_${id}`, cabinetWithPatientCount, 60000);
-				return new Response(JSON.stringify(cabinetWithPatientCount), {
-					status: 200,
-					headers: jsonHeaders,
-				});
+
+				// Pagination des patients
+				const startIndex = (page - 1) * patientsPerPage;
+				const endIndex = startIndex + patientsPerPage;
+				const patientsOnPage = cabinet.patients.slice(
+					startIndex,
+					endIndex
+				);
+
+				// Mise en cache avec la pagination
+				cache.put(
+					`cabinet_${id}`,
+					{ ...cabinetWithPatientCount, patients: patientsOnPage },
+					60000
+				);
+				return new Response(
+					JSON.stringify({
+						...cabinetWithPatientCount,
+						patients: patientsOnPage,
+					}),
+					{
+						status: 200,
+						headers: jsonHeaders,
+					}
+				);
 			} else {
 				return new Response(
 					JSON.stringify({ error: "Cabinet not found" }),
@@ -80,8 +103,15 @@ export async function GET(request) {
 				patientCount: cabinet.patients.length,
 			}));
 
-			cache.put("all_cabinets", cabinets, 60000);
-			return new Response(JSON.stringify(cabinets), {
+			// Application de la pagination à tous les patients
+			const startIndex = (page - 1) * patientsPerPage;
+			const endIndex = startIndex + patientsPerPage;
+			const paginatedCabinets = cabinets.map((cabinet) => ({
+				...cabinet,
+				patients: cabinet.patients.slice(startIndex, endIndex), // Patients pour la page actuelle
+			}));
+			cache.put("all_cabinets", paginatedCabinets, 60000);
+			return new Response(JSON.stringify(paginatedCabinets), {
 				status: 200,
 				headers: jsonHeaders,
 			});
