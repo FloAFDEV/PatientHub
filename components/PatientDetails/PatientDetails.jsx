@@ -164,7 +164,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				isOpen={openSections.basicInfo}
 				onToggle={() => toggleSection("basicInfo")}
 			>
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
 					<DetailItem
 						label="Email"
 						value={patient.email || "Non renseigné"}
@@ -224,53 +224,58 @@ const PatientDetails = ({ patient, onClose }) => {
 				isOpen={openSections.medicalHistory}
 				onToggle={() => toggleSection("medicalHistory")}
 			>
-				<DetailItem
-					label="Antécédents chirurgicaux"
-					value={patient.surgicalHistory || "Non renseigné"}
-				/>
-				<DetailItem
-					label="Antécédents traumatiques"
-					value={patient.traumaHistory || "Non renseigné"}
-				/>
-				<DetailItem
-					label="Antécédents rhumatologiques"
-					value={patient.rheumatologicalHistory || "Non renseigné"}
-				/>
-				<DetailItem
-					label="Correction visuelle ?"
-					value={
-						yesNoTranslations[patient.hasVisionCorrection] ||
-						"Non renseignée"
-					}
-				/>
-				<DetailItem
-					label="Nom de l'ophtalmologiste"
-					value={patient.ophtalmologistName || "Non renseigné"}
-				/>
-				<DetailItem
-					label="Problèmes ORL"
-					value={patient.entProblems || "Non renseigné"}
-				/>
-				<DetailItem
-					label="Nom du médecin ORL"
-					value={patient.entDoctorName || "Non renseigné"}
-				/>
-				<DetailItem
-					label="Problèmes digestifs"
-					value={patient.digestiveProblems || "Non renseigné"}
-				/>
-				<DetailItem
-					label="Nom du médecin digestif"
-					value={patient.digestiveDoctorName || "Non renseigné"}
-				/>
-				<DetailItem
-					label="Informations HDLM"
-					value={patient.hdlm || "Non renseignées"}
-				/>
-				<DetailItem
-					label="Traitements en cours"
-					value={patient.currentTreatment || "Non renseigné"}
-				/>
+				{" "}
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
+					<DetailItem
+						label="Antécédents chirurgicaux"
+						value={patient.surgicalHistory || "Non renseigné"}
+					/>
+					<DetailItem
+						label="Antécédents traumatiques"
+						value={patient.traumaHistory || "Non renseigné"}
+					/>
+					<DetailItem
+						label="Antécédents rhumatologiques"
+						value={
+							patient.rheumatologicalHistory || "Non renseigné"
+						}
+					/>
+					<DetailItem
+						label="Correction visuelle ?"
+						value={
+							yesNoTranslations[patient.hasVisionCorrection] ||
+							"Non renseignée"
+						}
+					/>
+					<DetailItem
+						label="Nom de l'ophtalmologiste"
+						value={patient.ophtalmologistName || "Non renseigné"}
+					/>
+					<DetailItem
+						label="Problèmes ORL"
+						value={patient.entProblems || "Non renseigné"}
+					/>
+					<DetailItem
+						label="Nom du médecin ORL"
+						value={patient.entDoctorName || "Non renseigné"}
+					/>
+					<DetailItem
+						label="Problèmes digestifs"
+						value={patient.digestiveProblems || "Non renseigné"}
+					/>
+					<DetailItem
+						label="Nom du médecin digestif"
+						value={patient.digestiveDoctorName || "Non renseigné"}
+					/>
+					<DetailItem
+						label="Informations HDLM"
+						value={patient.hdlm || "Non renseignées"}
+					/>
+					<DetailItem
+						label="Traitements en cours"
+						value={patient.currentTreatment || "Non renseigné"}
+					/>
+				</div>
 			</SectionToggle>
 
 			{/* Informations sur la famille */}
@@ -279,41 +284,45 @@ const PatientDetails = ({ patient, onClose }) => {
 				isOpen={openSections.familyInfo}
 				onToggle={() => toggleSection("familyInfo")}
 			>
-				<DetailItem
-					label="Fumeur ?"
-					value={
-						yesNoTranslations[patient.isSmoker] || "Non renseigné"
-					}
-				/>
-				<DetailItem
-					label="Contraception"
-					value={
-						contraceptionTranslations[patient.contraception] ||
-						"Non renseignée"
-					}
-				/>
-				<DetailItem
-					label="Enfants"
-					value={patient.hasChildren === "true" ? "Oui" : "Non"}
-				/>
-				{patient.childrenAges && (
-					<div>
-						<h4 className="text-sm font-normal m-2 mt-4">
-							Âges des enfants
-						</h4>
-						{patient.childrenAges.length > 0 ? (
-							patient.childrenAges.map((age, index) => (
-								<DetailItem
-									key={index}
-									label={`Enfant ${index + 1}`}
-									value={`${age} ans`}
-								/>
-							))
-						) : (
-							<p>Pas d&apos;enfants renseignés</p>
-						)}
-					</div>
-				)}
+				{" "}
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
+					<DetailItem
+						label="Fumeur ?"
+						value={
+							yesNoTranslations[patient.isSmoker] ||
+							"Non renseigné"
+						}
+					/>
+					<DetailItem
+						label="Contraception"
+						value={
+							contraceptionTranslations[patient.contraception] ||
+							"Non renseignée"
+						}
+					/>
+					<DetailItem
+						label="Enfants"
+						value={patient.hasChildren === "true" ? "Oui" : "Non"}
+					/>
+					{patient.childrenAges && (
+						<div>
+							<h4 className="text-sm font-normal m-2 mt-4">
+								Âges des enfants
+							</h4>
+							{patient.childrenAges.length > 0 ? (
+								patient.childrenAges.map((age, index) => (
+									<DetailItem
+										key={index}
+										label={`Enfant ${index + 1}`}
+										value={`${age} ans`}
+									/>
+								))
+							) : (
+								<p>Pas d&apos;enfants renseignés</p>
+							)}
+						</div>
+					)}
+				</div>
 			</SectionToggle>
 
 			{/* Informations du praticien et cabinet */}

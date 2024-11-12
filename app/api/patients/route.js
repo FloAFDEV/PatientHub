@@ -79,6 +79,10 @@ export async function GET(request) {
 			where: whereCondition,
 			skip: (page - 1) * pageSize,
 			take: pageSize,
+			include: {
+				osteopath: true,
+				cabinet: true,
+			},
 		});
 
 		return new Response(

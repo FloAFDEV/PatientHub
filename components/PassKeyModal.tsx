@@ -124,7 +124,7 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 							{Array.from({ length: 6 }, (_, index) => (
 								<InputOTPSlot
 									key={index}
-									className="shad-otp-slot flex justify-center items-center text-2xl md:text-3xl font-bold border border-red-500 rounded-lg w-10 md:w-12 h-10 md:h-12 gap-2 md:gap-4 text-green-500"
+									className="shad-otp-slot flex justify-center items-center text-2xl md:text-3xl font-bold border border-green-400 rounded-lg w-10 md:w-12 h-10 md:h-12 gap-2 md:gap-4 text-green-500"
 									index={index}
 								/>
 							))}

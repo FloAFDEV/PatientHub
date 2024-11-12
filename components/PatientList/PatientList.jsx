@@ -76,16 +76,18 @@ const PatientList = ({ initialPatients, user }) => {
 	}, [currentPage, fetchPatients]);
 
 	const filteredPatients = useMemo(() => {
-		return patients.filter((patient) => {
-			const matchesSearch = patient.name
-				.toLowerCase()
-				.includes(searchTerm.toLowerCase());
-			const matchesLetter =
-				searchLetter === "" ||
-				patient.name.charAt(0).toLowerCase() ===
-					searchLetter.toLowerCase();
-			return matchesSearch && matchesLetter;
-		});
+		return patients
+			.filter((patient) => {
+				const matchesSearch = patient.name
+					.toLowerCase()
+					.includes(searchTerm.toLowerCase());
+				const matchesLetter =
+					searchLetter === "" ||
+					patient.name.charAt(0).toLowerCase() ===
+						searchLetter.toLowerCase();
+				return matchesSearch && matchesLetter;
+			})
+			.sort((a, b) => a.name.localeCompare(b.name));
 	}, [patients, searchTerm, searchLetter]);
 
 	const handleNextPage = () => {
@@ -127,7 +129,10 @@ const PatientList = ({ initialPatients, user }) => {
 				bodyClassName="text-md p-2"
 			/>
 
-			<div className="bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500 text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
+			<div
+				className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
+ text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between"
+			>
 				<div className="flex flex-col flex-grow pr-2">
 					<h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
 						Bienvenue,{" "}
