@@ -192,7 +192,10 @@ const PatientList = ({ initialPatients, user }) => {
 						onClose={() => setShowAddFormPatient(false)}
 						onAddPatient={(newPatient) => {
 							setPatients([...patients, newPatient]);
-							setShowAddFormPatient(false);
+							toast.success("Patient ajouté avec succès !");
+							setTimeout(() => {
+								setShowAddFormPatient(false);
+							}, 2000);
 						}}
 					/>
 				</Suspense>
