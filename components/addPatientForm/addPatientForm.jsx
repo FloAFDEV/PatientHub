@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const AddPatientForm = ({ onClose }) => {
@@ -91,15 +89,6 @@ const AddPatientForm = ({ onClose }) => {
 			if (!response.ok)
 				throw new Error(`Erreur serveur: ${await response.text()}`);
 			await response.json();
-			toast.success(`Patient ${data.name} créé avec succès !`, {
-				position: "top-center",
-				autoClose: 5000,
-				hideProgressBar: false,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-			});
 			reset({
 				name: "",
 				email: "",
@@ -135,9 +124,7 @@ const AddPatientForm = ({ onClose }) => {
 			// Réinitialisation des champs qui ne sont pas directement gérés par react-hook-form
 			setValue("birthDate", null);
 		} catch (error) {
-			toast.error(
-				`Erreur lors de la création du patient: ${error.message}`
-			);
+			error(`Erreur lors de la création du patient: ${error.message}`);
 		}
 	};
 
@@ -490,13 +477,6 @@ const AddPatientForm = ({ onClose }) => {
 					</button>
 				</div>
 			</form>{" "}
-			<ToastContainer
-				position="top-center"
-				autoClose={5000}
-				hideProgressBar
-				toastClassName="text-md p-2"
-				bodyClassName="text-md p-2"
-			/>
 		</div>
 	);
 };
