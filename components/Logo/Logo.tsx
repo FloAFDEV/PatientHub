@@ -23,7 +23,7 @@ export const Logo = () => {
 			<motion.span
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
-				className="font-semibold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 dark:from-blue-500 dark:via-purple-500 dark:to-purple-500 whitespace-pre"
+				className="font-semibold text-4xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 dark:from-blue-500 dark:via-purple-500 dark:to-purple-500 whitespace-pre"
 			>
 				PatientHub
 			</motion.span>

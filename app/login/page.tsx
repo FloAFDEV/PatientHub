@@ -120,7 +120,7 @@ export default function LoginPage() {
 								</p>
 							</div>
 						</div>
-						<h1 className="absolute top-4 left-4 text-3xl sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+						<h1 className="absolute top-4 left-4 text-4xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
 							PatientHub
 						</h1>
 						<div className="w-full max-w-md text-card-foreground border p-8 shadow-lg rounded-lg mt-6 mb-12 sm:mb-24">
@@ -185,7 +185,7 @@ export default function LoginPage() {
 								{/* Bouton de soumission */}
 								<button
 									type="submit"
-									className={`w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500  text-white py-2 rounded-md hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+									className={`w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white py-2 rounded-md hover:scale-105 transition-transform duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
 										isLoading ? "opacity-50" : ""
 									}`}
 									disabled={isLoading}
