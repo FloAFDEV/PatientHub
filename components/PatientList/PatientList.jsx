@@ -120,7 +120,7 @@ const PatientList = ({ initialPatients, user }) => {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+		<div className="flex-1 p-4 sm:p-6 md:p-10 mr-4 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
 			<ToastContainer
 				position="top-center"
 				autoClose={3000}
@@ -128,11 +128,7 @@ const PatientList = ({ initialPatients, user }) => {
 				toastClassName="bg-blue-600 text-white font-semibold text-lg p-3 rounded-lg"
 				bodyClassName="text-md p-2"
 			/>
-
-			<div
-				className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
- text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between"
-			>
+			<div className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
 				<div className="flex flex-col flex-grow pr-2">
 					<h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
 						Bienvenue,{" "}
@@ -157,7 +153,7 @@ const PatientList = ({ initialPatients, user }) => {
 				</div>
 			</div>
 			<button
-				onClick={() => toast.success("Toast de test réussi !")}
+				onClick={() => toast.success("Toast de test réussi ! 🎉 ")}
 				className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300"
 			>
 				Montrer le toast
@@ -197,7 +193,7 @@ const PatientList = ({ initialPatients, user }) => {
 						onClose={() => setShowAddFormPatient(false)}
 						onAddPatient={(newPatient) => {
 							setPatients([...patients, newPatient]);
-							toast.success("Patient ajouté avec succès !");
+							toast.success("Patient ajouté avec succès ! 🎉");
 							setTimeout(() => {
 								setShowAddFormPatient(false);
 							}, 2000);
