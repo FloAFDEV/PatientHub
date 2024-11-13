@@ -131,14 +131,15 @@ const PatientList = ({ initialPatients, user }) => {
 			<div className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
 				<div className="flex flex-col flex-grow pr-2">
 					<h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
-						Bienvenue,{" "}
+						Bienvenue{" "}
 						{user
 							? user.user_metadata?.user_metadata?.first_name ||
 							  user.email
-							: "Utilisateur"}
+							: "Utilisateur"}{" "}
+						sur le listing de vos patients 📓
 					</h1>
 					<p className="text-sm sm:text-base">
-						Voici un aperçu de vos patients
+						Vos patients enregistrés
 					</p>
 				</div>
 				<div className="flex-shrink-0 ml-2 sm:ml-4">

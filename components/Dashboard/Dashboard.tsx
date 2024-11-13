@@ -50,7 +50,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						{user
 							? user.user_metadata?.user_metadata?.first_name ||
 							  user.email
-							: "Utilisateur"}
+							: "Utilisateur"}{" "}
+						! 👋🏽
 					</h1>
 					<p className="text-sm sm:text-base">
 						Voici un aperçu de votre tableau de bord
