@@ -14,6 +14,7 @@ import {
 	IconPlus,
 	IconChevronLeft,
 	IconChevronRight,
+	IconSkull,
 } from "@tabler/icons-react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -282,8 +283,16 @@ const PatientList = ({ initialPatients, user }) => {
 											size={18}
 										/>
 									)}
-									<h2 className="font-semibold text-base sm:text-lg text-gray-800 dark:text-gray-300">
+									<h2 className="font-semibold text-base sm:text-lg text-gray-800 dark:text-gray-300 flex items-center">
 										{patient.name}
+										{patient.isDeceased && (
+											<>
+												<span className="ml-2 text-sm font-normal text-red-500 dark:text-orange-400">
+													Décédé(e)
+												</span>
+												<IconSkull className="ml-2 w-5 h-5 text-gray-700 dark:text-slate-100" />
+											</>
+										)}
 									</h2>
 								</div>
 								<div className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm font-semibold flex space-x-6">
