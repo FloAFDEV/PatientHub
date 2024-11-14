@@ -129,7 +129,7 @@ const PatientList = ({ initialPatients, user }) => {
 				hideProgressBar={false}
 			/>
 
-			<header className="mb-8">
+			<header className="m-8">
 				<div className="flex items-center justify-between">
 					<h1 className="text-3xl font-bold text-gray-800 dark:text-white">
 						Liste des patients
@@ -139,7 +139,7 @@ const PatientList = ({ initialPatients, user }) => {
 						alt="Logo"
 						width={80}
 						height={80}
-						className="object-contain"
+						className="object-contain shadow-xl rounded-xl mr-8"
 						priority
 					/>
 				</div>

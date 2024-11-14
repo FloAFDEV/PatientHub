@@ -205,7 +205,6 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 				<div className="fixed z-50 top-1 left-2 md:top-4 md:right-4 md:left-auto">
 					<ModeToggle />
 				</div>{" "}
-				<div className="p-4"></div>
 				<main className="flex-1 overflow-auto p-1">
 					{activeComponent}
 					{children}{" "}

@@ -45,7 +45,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	return (
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
 			<header className="mb-8">
-				<div className="flex items-center justify-between">
+				<div className="flex items-center justify-between mt-8">
 					<h1 className="text-3xl font-bold text-gray-800 dark:text-white">
 						Tableau de bord
 					</h1>
@@ -54,7 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						alt="Logo"
 						width={80}
 						height={80}
-						className="object-contain"
+						className="object-contain shadow-xl rounded-xl mr-8"
 						priority
 					/>
 				</div>

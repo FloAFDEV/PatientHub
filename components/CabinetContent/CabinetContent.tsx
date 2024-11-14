@@ -142,32 +142,30 @@ const CabinetContent: React.FC = () => {
 	}
 
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 mr-4 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
-			<div className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
-				<div className="flex flex-col flex-grow pr-2">
-					<h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
-						Bienvenue sur la fiche de votre cabinet
-					</h1>
-					<p className="text-sm sm:text-base">
-						Retrouvez ici les informations sur votre cabinet et vos
-						paramètres.
-					</p>
-				</div>
-				<div className="flex-shrink-0 ml-2 sm:ml-4">
+		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
+			<header className="mb-8">
+				<div className="flex items-center justify-between mt-8 mr-8">
+					<div>
+						<h1 className="text-3xl font-bold mb-2">
+							Fiche de votre cabinet
+						</h1>
+						<p className="text-lg opacity-90">
+							Informations et paramètres de votre cabinet
+						</p>
+					</div>
 					<Image
 						src="/assets/icons/logo-full.svg"
 						alt="Logo"
 						width={100}
 						height={100}
-						className="object-contain rounded-xl w-[60px] sm:w-[80px] md:w-[100px]"
+						className="object-contain rounded-xl"
 						priority
 					/>
 				</div>
-			</div>
-			{/* Contenu principal */}
-			<main className="flex-grow p-4">
-				{/* Cartes d'information */}
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 ">
+			</header>
+
+			<main className="space-y-8">
+				<section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 					<InfoCard
 						icon={
 							<BuildingOfficeIcon className="h-6 w-6 text-blue-500" />
@@ -204,10 +202,9 @@ const CabinetContent: React.FC = () => {
 						}
 						image="/assets/images/NombrePatients.webp"
 					/>
-				</div>
+				</section>
 
-				{/* Boutons d'action */}
-				<div className="flex flex-wrap justify-center gap-4">
+				<section className="flex flex-wrap justify-center gap-4">
 					<ActionButton
 						onClick={() => setIsEditMode(true)}
 						icon={<PencilSquareIcon className="h-5 w-5" />}
@@ -226,9 +223,9 @@ const CabinetContent: React.FC = () => {
 						text="Supprimer le Cabinet"
 						color="red"
 					/>
-				</div>
+				</section>
 			</main>
-			{/* Modales */}
+
 			{isEditMode && cabinetInfo && (
 				<EditModal
 					initialData={cabinetInfo}
@@ -273,34 +270,29 @@ interface InfoCardProps {
 
 const InfoCard: React.FC<InfoCardProps> = React.memo(
 	({ icon, title, content, link, image }) => (
-		<div
-			className="bg-white dark:bg-slate-700 rounded-lg shadow-md hover:shadow-2xl  
-                flex flex-col overflow-hidden border border-blue-300
-                hover:scale-105 hover:border-blue-500 transition-transform transform duration-300"
-		>
-			{" "}
+		<div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
 			<Image
 				src={image}
 				alt={title}
-				className="w-full h-32 object-cover rounded-md"
+				className="w-full h-40 object-cover"
 				loading="lazy"
 				width={400}
 				height={200}
 			/>
-			<div className="p-4 flex flex-col flex-grow">
+			<div className="p-4">
 				<div className="flex items-center mb-2">
 					{icon}
-					<h2 className="text-base font-semibold text-gray-800 dark:text-white ml-2">
+					<h2 className="text-lg font-semibold text-gray-800 dark:text-white ml-2">
 						{title}
 					</h2>
 				</div>
-				<p className="text-gray-600 text-lg font-light dark:text-white break-words flex-grow">
+				<p className="text-gray-600 dark:text-gray-300 break-words">
 					{link ? (
 						<a
 							href={link}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="dark:text-white hover:underline"
+							className="hover:underline text-blue-600 dark:text-blue-400"
 						>
 							{content}
 						</a>
@@ -323,28 +315,19 @@ interface ActionButtonProps {
 
 const ActionButton: React.FC<ActionButtonProps> = React.memo(
 	({ onClick, icon, text, color }) => {
-		const getColorClasses = (color: string) => {
-			switch (color) {
-				case "blue":
-					return "border border-blue-500 hover:bg-blue-600";
-				case "green":
-					return "border border-green-500 hover:bg-green-600";
-				case "red":
-					return "border border-red-500 hover:bg-red-600";
-				default:
-					return "bg-gray-500 hover:bg-gray-600";
-			}
+		const colorClasses = {
+			blue: "border-2 border-blue-600 hover:bg-blue-700 text-slate-700 dark:text-white",
+			green: "border-2 border-green-600 hover:bg-green-700 text-slate-700 dark:text-white",
+			red: "bg-red-600 hover:bg-red-700 text-white",
 		};
 
 		return (
 			<button
 				onClick={onClick}
-				className={`${getColorClasses(
-					color
-				)} w-full sm:w-auto max-w-xs dark:text-white font-light text-zinc-700 hover:text-white py-2 px-4 rounded flex items-center justify-center transition duration-300 ease-in-out`}
+				className={`${colorClasses[color]} px-6 py-3 rounded-lg font-medium flex items-center justify-center transition duration-300 ease-in-out transform hover:scale-105`}
 			>
 				{icon}
-				<span className="ml-4">{text}</span>
+				<span className="ml-2">{text}</span>
 			</button>
 		);
 	}
