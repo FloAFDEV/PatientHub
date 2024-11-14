@@ -8,6 +8,9 @@ import {
 	IconCalendar,
 	IconList,
 	IconChartBar,
+	IconUsers,
+	IconClock,
+	IconUserPlus as IconNewUser,
 } from "@tabler/icons-react";
 
 interface DashboardProps {
@@ -15,10 +18,8 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
-	// Déclarez un état pour stocker le nombre de patients
 	const [patientCount, setPatientCount] = useState<number | null>(null);
 
-	// Utilisez useEffect pour appeler l'API lors du rendu du composant
 	useEffect(() => {
 		let isMounted = true;
 		const fetchPatientCount = async () => {
@@ -42,105 +43,148 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	}, []);
 
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 mr-4 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
-			<div className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
-				<div className="flex flex-col flex-grow pr-2">
-					<h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
-						Bienvenue,{" "}
-						{user
-							? user.user_metadata?.user_metadata?.first_name ||
-							  user.email
-							: "Utilisateur"}{" "}
-						! 👋🏽
+		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
+			<header className="mb-8">
+				<div className="flex items-center justify-between">
+					<h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+						Tableau de bord
 					</h1>
-					<p className="text-sm sm:text-base">
-						Voici un aperçu de votre tableau de bord
-					</p>
-				</div>
-				<div className="flex-shrink-0 ml-2 sm:ml-4">
 					<Image
 						src="/assets/icons/logo-full.svg"
 						alt="Logo"
-						width={100}
-						height={100}
-						className="object-contain rounded-xl w-[60px] sm:w-[80px] md:w-[100px]"
+						width={80}
+						height={80}
+						className="object-contain"
 						priority
 					/>
 				</div>
+				<p className="mt-2 text-gray-600 dark:text-gray-400">
+					Bienvenue,{" "}
+					{user?.user_metadata?.user_metadata?.first_name ||
+						user?.email ||
+						"Utilisateur"}
+				</p>
+			</header>
+
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+				<StatCard
+					icon={<IconUsers className="w-8 h-8 text-blue-500" />}
+					title="Patients actifs"
+					value={
+						patientCount !== null ? patientCount : "Chargement..."
+					}
+					change="+12%"
+				/>
+				<StatCard
+					icon={<IconClock className="w-8 h-8 text-green-500" />}
+					title="Rendez-vous aujourd'hui"
+					value="8"
+					subtitle="Prochain RDV à 14h30"
+				/>
+				<StatCard
+					icon={<IconNewUser className="w-8 h-8 text-purple-500" />}
+					title="Nouveaux patients"
+					value="24"
+					subtitle="Ce mois-ci"
+				/>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-				{/* Section des patients actifs */}
-				<div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
-						Patients actifs
-					</h2>
-					<p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-						{patientCount !== null ? patientCount : "Chargement..."}
-					</p>
-					<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-						+12% par rapport au mois dernier
-					</p>
-				</div>
-
-				{/* Autres sections */}
-				<div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
-						Rendez-vous aujourd&apos;hui
-					</h2>
-					<p className="text-3xl font-bold text-green-600 dark:text-green-400">
-						8
-					</p>
-					<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-						Prochain RDV à 14h30
-					</p>
-				</div>
-				<div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-					<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
-						Nouveaux patients
-					</h2>
-					<p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-						24
-					</p>
-					<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-						Ce mois-ci
-					</p>
-				</div>
-			</div>
-
-			{/* Actions rapides */}
-			<div className="mt-6 sm:mt-8">
-				<h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4">
+			<section className="mb-8">
+				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
 					Actions rapides
 				</h2>
-				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-					<button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base flex items-center justify-center">
-						<IconUserPlus className="mr-2" /> Ajouter un patient
-					</button>
-					<button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base flex items-center justify-center">
-						<IconCalendar className="mr-2" /> Voir les rendez-vous
-					</button>
-					<button className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base flex items-center justify-center">
-						<IconList className="mr-2" /> Voir le listing patient
-					</button>
-					<button className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded transition duration-300 text-sm sm:text-base flex items-center justify-center">
-						<IconChartBar className="mr-2" /> Rapports mensuels
-					</button>
+				<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+					<ActionButton
+						icon={IconUserPlus}
+						text="Ajouter un patient"
+						color="blue"
+					/>
+					<ActionButton
+						icon={IconCalendar}
+						text="Voir les rendez-vous"
+						color="green"
+					/>
+					<ActionButton
+						icon={IconList}
+						text="Voir le listing patient"
+						color="purple"
+					/>
+					<ActionButton
+						icon={IconChartBar}
+						text="Rapports mensuels"
+						color="yellow"
+					/>
 				</div>
-			</div>
+			</section>
 
-			{/* Graphiques et autres visualisations */}
-			<div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-lg mt-4 sm:mt-6">
-				<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2 sm:mb-4">
-					Graphiques et autres visualisations
+			<section className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
+					Graphiques et visualisations
 				</h2>
-				<p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+				<p className="text-gray-600 dark:text-gray-400">
 					Contenu supplémentaire, comme des graphiques, des
 					tableaux...
 				</p>
-			</div>
+			</section>
 		</div>
 	);
 };
+
+interface StatCardProps {
+	icon: React.ReactNode;
+	title: string;
+	value: string | number;
+	change?: string;
+	subtitle?: string;
+}
+
+const StatCard: React.FC<StatCardProps> = ({
+	icon,
+	title,
+	value,
+	change,
+	subtitle = "",
+}) => (
+	<div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+		<div className="flex items-center justify-between mb-4">
+			{icon}
+			<h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+				{title}
+			</h3>
+		</div>
+		<p className="text-3xl font-bold text-gray-900 dark:text-white">
+			{value}
+		</p>
+		{change && (
+			<p className="mt-2 text-sm text-green-600 dark:text-green-400">
+				{change}
+			</p>
+		)}
+		{subtitle && (
+			<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+				{subtitle}
+			</p>
+		)}
+	</div>
+);
+
+interface ActionButtonProps {
+	icon: React.ElementType;
+	text: string;
+	color: string;
+}
+
+const ActionButton: React.FC<ActionButtonProps> = ({
+	icon: Icon,
+	text,
+	color,
+}) => (
+	<button
+		className={`bg-${color}-500 hover:bg-${color}-600 text-white font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center`}
+	>
+		<Icon className="mr-2" size={20} />
+		<span>{text}</span>
+	</button>
+);
 
 export default Dashboard;

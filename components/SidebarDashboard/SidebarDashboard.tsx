@@ -204,10 +204,11 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 			<div className="flex-1 flex flex-col">
 				<div className="fixed z-50 top-1 left-2 md:top-4 md:right-4 md:left-auto">
 					<ModeToggle />
-				</div>
+				</div>{" "}
+				<div className="p-4"></div>
 				<main className="flex-1 overflow-auto p-1">
 					{activeComponent}
-					{children}
+					{children}{" "}
 				</main>
 				<footer className="bg-gray-200 dark:bg-slate-800 text-center p-2 border-t border-neutral-300 dark:border-neutral-700">
 					<p className="text-sm font-extralight text-gray-600 dark:text-gray-400">

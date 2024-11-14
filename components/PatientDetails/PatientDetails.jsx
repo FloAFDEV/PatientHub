@@ -270,6 +270,7 @@ const PatientDetails = ({ patient, onClose }) => {
 					<DetailItem
 						label="Informations HDLM"
 						value={patient.hdlm || "Non renseignées"}
+						className="bg-yellow-100 dark:bg-yellow-700 p-3 rounded-lg text-sm sm:text-base font-medium"
 					/>
 					<DetailItem
 						label="Traitements en cours"

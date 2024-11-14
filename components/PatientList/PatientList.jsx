@@ -32,6 +32,7 @@ const PatientList = ({ initialPatients, user }) => {
 	const [showAddFormPatient, setShowAddFormPatient] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
+	const itemsPerPage = 15;
 
 	const calculateAge = useMemo(
 		() => (birthDate) => {
@@ -121,55 +122,41 @@ const PatientList = ({ initialPatients, user }) => {
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 	return (
-		<div className="flex-1 p-4 sm:p-6 md:p-10 mr-4 bg-gray-100 dark:bg-gray-900 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
 			<ToastContainer
 				position="top-center"
 				autoClose={3000}
 				hideProgressBar={false}
-				toastClassName="bg-blue-600 text-white font-semibold text-lg p-3 rounded-lg"
-				bodyClassName="text-md p-2"
 			/>
-			<div className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white p-3 sm:p-4 rounded-lg shadow-lg mb-4 flex items-center justify-between">
-				<div className="flex flex-col flex-grow pr-2">
-					<h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
-						Bienvenue{" "}
-						{user
-							? user.user_metadata?.user_metadata?.first_name ||
-							  user.email
-							: "Utilisateur"}{" "}
-						sur le listing de vos patients 📓
+
+			<header className="mb-8">
+				<div className="flex items-center justify-between">
+					<h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+						Liste des patients
 					</h1>
-					<p className="text-sm sm:text-base">
-						Vos patients enregistrés
-					</p>
-				</div>
-				<div className="flex-shrink-0 ml-2 sm:ml-4">
 					<Image
 						src="/assets/icons/logo-full.svg"
 						alt="Logo"
-						width={100}
-						height={100}
-						className="object-contain rounded-xl w-[60px] sm:w-[80px] md:w-[100px]"
+						width={80}
+						height={80}
+						className="object-contain"
 						priority
 					/>
 				</div>
-			</div>
-			<button
-				onClick={() => toast.success("Toast de test réussi ! 🎉 ")}
-				className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300"
-			>
-				Montrer le toast
-			</button>
-			<h2 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-4 text-center">
-				Recherche de patients
-			</h2>
+				<p className="mt-2 text-gray-600 dark:text-gray-400">
+					Gérez vos patients,{" "}
+					{user?.user_metadata?.user_metadata?.first_name ||
+						user?.email ||
+						"Utilisateur"}
+				</p>
+			</header>
 
-			<div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-6">
-				<div className="relative max-w-sm w-full">
+			<div className="flex flex-col md:flex-row justify-between items-center mb-6">
+				<div className="relative w-full md:w-1/3 mb-4 md:mb-0">
 					<input
 						type="text"
-						placeholder="Rechercher par nom..."
-						className="w-full p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-white"
+						placeholder="Rechercher un patient..."
+						className="w-full p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 					/>
@@ -178,40 +165,22 @@ const PatientList = ({ initialPatients, user }) => {
 						size={20}
 					/>
 				</div>
-				<div>
-					<button
-						onClick={() => setShowAddFormPatient(true)}
-						className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center text-sm sm:text-base"
-					>
-						<IconPlus className="mr-2" size={18} />
-						Ajouter un patient
-					</button>
-				</div>
+				<button
+					onClick={() => setShowAddFormPatient(true)}
+					className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 flex items-center"
+				>
+					<IconPlus className="mr-2" size={18} /> Ajouter un patient
+				</button>
 			</div>
 
-			{showAddFormPatient && (
-				<Suspense fallback={<div>Loading...</div>}>
-					<AddPatientForm
-						onClose={() => setShowAddFormPatient(false)}
-						onAddPatient={(newPatient) => {
-							setPatients([...patients, newPatient]);
-							toast.success("Patient ajouté avec succès ! 🎉");
-							setTimeout(() => {
-								setShowAddFormPatient(false);
-							}, 2000);
-						}}
-					/>
-				</Suspense>
-			)}
-
-			<div className="hidden md:flex flex-wrap justify-center gap-1 mb-4">
+			<div className="hidden md:flex flex-wrap justify-center gap-2 mb-6">
 				{alphabet.map((letter) => (
 					<button
 						key={letter}
-						className={`w-7 h-7 rounded-full transition duration-300 text-sm ${
+						className={`w-8 h-8 rounded-full transition duration-300 ${
 							searchLetter === letter
 								? "bg-blue-500 text-white"
-								: "hover:bg-blue-100 dark:hover:bg-gray-700"
+								: "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-blue-100 dark:hover:bg-blue-900"
 						}`}
 						onClick={() => setSearchLetter(letter)}
 					>
@@ -219,10 +188,10 @@ const PatientList = ({ initialPatients, user }) => {
 					</button>
 				))}
 				<button
-					className={`px-2 py-1 rounded-full transition duration-300 text-sm ${
+					className={`px-3 py-1 rounded-full transition duration-300 ${
 						searchLetter === ""
 							? "bg-blue-500 text-white"
-							: "hover:bg-blue-100 dark:hover:bg-gray-700"
+							: "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-blue-100 dark:hover:bg-blue-900"
 					}`}
 					onClick={() => {
 						setSearchLetter("");
@@ -233,36 +202,19 @@ const PatientList = ({ initialPatients, user }) => {
 				</button>
 			</div>
 
-			<select
-				className="md:hidden mb-4 p-2 border border-blue-500 rounded-lg w-full max-w-sm shadow-md mx-auto text-sm"
-				value={searchLetter}
-				onChange={(e) => setSearchLetter(e.target.value)}
-			>
-				<option value="">Tous</option>
-				{alphabet.map((letter) => (
-					<option key={letter} value={letter}>
-						{letter}
-					</option>
-				))}
-			</select>
-
-			<ul className="space-y-3 w-full max-w-5xl mx-auto">
+			<ul className="space-y-4">
 				{filteredPatients.length === 0 ? (
-					<li className="text-base sm:text-lg text-gray-500 text-center">
+					<li className="text-center text-gray-500 dark:text-gray-400">
 						Aucun patient trouvé.
 					</li>
 				) : (
 					filteredPatients.map((patient) => (
 						<li
 							key={patient.id}
-							className={`p-3 sm:p-4 border rounded-lg shadow-md bg-gray-50 dark:bg-gray-800 hover:shadow-lg transition-shadow duration-200 flex flex-col ${
-								patient.gender === "Homme"
-									? "text-blue-800"
-									: "text-pink-800"
-							} dark:bg-gray-800`}
+							className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
 						>
 							<div
-								className="flex flex-col sm:flex-row sm:items-center cursor-pointer justify-between"
+								className="p-4 cursor-pointer"
 								onClick={() =>
 									setSelectedPatientId((prevId) =>
 										prevId === patient.id
@@ -271,56 +223,59 @@ const PatientList = ({ initialPatients, user }) => {
 									)
 								}
 							>
-								<div className="flex items-center mb-2 sm:mb-0">
-									{patient.gender === "Homme" ? (
-										<IconGenderMale
-											className="text-blue-500 mr-2"
-											size={18}
-										/>
-									) : (
-										<IconGenderFemale
-											className="text-pink-500 mr-2"
-											size={18}
-										/>
-									)}
-									<h2 className="font-semibold text-base sm:text-lg text-gray-800 dark:text-gray-300 flex items-center">
-										{patient.name}
-										{patient.isDeceased && (
-											<>
-												<span className="ml-2 text-sm font-normal text-red-500 dark:text-orange-400">
-													Décédé(e)
-												</span>
-												<IconSkull className="ml-2 w-5 h-5 text-gray-700 dark:text-slate-100" />
-											</>
-										)}
-									</h2>
-								</div>
-								<div className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm font-semibold flex space-x-6">
-									<p>
-										Âge: {calculateAge(patient.birthDate)}{" "}
-										ans
-									</p>
-									<p>
-										Tél:{" "}
-										{patient.phone ? (
-											<a
-												href={`tel:${patient.phone}`}
-												className="text-stone-900 hover:underline dark:text-green-400"
-											>
-												{patient.phone}
-											</a>
+								<div className="flex items-center justify-between">
+									<div className="flex items-center">
+										{patient.gender === "Homme" ? (
+											<IconGenderMale
+												className="text-blue-500 mr-2"
+												size={24}
+											/>
 										) : (
-											<span className="text-stone-900 dark:text-gray-400">
-												Numéro non renseigné
-											</span>
+											<IconGenderFemale
+												className="text-pink-500 mr-2"
+												size={24}
+											/>
 										)}
-									</p>
+										<h2 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+											{patient.name}
+											{patient.isDeceased && (
+												<>
+													<span className="ml-2 text-sm font-normal text-red-500 dark:text-red-400">
+														Décédé(e)
+													</span>
+													<IconSkull className="ml-2 w-5 h-5 text-red-500 dark:text-red-400" />
+												</>
+											)}
+										</h2>
+									</div>
+									<div className="text-sm text-gray-600 dark:text-gray-400">
+										<p>
+											Âge:{" "}
+											{calculateAge(patient.birthDate)}{" "}
+											ans
+										</p>
+										<p>
+											Tél:{" "}
+											{patient.phone ? (
+												<a
+													href={`tel:${patient.phone}`}
+													className="text-blue-600 dark:text-blue-400 hover:underline"
+												>
+													{patient.phone}
+												</a>
+											) : (
+												<span>Non renseigné</span>
+											)}
+										</p>
+									</div>
 								</div>
 							</div>
 							{selectedPatientId === patient.id && (
 								<React.Suspense
 									fallback={
-										<div>Chargement des détails...</div>
+										<div className="p-4 text-center">
+											Chargement des détails...
+										</div>
 									}
 								>
 									<PatientDetails
@@ -336,11 +291,11 @@ const PatientList = ({ initialPatients, user }) => {
 				)}
 			</ul>
 
-			<div className="flex flex-col sm:flex-row justify-between items-center mt-4 w-full max-w-3xl mx-auto">
+			<div className="flex justify-between items-center mt-6">
 				<select
 					value={currentPage}
 					onChange={(e) => handlePageChange(Number(e.target.value))}
-					className="mb-4 sm:mb-0 p-2 border border-blue-500 rounded-lg shadow-md text-sm"
+					className="p-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
 				>
 					{Array.from({ length: totalPages }, (_, index) => (
 						<option key={index} value={index + 1}>
@@ -348,31 +303,52 @@ const PatientList = ({ initialPatients, user }) => {
 						</option>
 					))}
 				</select>
-				<div className="flex justify-center items-center space-x-2 sm:space-x-4">
+				<div className="flex space-x-2">
 					<button
 						onClick={handlePrevPage}
 						disabled={currentPage === 1}
-						className={`px-4 py-2 ${
+						className={`p-2 rounded-lg transition ${
 							currentPage === 1
-								? "opacity-50 cursor-not-allowed"
+								? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
 								: "bg-blue-600 hover:bg-blue-700 text-white"
-						} rounded-lg transition`}
+						}`}
 					>
-						<IconChevronLeft size={18} />
+						<IconChevronLeft size={24} />
 					</button>
 					<button
 						onClick={handleNextPage}
 						disabled={currentPage >= totalPages}
-						className={`px-4 py-2 ${
+						className={`p-2 rounded-lg transition ${
 							currentPage >= totalPages
-								? "opacity-50 cursor-not-allowed"
+								? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
 								: "bg-blue-600 hover:bg-blue-700 text-white"
-						} rounded-lg transition`}
+						}`}
 					>
-						<IconChevronRight size={18} />
+						<IconChevronRight size={24} />
 					</button>
 				</div>
 			</div>
+
+			{showAddFormPatient && (
+				<React.Suspense
+					fallback={
+						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+							Chargement...
+						</div>
+					}
+				>
+					<AddPatientForm
+						onClose={() => setShowAddFormPatient(false)}
+						onAddPatient={(newPatient) => {
+							setPatients([...patients, newPatient]);
+							toast.success("Patient ajouté avec succès !");
+							setTimeout(() => {
+								setShowAddFormPatient(false);
+							}, 2000);
+						}}
+					/>
+				</React.Suspense>
+			)}
 		</div>
 	);
 };
