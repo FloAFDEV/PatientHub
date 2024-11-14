@@ -1,10 +1,4 @@
-import React, {
-	useEffect,
-	useState,
-	useMemo,
-	useCallback,
-	Suspense,
-} from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import Image from "next/image";
 import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import {
@@ -32,7 +26,6 @@ const PatientList = ({ initialPatients, user }) => {
 	const [showAddFormPatient, setShowAddFormPatient] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
-	const itemsPerPage = 15;
 
 	const calculateAge = useMemo(
 		() => (birthDate) => {
