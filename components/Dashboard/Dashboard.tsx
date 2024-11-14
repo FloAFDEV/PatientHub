@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
+import PatientList from "../PatientList/PatientList";
 import {
 	IconUserPlus,
 	IconCalendar,
@@ -116,7 +117,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					/>
 				</div>
 			</section>
-
 			<section className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
 				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
 					Graphiques et visualisations
@@ -125,6 +125,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					Contenu supplémentaire, comme des graphiques, des
 					tableaux...
 				</p>
+				<div className="overflow-auto max-w-lg max-h-96">
+					<PatientList initialPatients={[]} user={user} />
+				</div>
 			</section>
 		</div>
 	);

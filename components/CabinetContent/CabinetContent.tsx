@@ -316,9 +316,9 @@ interface ActionButtonProps {
 const ActionButton: React.FC<ActionButtonProps> = React.memo(
 	({ onClick, icon, text, color }) => {
 		const colorClasses = {
-			blue: "border-2 border-blue-600 hover:bg-blue-700 text-slate-700 dark:text-white",
-			green: "border-2 border-green-600 hover:bg-green-700 text-slate-700 dark:text-white",
-			red: "bg-red-600 hover:bg-red-700 text-white",
+			blue: "border-2 border-blue-500 hover:bg-blue-600 hover:text-white text-slate-700 dark:text-white",
+			green: "border-2 border-green-500 hover:bg-green-600 hover:text-white text-slate-700 dark:text-white",
+			red: "bg-red-500 hover:bg-red-700 text-white",
 		};
 
 		return (

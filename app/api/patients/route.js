@@ -55,26 +55,35 @@ function formatPatientData(data) {
 
 // Méthode GET pour récupérer les patients avec pagination
 export async function GET(request) {
-	const { searchParams } = new URL(request.url);
-	const name = searchParams.get("name");
-	const page = parseInt(searchParams.get("page")) || 1;
-	const pageSize = 15;
-
 	try {
-		const whereCondition = name
-			? {
-					OR: [
-						{ name: { contains: name, mode: "insensitive" } },
-						{ firstName: { contains: name, mode: "insensitive" } },
-					],
-			  }
-			: {};
+		const { searchParams } = new URL(request.url);
+		const name = searchParams.get("name");
+		const page = Math.max(1, parseInt(searchParams.get("page"), 10) || 1); // Définit `page` à 1 si `NaN` ou négatif
+		const pageSize = 15;
 
+		// Fonction pour construire la condition where de recherche
+		const buildWhereCondition = (name) => {
+			return name
+				? {
+						OR: [
+							{ name: { contains: name, mode: "insensitive" } },
+							{
+								firstName: {
+									contains: name,
+									mode: "insensitive",
+								},
+							},
+						],
+				  }
+				: {};
+		};
+		const whereCondition = buildWhereCondition(name);
+		// Obtenir le nombre total de patients pour la pagination
 		const totalPatients = await prisma.patient.count({
 			where: whereCondition,
 		});
 		const totalPages = Math.ceil(totalPatients / pageSize);
-
+		// Obtenir les patients en fonction de la pagination et des filtres
 		const patients = await prisma.patient.findMany({
 			where: whereCondition,
 			skip: (page - 1) * pageSize,
@@ -84,7 +93,7 @@ export async function GET(request) {
 				cabinet: true,
 			},
 		});
-
+		// Retourner les données avec les informations de pagination
 		return new Response(
 			JSON.stringify({
 				patients,
@@ -100,7 +109,13 @@ export async function GET(request) {
 		);
 	} catch (error) {
 		console.error("Erreur lors de la récupération des patients :", error);
-		return new Response("Erreur interne du serveur", { status: 500 });
+		return new Response(
+			JSON.stringify({
+				message: "Erreur lors de la récupération des patients",
+				error: error.message,
+			}),
+			{ status: 500, headers: { "Content-Type": "application/json" } }
+		);
 	}
 }
 
@@ -179,10 +194,14 @@ export async function DELETE(request) {
 	if (!email) return new Response("Email is required", { status: 400 });
 
 	try {
-		await prisma.patient.delete({ where: { email: email } });
+		const patient = await prisma.patient.findUnique({ where: { email } });
+		if (!patient) {
+			return new Response("Patient not found", { status: 404 });
+		}
+		await prisma.patient.delete({ where: { email } });
 		return new Response("Patient deleted successfully", { status: 204 });
 	} catch (error) {
 		console.error("Error deleting patient:", error);
-		return new Response("Could not delete patient", { status: 500 });
+		return handleErrorResponse(error, "Could not delete patient");
 	}
 }
