@@ -123,7 +123,7 @@ const PatientList = ({ initialPatients, user }) => {
 			/>
 
 			<header className="m-8">
-				<div className="flex items-center justify-between">
+				<div className="flex items-center justify-between mt-8">
 					<h1 className="text-3xl font-bold text-gray-800 dark:text-white">
 						Liste des patients
 					</h1>
@@ -132,7 +132,7 @@ const PatientList = ({ initialPatients, user }) => {
 						alt="Logo"
 						width={80}
 						height={80}
-						className="object-contain shadow-xl rounded-xl mr-8"
+						className="object-contain shadow-xl rounded-xl"
 						priority
 					/>
 				</div>

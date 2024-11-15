@@ -55,7 +55,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						alt="Logo"
 						width={80}
 						height={80}
-						className="object-contain shadow-xl rounded-xl mr-8"
+						className="object-contain shadow-xl rounded-xl"
 						priority
 					/>
 				</div>
@@ -104,22 +104,22 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					<ActionButton
 						icon={IconUserPlus}
 						text="Ajouter un patient"
-						color="blue"
+						className="bg-blue-500 hover:bg-blue-600"
 					/>
 					<ActionButton
 						icon={IconCalendar}
 						text="Voir les rendez-vous"
-						color="green"
+						className="bg-green-500 hover:bg-green-600"
 					/>
 					<ActionButton
 						icon={IconList}
 						text="Voir le listing patient"
-						color="purple"
+						className="bg-purple-500 hover:bg-purple-600"
 					/>
 					<ActionButton
 						icon={IconChartBar}
 						text="Rapports mensuels"
-						color="yellow"
+						className="bg-yellow-500 hover:bg-yellow-600"
 					/>
 				</div>
 			</section>
@@ -180,26 +180,16 @@ const StatCard: React.FC<StatCardProps> = ({
 interface ActionButtonProps {
 	icon: React.ElementType;
 	text: string;
-	color: string;
+	className: string;
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({
 	icon: Icon,
 	text,
-	color,
+	className,
 }) => (
 	<button
-		className={`${
-			color === "blue"
-				? "bg-blue-500 hover:bg-blue-600"
-				: color === "green"
-				? "bg-green-500 hover:bg-green-600"
-				: color === "purple"
-				? "bg-purple-500 hover:bg-purple-600"
-				: color === "yellow"
-				? "bg-yellow-500 hover:bg-yellow-600"
-				: "bg-gray-500 hover:bg-gray-600"
-		} text-white font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center`}
+		className={`${className} text-white font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center`}
 	>
 		<Icon className="mr-2" size={20} />
 		<span>{text}</span>
