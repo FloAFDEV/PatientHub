@@ -4,9 +4,6 @@ import React, { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import {
-	IconUserPlus,
-	IconCalendar,
-	IconList,
 	IconChartBar,
 	IconUsers,
 	IconClock,
@@ -25,6 +22,7 @@ import {
 	Tooltip,
 	Legend,
 	ResponsiveContainer,
+	LabelList,
 } from "recharts";
 
 interface DashboardProps {
@@ -86,9 +84,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 			fill: "#EC4899", // Rose pour les femmes
 		},
 	];
-
-	// Couleurs pour le graphique de répartition
-	const COLORS = ["#0088FE", "#FF8042"];
 
 	return (
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
@@ -182,11 +177,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								<YAxis domain={["auto", "auto"]} />
 								<Tooltip />
 								<Legend />
-								<Bar
-									dataKey="age"
-									fill="#8884d8"
-									barSize={60}
-								/>
+								<Bar dataKey="age" barSize={60} fill="#8884d8">
+									<LabelList
+										dataKey="age"
+										position="insideTop"
+										fontSize={14}
+										fill="#fff"
+									/>
+								</Bar>
 							</BarChart>
 						</ResponsiveContainer>
 					</div>
@@ -217,7 +215,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 													: "#EC4899"
 											}
 										/>
-									))}
+									))}{" "}
+									<LabelList
+										dataKey="value"
+										position="inside"
+										fontSize={14}
+										fill="#fff"
+									/>
 								</Pie>
 								<Tooltip />
 								<Legend />
