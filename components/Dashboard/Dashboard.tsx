@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
@@ -8,6 +6,7 @@ import {
 	IconUsers,
 	IconClock,
 	IconUserPlus as IconNewUser,
+	IconCalendar,
 } from "@tabler/icons-react";
 
 import {
@@ -36,6 +35,8 @@ interface DashboardData {
 	averageAge: number;
 	averageAgeMale: number;
 	averageAgeFemale: number;
+	newPatientsThisMonth: number;
+	newPatientsThisYear: number;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
@@ -75,13 +76,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	const ageData = [
 		{
 			name: "Hommes",
-			age: dashboardData?.averageAgeMale || 0,
-			fill: "#0088FE", // Bleu pour les hommes
+			Age: dashboardData?.averageAgeMale || 0,
+			fill: "#4c50bf", // Bleu pour les hommes
 		},
 		{
 			name: "Femmes",
-			age: dashboardData?.averageAgeFemale || 0,
-			fill: "#EC4899", // Rose pour les femmes
+			Age: dashboardData?.averageAgeFemale || 0,
+			fill: "#ed64a6", // Rose pour les femmes
 		},
 	];
 
@@ -89,7 +90,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
 			{/* En-tête de bienvenue */}
 			<header className="mb-8">
-				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-lg mb-8">
+				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
 					<Image
 						src="/assets/images/ModernCabinet.webp"
 						alt="Modern Osteopathy Clinic"
@@ -139,50 +140,97 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					value="8"
 					subtitle="Prochain RDV à 14h30"
 				/>
+
 				<StatCard
 					icon={
 						<IconNewUser className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 mr-2" />
 					}
-					title="Nouveaux patients"
-					value="24"
-					subtitle="Ce mois-ci"
+					title="Nouveaux patients (Ce mois-ci)"
+					value={
+						dashboardData?.newPatientsThisMonth || "Chargement..."
+					}
+				/>
+				<StatCard
+					icon={
+						<IconNewUser className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 mr-2" />
+					}
+					title="Nouveaux patients (Cette année)"
+					value={
+						dashboardData?.newPatientsThisYear || "Chargement..."
+					}
 				/>
 				<StatCard
 					icon={
 						<IconChartBar className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mr-2" />
 					}
-					title="Âge moyen"
+					title="Âge moyen des patients"
 					value={
-						dashboardData?.averageAge?.toFixed(1) || "Chargement..."
+						dashboardData?.averageAge
+							? `${dashboardData.averageAge.toFixed(1)} ans`
+							: "Chargement..."
 					}
-					subtitle="ans"
+					subtitle=""
 				/>
 			</div>
 
 			{/* Section des graphiques */}
-			<section className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+			<section className="bg-white dark:bg-gray-800 rounded-lg p-6">
 				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4 text-center">
 					Graphiques et visualisations
 				</h2>
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
 					{/* Graphique pour l'âge moyen des hommes et des femmes */}
-					<div>
-						<h3 className="text-lg font-semibold mb-2">
+					<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg">
+						<h3 className="text-base sm:text-lg md:text-xl text-center font-semibold mb-2 sm:mb-4 text-gray-800 dark:text-white flex items-center justify-center gap-2">
+							<IconCalendar
+								className="text-indigo-600 dark:text-indigo-400"
+								size={20}
+							/>
 							Âge moyen des patients
 						</h3>
-						<ResponsiveContainer width="100%" height={300}>
+						<ResponsiveContainer width="100%" height={250}>
 							<BarChart data={ageData}>
-								<CartesianGrid strokeDasharray="3 3" />
-								<XAxis dataKey="name" />
-								<YAxis domain={["auto", "auto"]} />
-								<Tooltip />
-								<Legend />
-								<Bar dataKey="age" barSize={60} fill="#8884d8">
+								<CartesianGrid
+									strokeDasharray="3 3"
+									stroke="#ccc"
+								/>
+								<XAxis
+									dataKey="name"
+									tick={{ fill: "#A0AEC0", fontSize: 12 }}
+									tickLine={false}
+									interval={0}
+								/>
+								<YAxis
+									domain={["auto", "auto"]}
+									tick={{ fill: "#A0AEC0", fontSize: 12 }}
+								/>
+								<Tooltip
+									contentStyle={{
+										backgroundColor: "#f8fafc",
+										border: "none",
+										borderRadius: "8px",
+										boxShadow:
+											"0 4px 6px rgba(0, 0, 0, 0.1)",
+									}}
+								/>
+								<Legend
+									wrapperStyle={{ paddingTop: "10px" }}
+									formatter={(value) => (
+										<span className="text-indigo-600 dark:text-indigo-400 font-normal">
+											{value}
+										</span>
+									)}
+								/>
+								<Bar dataKey="Age" barSize={70} fill="#4C51BF">
 									<LabelList
-										dataKey="age"
+										dataKey="Age"
 										position="insideTop"
-										fontSize={14}
+										formatter={(value: number) =>
+											`${value} ans`
+										}
+										fontSize={12}
 										fill="#fff"
+										fontWeight="thin"
 									/>
 								</Bar>
 							</BarChart>
@@ -190,41 +238,70 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					</div>
 
 					{/* Graphique pour la répartition Hommes/Femmes */}
-					<div>
-						<h3 className="text-lg font-semibold mb-2 text-center">
+					<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg">
+						<h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-4 text-gray-800 dark:text-white text-center flex items-center justify-center gap-2">
+							<IconUsers
+								className="text-pink-500 dark:text-pink-300"
+								size={20}
+							/>
 							Répartition Hommes/Femmes
 						</h3>
-						<ResponsiveContainer width="100%" height={300}>
+						<ResponsiveContainer
+							width="100%"
+							height={200}
+							className="sm:height-[300px]"
+						>
 							<PieChart>
 								<Pie
 									data={genderData}
 									cx="50%"
 									cy="50%"
-									innerRadius={60}
-									outerRadius={80}
-									fill="#8884d8"
+									innerRadius={50}
+									outerRadius={70}
 									paddingAngle={5}
 									dataKey="value"
 								>
-									{genderData.map((entry, index) => (
+									{genderData.map((_entry, index) => (
 										<Cell
 											key={`cell-${index}`}
 											fill={
 												index === 0
-													? "#0088FE"
-													: "#EC4899"
+													? "#4C51BF"
+													: "#ED64A6"
 											}
 										/>
-									))}{" "}
+									))}
 									<LabelList
 										dataKey="value"
 										position="inside"
-										fontSize={14}
+										fontSize={12}
 										fill="#fff"
+										fontWeight="thin"
 									/>
 								</Pie>
-								<Tooltip />
-								<Legend />
+								<Tooltip
+									contentStyle={{
+										backgroundColor: "#f8fafc",
+										border: "none",
+										borderRadius: "8px",
+										boxShadow:
+											"0 4px 6px rgba(0, 0, 0, 0.1)",
+									}}
+								/>
+								<Legend
+									wrapperStyle={{ paddingTop: "10px" }}
+									formatter={(value, _entry, index) => (
+										<span
+											className={`${
+												index === 0
+													? "text-indigo-600 dark:text-indigo-400"
+													: "text-pink-500 dark:text-pink-300"
+											} font-normal`}
+										>
+											{value}
+										</span>
+									)}
+								/>
 							</PieChart>
 						</ResponsiveContainer>
 					</div>

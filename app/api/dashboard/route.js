@@ -8,6 +8,7 @@ export async function GET() {
 		// Récupération des patients depuis la base de données
 		const patients = await prisma.patient.findMany({
 			select: {
+				createdAt: true, // date de création
 				gender: true,
 				birthDate: true,
 			},
@@ -58,6 +59,25 @@ export async function GET() {
 			? femaleAges.reduce((a, b) => a + b, 0) / femaleAges.length
 			: 0;
 
+		// Date actuelle
+		const currentDate = new Date();
+
+		// Filtrer les patients créés ce mois-ci
+		const startOfMonth = new Date(
+			currentDate.getFullYear(),
+			currentDate.getMonth(),
+			1
+		);
+		const newPatientsThisMonth = patients.filter(
+			(p) => new Date(p.createdAt) >= startOfMonth
+		).length;
+
+		// Filtrer les patients créés cette année
+		const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+		const newPatientsThisYear = patients.filter(
+			(p) => new Date(p.createdAt) >= startOfYear
+		).length;
+
 		// Retourner la réponse JSON avec les données calculées
 		return NextResponse.json({
 			totalPatients,
@@ -66,6 +86,8 @@ export async function GET() {
 			averageAge: Math.round(averageAge * 10) / 10, // Arrondi à 1 décimale
 			averageAgeMale: Math.round(averageAgeMale * 10) / 10,
 			averageAgeFemale: Math.round(averageAgeFemale * 10) / 10,
+			newPatientsThisMonth,
+			newPatientsThisYear,
 		});
 	} catch (error) {
 		// En cas d'erreur
