@@ -67,9 +67,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				</p>
 			</header>
 
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+			<div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
 				<StatCard
-					icon={<IconUsers className="w-8 h-8 text-blue-500" />}
+					icon={
+						<IconUsers className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 mr-2" />
+					}
 					title="Patients actifs"
 					value={
 						patientCount !== null ? patientCount : "Chargement..."
@@ -77,13 +79,17 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					change="+12%"
 				/>
 				<StatCard
-					icon={<IconClock className="w-8 h-8 text-green-500" />}
+					icon={
+						<IconClock className="w-6 h-6 sm:w-8 sm:h-8 text-green-500 mr-2" />
+					}
 					title="Rendez-vous aujourd'hui"
 					value="8"
 					subtitle="Prochain RDV à 14h30"
 				/>
 				<StatCard
-					icon={<IconNewUser className="w-8 h-8 text-purple-500" />}
+					icon={
+						<IconNewUser className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 mr-2" />
+					}
 					title="Nouveaux patients"
 					value="24"
 					subtitle="Ce mois-ci"
@@ -94,7 +100,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
 					Actions rapides
 				</h2>
-				<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
 					<ActionButton
 						icon={IconUserPlus}
 						text="Ajouter un patient"
@@ -183,7 +189,17 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 	color,
 }) => (
 	<button
-		className={`bg-${color}-500 hover:bg-${color}-600 text-white font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center`}
+		className={`${
+			color === "blue"
+				? "bg-blue-500 hover:bg-blue-600"
+				: color === "green"
+				? "bg-green-500 hover:bg-green-600"
+				: color === "purple"
+				? "bg-purple-500 hover:bg-purple-600"
+				: color === "yellow"
+				? "bg-yellow-500 hover:bg-yellow-600"
+				: "bg-gray-500 hover:bg-gray-600"
+		} text-white font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center`}
 	>
 		<Icon className="mr-2" size={20} />
 		<span>{text}</span>
