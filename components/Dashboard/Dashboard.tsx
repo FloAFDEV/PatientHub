@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
-import PatientList from "../PatientList/PatientList";
 import {
 	IconUserPlus,
 	IconCalendar,
@@ -14,68 +13,127 @@ import {
 	IconUserPlus as IconNewUser,
 } from "@tabler/icons-react";
 
+import {
+	PieChart,
+	Pie,
+	Cell,
+	BarChart,
+	Bar,
+	XAxis,
+	YAxis,
+	CartesianGrid,
+	Tooltip,
+	Legend,
+	ResponsiveContainer,
+} from "recharts";
+
 interface DashboardProps {
 	user: User | null;
 }
 
+interface DashboardData {
+	totalPatients: number;
+	maleCount: number;
+	femaleCount: number;
+	averageAge: number;
+	averageAgeMale: number;
+	averageAgeFemale: number;
+}
+
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
-	const [patientCount, setPatientCount] = useState<number | null>(null);
+	const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+		null
+	);
 
 	useEffect(() => {
 		let isMounted = true;
-		const fetchPatientCount = async () => {
+		const fetchDashboardData = async () => {
 			try {
-				const response = await fetch("/api/patients?page=1");
+				const response = await fetch("/api/dashboard");
 				const data = await response.json();
 				if (isMounted) {
-					setPatientCount(data.totalPatients);
+					setDashboardData(data);
 				}
 			} catch (error) {
 				console.error(
-					"Erreur lors de la récupération des patients",
+					"Erreur lors de la récupération des données du tableau de bord",
 					error
 				);
 			}
 		};
-		fetchPatientCount();
+		fetchDashboardData();
 		return () => {
 			isMounted = false;
 		};
 	}, []);
 
+	// Données pour la répartition des Hommes/Femmes
+	const genderData = [
+		{ name: "Hommes", value: dashboardData?.maleCount || 0 },
+		{ name: "Femmes", value: dashboardData?.femaleCount || 0 },
+	];
+
+	// Données pour les âges moyens des hommes et des femmes
+	const ageData = [
+		{
+			name: "Hommes",
+			age: dashboardData?.averageAgeMale || 0,
+			fill: "#0088FE", // Bleu pour les hommes
+		},
+		{
+			name: "Femmes",
+			age: dashboardData?.averageAgeFemale || 0,
+			fill: "#EC4899", // Rose pour les femmes
+		},
+	];
+
+	// Couleurs pour le graphique de répartition
+	const COLORS = ["#0088FE", "#FF8042"];
+
 	return (
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
+			{/* En-tête de bienvenue */}
 			<header className="mb-8">
-				<div className="flex items-center justify-between mt-8">
-					<h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-						Tableau de bord
-					</h1>
+				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-lg mb-8">
 					<Image
-						src="/assets/icons/logo-full.svg"
-						alt="Logo"
-						width={80}
-						height={80}
-						className="object-contain shadow-xl rounded-xl"
+						src="/assets/images/ModernCabinet.webp"
+						alt="Modern Osteopathy Clinic"
+						layout="fill"
+						objectFit="cover"
+						objectPosition="center 60%"
+						className="opacity-80"
 						priority
 					/>
+					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
+						<Image
+							src="/assets/icons/logo-full.svg"
+							alt="Logo"
+							width={80}
+							height={80}
+							className="object-contain shadow-xl rounded-xl mb-4"
+							priority
+						/>
+						<h1 className="text-3xl font-bold drop-shadow-md">
+							Tableau de bord
+						</h1>
+						<p className="mt-2 text-xl drop-shadow-sm">
+							Bienvenue,{" "}
+							{user?.user_metadata?.user_metadata?.first_name ||
+								user?.email ||
+								"Utilisateur"}
+						</p>
+					</div>
 				</div>
-				<p className="mt-2 text-gray-600 dark:text-gray-400">
-					Bienvenue,{" "}
-					{user?.user_metadata?.user_metadata?.first_name ||
-						user?.email ||
-						"Utilisateur"}
-				</p>
 			</header>
 
-			<div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+			{/* Section des statistiques */}
+			<div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
 				<StatCard
 					icon={
 						<IconUsers className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 mr-2" />
 					}
 					title="Patients actifs"
-					value={
-						patientCount !== null ? patientCount : "Chargement..."
-					}
+					value={dashboardData?.totalPatients || "Chargement..."}
 					change="+12%"
 				/>
 				<StatCard
@@ -94,51 +152,85 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					value="24"
 					subtitle="Ce mois-ci"
 				/>
+				<StatCard
+					icon={
+						<IconChartBar className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mr-2" />
+					}
+					title="Âge moyen"
+					value={
+						dashboardData?.averageAge?.toFixed(1) || "Chargement..."
+					}
+					subtitle="ans"
+				/>
 			</div>
 
-			<section className="mb-8">
-				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
-					Actions rapides
-				</h2>
-				<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-					<ActionButton
-						icon={IconUserPlus}
-						text="Ajouter un patient"
-						className="bg-blue-500 hover:bg-blue-600"
-					/>
-					<ActionButton
-						icon={IconCalendar}
-						text="Voir les rendez-vous"
-						className="bg-green-500 hover:bg-green-600"
-					/>
-					<ActionButton
-						icon={IconList}
-						text="Voir le listing patient"
-						className="bg-purple-500 hover:bg-purple-600"
-					/>
-					<ActionButton
-						icon={IconChartBar}
-						text="Rapports mensuels"
-						className="bg-yellow-500 hover:bg-yellow-600"
-					/>
-				</div>
-			</section>
+			{/* Section des graphiques */}
 			<section className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
+				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4 text-center">
 					Graphiques et visualisations
 				</h2>
-				<p className="text-gray-600 dark:text-gray-400">
-					Contenu supplémentaire, comme des graphiques, des
-					tableaux...
-				</p>
-				<div className="overflow-auto max-w-lg max-h-96">
-					<PatientList initialPatients={[]} user={user} />
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					{/* Graphique pour l'âge moyen des hommes et des femmes */}
+					<div>
+						<h3 className="text-lg font-semibold mb-2">
+							Âge moyen des patients
+						</h3>
+						<ResponsiveContainer width="100%" height={300}>
+							<BarChart data={ageData}>
+								<CartesianGrid strokeDasharray="3 3" />
+								<XAxis dataKey="name" />
+								<YAxis domain={["auto", "auto"]} />
+								<Tooltip />
+								<Legend />
+								<Bar
+									dataKey="age"
+									fill="#8884d8"
+									barSize={60}
+								/>
+							</BarChart>
+						</ResponsiveContainer>
+					</div>
+
+					{/* Graphique pour la répartition Hommes/Femmes */}
+					<div>
+						<h3 className="text-lg font-semibold mb-2 text-center">
+							Répartition Hommes/Femmes
+						</h3>
+						<ResponsiveContainer width="100%" height={300}>
+							<PieChart>
+								<Pie
+									data={genderData}
+									cx="50%"
+									cy="50%"
+									innerRadius={60}
+									outerRadius={80}
+									fill="#8884d8"
+									paddingAngle={5}
+									dataKey="value"
+								>
+									{genderData.map((entry, index) => (
+										<Cell
+											key={`cell-${index}`}
+											fill={
+												index === 0
+													? "#0088FE"
+													: "#EC4899"
+											}
+										/>
+									))}
+								</Pie>
+								<Tooltip />
+								<Legend />
+							</PieChart>
+						</ResponsiveContainer>
+					</div>
 				</div>
 			</section>
 		</div>
 	);
 };
 
+// Composant pour afficher les cartes de statistiques
 interface StatCardProps {
 	icon: React.ReactNode;
 	title: string;
@@ -152,48 +244,33 @@ const StatCard: React.FC<StatCardProps> = ({
 	title,
 	value,
 	change,
-	subtitle = "",
+	subtitle,
 }) => (
-	<div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-		<div className="flex items-center justify-between mb-4">
-			{icon}
-			<h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-				{title}
-			</h3>
+	<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-4 sm:p-6 rounded-lg shadow-lg">
+		<div className="flex items-center justify-between mb-3">
+			<div className="flex items-center">
+				{icon}
+				<h3 className="text-sm sm:text-base font-semibold text-gray-800 dark:text-white ml-2">
+					{title}
+				</h3>
+			</div>
 		</div>
-		<p className="text-3xl font-bold text-gray-900 dark:text-white">
+		<p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
 			{value}
 		</p>
-		{change && (
-			<p className="mt-2 text-sm text-green-600 dark:text-green-400">
-				{change}
-			</p>
-		)}
-		{subtitle && (
-			<p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-				{subtitle}
-			</p>
-		)}
+		<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2">
+			{change && (
+				<p className="text-sm sm:text-base text-green-600 dark:text-green-400 mb-1 sm:mb-0">
+					{change}
+				</p>
+			)}
+			{subtitle && (
+				<p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+					{subtitle}
+				</p>
+			)}
+		</div>
 	</div>
-);
-
-interface ActionButtonProps {
-	icon: React.ElementType;
-	text: string;
-	className: string;
-}
-
-const ActionButton: React.FC<ActionButtonProps> = ({
-	icon: Icon,
-	text,
-	className,
-}) => (
-	<button
-		className={`${className} text-white font-semibold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center`}
-	>
-		<Icon className="mr-2" size={20} />
-		<span>{text}</span>
-	</button>
 );
 
 export default Dashboard;

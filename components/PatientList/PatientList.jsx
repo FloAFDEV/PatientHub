@@ -103,9 +103,9 @@ const PatientList = ({ initialPatients, user }) => {
 
 	if (loading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen bg-slate-800">
+			<div className="flex items-center justify-center min-h-screen bg-gray-200 dark:bg-slate-800">
 				<div className="animate-spin h-16 w-16 border-t-4 border-blue-500 rounded-full mb-6"></div>
-				<p className="text-xl text-gray-300 mt-6">
+				<p className="text-xl text-gray-800 dark:text-gray-300 mt-6">
 					Chargement en cours...
 				</p>
 			</div>

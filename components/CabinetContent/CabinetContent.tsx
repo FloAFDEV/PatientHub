@@ -123,10 +123,9 @@ const CabinetContent: React.FC = () => {
 
 	if (loading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen bg-slate-800">
-				<div className="animate-spin h-16 w-16 border-t-4 border-blue-500 rounded-full mb-6"></div>{" "}
-				<p className="text-xl text-gray-300 mt-6">
-					{" "}
+			<div className="flex items-center justify-center min-h-screen bg-gray-200 dark:bg-slate-800">
+				<div className="animate-spin h-16 w-16 border-t-4 border-blue-500 rounded-full mb-6"></div>
+				<p className="text-xl text-gray-800 dark:text-gray-300 mt-6">
 					Chargement en cours...
 				</p>
 			</div>
@@ -144,7 +143,7 @@ const CabinetContent: React.FC = () => {
 	return (
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
 			<header className="mb-8">
-				<div className="flex items-center justify-between mt-8 mr-8">
+				<div className="flex items-center justify-between mt-8">
 					<div>
 						<h1 className="text-3xl font-bold mb-2">
 							Fiche de votre cabinet
@@ -158,7 +157,7 @@ const CabinetContent: React.FC = () => {
 						alt="Logo"
 						width={100}
 						height={100}
-						className="object-contain rounded-xl"
+						className="object-contain rounded-xl shadow-xl"
 						priority
 					/>
 				</div>
