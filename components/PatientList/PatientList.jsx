@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import Image from "next/image";
 import AddPatientForm from "@/components/addPatientForm/addPatientForm";
@@ -19,6 +21,7 @@ const PatientDetails = React.lazy(() =>
 
 const PatientList = ({ initialPatients, user }) => {
 	const [patients, setPatients] = useState(initialPatients || []);
+	const [allPatients, setAllPatients] = useState([]);
 	const [loading, setLoading] = useState(!initialPatients);
 	const [selectedPatientId, setSelectedPatientId] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
@@ -26,6 +29,7 @@ const PatientList = ({ initialPatients, user }) => {
 	const [showAddFormPatient, setShowAddFormPatient] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
+	const [isSearching, setIsSearching] = useState(false);
 
 	const calculateAge = useMemo(
 		() => (birthDate) => {
@@ -47,6 +51,21 @@ const PatientList = ({ initialPatients, user }) => {
 		[]
 	);
 
+	const fetchAllPatients = useCallback(async () => {
+		try {
+			const response = await fetch("/api/patients/search");
+			if (!response.ok)
+				throw new Error("Erreur dans le chargement des données.");
+			const data = await response.json();
+			setAllPatients(data.patients);
+		} catch (error) {
+			console.error(
+				"Erreur lors de la récupération de tous les patients :",
+				error
+			);
+		}
+	}, []);
+
 	const fetchPatients = useCallback(async (page) => {
 		setLoading(true);
 		try {
@@ -67,38 +86,68 @@ const PatientList = ({ initialPatients, user }) => {
 	}, []);
 
 	useEffect(() => {
-		fetchPatients(currentPage);
-	}, [currentPage, fetchPatients]);
+		if (!isSearching) {
+			fetchPatients(currentPage);
+		}
+	}, [currentPage, fetchPatients, isSearching]);
+
+	useEffect(() => {
+		fetchAllPatients();
+	}, [fetchAllPatients]);
+
+	useEffect(() => {
+		const delayDebounceFn = setTimeout(() => {
+			if (searchTerm) {
+				setIsSearching(true);
+				const searchResults = allPatients.filter(
+					(patient) =>
+						patient.name
+							.toLowerCase()
+							.includes(searchTerm.toLowerCase()) ||
+						(patient.phone && patient.phone.includes(searchTerm)) ||
+						(patient.email &&
+							patient.email
+								.toLowerCase()
+								.includes(searchTerm.toLowerCase()))
+				);
+				setPatients(searchResults);
+			} else {
+				setIsSearching(false);
+				fetchPatients(currentPage);
+			}
+		}, 300);
+
+		return () => clearTimeout(delayDebounceFn);
+	}, [searchTerm, allPatients, currentPage, fetchPatients]);
 
 	const filteredPatients = useMemo(() => {
 		return patients
 			.filter((patient) => {
-				const matchesSearch = patient.name
-					.toLowerCase()
-					.includes(searchTerm.toLowerCase());
 				const matchesLetter =
 					searchLetter === "" ||
 					patient.name.charAt(0).toLowerCase() ===
 						searchLetter.toLowerCase();
-				return matchesSearch && matchesLetter;
+				return matchesLetter;
 			})
 			.sort((a, b) => a.name.localeCompare(b.name));
-	}, [patients, searchTerm, searchLetter]);
+	}, [patients, searchLetter]);
 
 	const handleNextPage = () => {
-		if (currentPage < totalPages) {
+		if (currentPage < totalPages && !isSearching) {
 			setCurrentPage(currentPage + 1);
 		}
 	};
 
 	const handlePrevPage = () => {
-		if (currentPage > 1) {
+		if (currentPage > 1 && !isSearching) {
 			setCurrentPage(currentPage - 1);
 		}
 	};
 
 	const handlePageChange = (newPage) => {
-		setCurrentPage(Number(newPage));
+		if (!isSearching) {
+			setCurrentPage(Number(newPage));
+		}
 	};
 
 	if (loading) {
@@ -284,43 +333,47 @@ const PatientList = ({ initialPatients, user }) => {
 				)}
 			</ul>
 
-			<div className="flex justify-between items-center mt-6">
-				<select
-					value={currentPage}
-					onChange={(e) => handlePageChange(Number(e.target.value))}
-					className="p-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
-				>
-					{Array.from({ length: totalPages }, (_, index) => (
-						<option key={index} value={index + 1}>
-							Page {index + 1}
-						</option>
-					))}
-				</select>
-				<div className="flex space-x-2">
-					<button
-						onClick={handlePrevPage}
-						disabled={currentPage === 1}
-						className={`p-2 rounded-lg transition ${
-							currentPage === 1
-								? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
-								: "bg-blue-600 hover:bg-blue-700 text-white"
-						}`}
+			{!isSearching && (
+				<div className="flex justify-between items-center mt-6">
+					<select
+						value={currentPage}
+						onChange={(e) =>
+							handlePageChange(Number(e.target.value))
+						}
+						className="p-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
 					>
-						<IconChevronLeft size={24} />
-					</button>
-					<button
-						onClick={handleNextPage}
-						disabled={currentPage >= totalPages}
-						className={`p-2 rounded-lg transition ${
-							currentPage >= totalPages
-								? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
-								: "bg-blue-600 hover:bg-blue-700 text-white"
-						}`}
-					>
-						<IconChevronRight size={24} />
-					</button>
+						{Array.from({ length: totalPages }, (_, index) => (
+							<option key={index} value={index + 1}>
+								Page {index + 1}
+							</option>
+						))}
+					</select>
+					<div className="flex space-x-2">
+						<button
+							onClick={handlePrevPage}
+							disabled={currentPage === 1}
+							className={`p-2 rounded-lg transition ${
+								currentPage === 1
+									? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
+									: "bg-blue-600 hover:bg-blue-700 text-white"
+							}`}
+						>
+							<IconChevronLeft size={24} />
+						</button>
+						<button
+							onClick={handleNextPage}
+							disabled={currentPage >= totalPages}
+							className={`p-2 rounded-lg transition ${
+								currentPage >= totalPages
+									? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
+									: "bg-blue-600 hover:bg-blue-700 text-white"
+							}`}
+						>
+							<IconChevronRight size={24} />
+						</button>
+					</div>
 				</div>
-			</div>
+			)}
 
 			{showAddFormPatient && (
 				<React.Suspense
@@ -334,6 +387,7 @@ const PatientList = ({ initialPatients, user }) => {
 						onClose={() => setShowAddFormPatient(false)}
 						onAddPatient={(newPatient) => {
 							setPatients([...patients, newPatient]);
+							setAllPatients([...allPatients, newPatient]);
 							toast.success("Patient ajouté avec succès !");
 							setTimeout(() => {
 								setShowAddFormPatient(false);
