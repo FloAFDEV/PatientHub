@@ -126,7 +126,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 			<div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
 				<StatCard
 					icon={
-						<IconUsers className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 mr-2" />
+						<div className="flex items-center justify-center w-8 h-8">
+							<IconUsers className="w-full h-full text-blue-500" />
+						</div>
 					}
 					title="Patients actifs"
 					value={dashboardData?.totalPatients || "Chargement..."}
@@ -134,16 +136,19 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				/>
 				<StatCard
 					icon={
-						<IconClock className="w-6 h-6 sm:w-8 sm:h-8 text-green-500 mr-2" />
+						<div className="flex items-center justify-center w-8 h-8">
+							<IconClock className="w-full h-full text-green-500" />
+						</div>
 					}
 					title="Rendez-vous aujourd'hui"
 					value="8"
 					subtitle="Prochain RDV à 14h30"
 				/>
-
 				<StatCard
 					icon={
-						<IconNewUser className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 mr-2" />
+						<div className="flex items-center justify-center w-10 h-10">
+							<IconNewUser className="w-full h-full text-purple-500" />
+						</div>
 					}
 					title="Nouveaux patients (Ce mois-ci)"
 					value={
@@ -152,7 +157,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				/>
 				<StatCard
 					icon={
-						<IconNewUser className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500 mr-2" />
+						<div className="flex items-center justify-center w-10 h-10">
+							<IconNewUser className="w-full h-full text-purple-500" />
+						</div>
 					}
 					title="Nouveaux patients (Cette année)"
 					value={
@@ -161,7 +168,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				/>
 				<StatCard
 					icon={
-						<IconChartBar className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mr-2" />
+						<div className="flex items-center justify-center w-10 h-10">
+							<IconChartBar className="w-full h-full text-yellow-500" />
+						</div>
 					}
 					title="Âge moyen des patients"
 					value={
@@ -181,7 +190,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
 					{/* Graphique pour l'âge moyen des hommes et des femmes */}
 					<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg">
-						<h3 className="text-base sm:text-lg md:text-xl text-center font-semibold mb-2 sm:mb-4 text-gray-800 dark:text-white flex items-center justify-center gap-2">
+						<h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 sm:mb-6 text-gray-800 dark:text-white text-center flex items-center justify-center gap-2">
 							<IconCalendar
 								className="text-indigo-600 dark:text-indigo-400"
 								size={20}

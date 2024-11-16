@@ -169,7 +169,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 							))}
 						</div>
 					</div>
-					<div className="dark:bg-slate-800 flex items-center gap-3 rounded-xl mb-4">
+					<div className="dark:bg-neutral-900 flex items-center gap-3 rounded-xl mb-4">
 						{user ? (
 							<>
 								<Image

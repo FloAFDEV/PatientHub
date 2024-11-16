@@ -207,7 +207,7 @@ const PatientList = ({ initialPatients, user }) => {
 							className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
 						>
 							<div
-								className="p-4 cursor-pointer"
+								className="p-0.5 sm:p-1 cursor-pointer"
 								onClick={() =>
 									setSelectedPatientId((prevId) =>
 										prevId === patient.id
