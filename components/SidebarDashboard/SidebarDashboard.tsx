@@ -3,7 +3,7 @@
 import React, { useState, useLayoutEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import AppointmentForm from "@/components/Appointments/appointmentForm";
+import AppointmentsManager from "@/components/Appointments/AppointmentsManager";
 import { toast } from "react-toastify";
 import {
 	ArrowLeftIcon,
@@ -30,16 +30,7 @@ const supabase = createClient();
 const MemoizedDashboard = React.memo(Dashboard);
 const MemoizedPatientList = React.memo(PatientList);
 const MemoizedCabinetContent = React.memo(CabinetContent);
-
-toast.success("Rendez-vous ajouté avec succès !", {
-	position: "top-right", // Position du toast
-	autoClose: 5000, // Durée avant la fermeture automatique (en ms)
-	hideProgressBar: false, // Afficher ou non la barre de progression
-	closeOnClick: true, // Fermer le toast au clic
-	pauseOnHover: true, // Suspendre l'auto-close au survol
-	draggable: true, // Rendre le toast draggable
-	progress: undefined, // Définir le progrès
-});
+const MemoizedAppointmentsManager = React.memo(AppointmentsManager);
 
 function SidebarDashboard({ children }: { children: React.ReactNode }) {
 	const [open, setOpen] = useState(false);
@@ -70,34 +61,6 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 		},
 		[router]
 	);
-
-	const handleAppointmentSubmit = async (appointment: {
-		date: Date;
-		time: string;
-		reason: string;
-		patientId: number;
-	}) => {
-		try {
-			const response = await fetch("/api/appointments", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(appointment),
-			});
-			if (!response.ok) {
-				throw new Error("Erreur lors de la création du rendez-vous");
-			}
-			const data = await response.json();
-			console.log("Rendez-vous ajouté :", data);
-			toast.success("Rendez-vous ajouté avec succès !");
-		} catch (error) {
-			console.error("Erreur lors de l'ajout du rendez-vous:", error);
-			toast.error(
-				"Une erreur est survenue lors de l'ajout du rendez-vous."
-			);
-		}
-	};
 
 	const handleTabChange = useCallback((tab: string) => {
 		setActiveTab(tab);
@@ -195,12 +158,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 			case "Cabinet":
 				return <MemoizedCabinetContent />;
 			case "appointments":
-				return (
-					<AppointmentForm
-						onSubmit={handleAppointmentSubmit}
-						patientId={123}
-					/>
-				); // Exemple avec un patientId
+				return <MemoizedAppointmentsManager />;
 			default:
 				return null;
 		}
@@ -261,17 +219,12 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 			<div className="flex-1 flex flex-col">
 				<div className="fixed z-50 top-1 left-2 md:top-4 md:right-4 md:left-auto">
 					<ModeToggle />
-				</div>{" "}
+				</div>
 				<main className="flex-1 overflow-auto p-1">
 					{activeComponent}
-					{children}{" "}
+					{children}
 				</main>
 				<Footer />
-				{/* <footer className="bg-gray-200 dark:bg-slate-800 text-center p-2 border-t border-neutral-300 dark:border-neutral-700">
-					<p className="text-sm font-extralight text-gray-600 dark:text-gray-400">
-						© 2024 - PatientHub. Tous droits réservés.
-					</p>
-				</footer> */}
 			</div>
 		</div>
 	);
