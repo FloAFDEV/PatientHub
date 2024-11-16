@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import { Appointment } from "./AppointmentsManager";
 
 interface Patient {
@@ -98,6 +100,10 @@ export function AppointmentDialog({
 							? "Nouveau rendez-vous"
 							: "Modifier le rendez-vous"}
 					</DialogTitle>
+					<p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+						Date :{" "}
+						{format(selectedDate, "dd MMMM yyyy", { locale: fr })}
+					</p>
 				</DialogHeader>
 				<Form {...form}>
 					<form
