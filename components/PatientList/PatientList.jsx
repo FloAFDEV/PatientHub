@@ -97,19 +97,28 @@ const PatientList = ({ initialPatients, user }) => {
 
 	useEffect(() => {
 		const delayDebounceFn = setTimeout(() => {
-			if (searchTerm) {
+			if (searchTerm || searchLetter) {
 				setIsSearching(true);
-				const searchResults = allPatients.filter(
-					(patient) =>
-						patient.name
-							.toLowerCase()
-							.includes(searchTerm.toLowerCase()) ||
-						(patient.phone && patient.phone.includes(searchTerm)) ||
-						(patient.email &&
-							patient.email
+				const searchResults = allPatients.filter((patient) => {
+					const matchesSearch = searchTerm
+						? patient.name
 								.toLowerCase()
-								.includes(searchTerm.toLowerCase()))
-				);
+								.includes(searchTerm.toLowerCase()) ||
+						  (patient.phone &&
+								patient.phone.includes(searchTerm)) ||
+						  (patient.email &&
+								patient.email
+									.toLowerCase()
+									.includes(searchTerm.toLowerCase()))
+						: true;
+
+					const matchesLetter = searchLetter
+						? patient.name.charAt(0).toLowerCase() ===
+						  searchLetter.toLowerCase()
+						: true;
+
+					return matchesSearch && matchesLetter;
+				});
 				setPatients(searchResults);
 			} else {
 				setIsSearching(false);
@@ -118,7 +127,20 @@ const PatientList = ({ initialPatients, user }) => {
 		}, 300);
 
 		return () => clearTimeout(delayDebounceFn);
-	}, [searchTerm, allPatients, currentPage, fetchPatients]);
+	}, [searchTerm, searchLetter, allPatients, currentPage, fetchPatients]);
+
+	const handleLetterClick = (letter) => {
+		setSearchLetter(letter);
+		setIsSearching(true);
+	};
+
+	const handleResetFilters = () => {
+		setSearchLetter("");
+		setSearchTerm("");
+		setIsSearching(false);
+		fetchPatients(1);
+		setCurrentPage(1);
+	};
 
 	const filteredPatients = useMemo(() => {
 		return patients
@@ -224,21 +246,18 @@ const PatientList = ({ initialPatients, user }) => {
 								? "bg-blue-500 text-white"
 								: "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-blue-100 dark:hover:bg-blue-900"
 						}`}
-						onClick={() => setSearchLetter(letter)}
+						onClick={() => handleLetterClick(letter)}
 					>
 						{letter}
 					</button>
 				))}
 				<button
 					className={`px-3 py-1 rounded-full transition duration-300 ${
-						searchLetter === ""
+						!searchLetter && !searchTerm
 							? "bg-blue-500 text-white"
 							: "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-blue-100 dark:hover:bg-blue-900"
 					}`}
-					onClick={() => {
-						setSearchLetter("");
-						setSearchTerm("");
-					}}
+					onClick={handleResetFilters}
 				>
 					Tous
 				</button>

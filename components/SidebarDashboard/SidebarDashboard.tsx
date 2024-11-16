@@ -3,11 +3,14 @@
 import React, { useState, useLayoutEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
+import AppointmentForm from "@/components/Appointments/appointmentForm";
+import { toast } from "react-toastify";
 import {
 	ArrowLeftIcon,
 	DocumentIcon,
 	UserCircleIcon,
 	ChartBarIcon,
+	CalendarIcon,
 	BuildingOfficeIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
@@ -20,12 +23,23 @@ import CabinetContent from "@/components/CabinetContent/CabinetContent";
 import { Logo, LogoIcon } from "@/components/Logo/Logo";
 import Dashboard from "@/components/Dashboard/Dashboard";
 import { User } from "@supabase/supabase-js";
+import Footer from "@/components/Footer";
 
 const supabase = createClient();
 
 const MemoizedDashboard = React.memo(Dashboard);
 const MemoizedPatientList = React.memo(PatientList);
 const MemoizedCabinetContent = React.memo(CabinetContent);
+
+toast.success("Rendez-vous ajouté avec succès !", {
+	position: "top-right", // Position du toast
+	autoClose: 5000, // Durée avant la fermeture automatique (en ms)
+	hideProgressBar: false, // Afficher ou non la barre de progression
+	closeOnClick: true, // Fermer le toast au clic
+	pauseOnHover: true, // Suspendre l'auto-close au survol
+	draggable: true, // Rendre le toast draggable
+	progress: undefined, // Définir le progrès
+});
 
 function SidebarDashboard({ children }: { children: React.ReactNode }) {
 	const [open, setOpen] = useState(false);
@@ -56,6 +70,34 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 		},
 		[router]
 	);
+
+	const handleAppointmentSubmit = async (appointment: {
+		date: Date;
+		time: string;
+		reason: string;
+		patientId: number;
+	}) => {
+		try {
+			const response = await fetch("/api/appointments", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(appointment),
+			});
+			if (!response.ok) {
+				throw new Error("Erreur lors de la création du rendez-vous");
+			}
+			const data = await response.json();
+			console.log("Rendez-vous ajouté :", data);
+			toast.success("Rendez-vous ajouté avec succès !");
+		} catch (error) {
+			console.error("Erreur lors de l'ajout du rendez-vous:", error);
+			toast.error(
+				"Une erreur est survenue lors de l'ajout du rendez-vous."
+			);
+		}
+	};
 
 	const handleTabChange = useCallback((tab: string) => {
 		setActiveTab(tab);
@@ -112,6 +154,14 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 				onClick: () => handleTabChange("Cabinet"),
 			},
 			{
+				label: "Rendez-vous",
+				href: "#",
+				icon: (
+					<CalendarIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				),
+				onClick: () => handleTabChange("appointments"),
+			},
+			{
 				label: "Contact",
 				href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour%2C%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci%21",
 				icon: (
@@ -144,6 +194,13 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 				);
 			case "Cabinet":
 				return <MemoizedCabinetContent />;
+			case "appointments":
+				return (
+					<AppointmentForm
+						onSubmit={handleAppointmentSubmit}
+						patientId={123}
+					/>
+				); // Exemple avec un patientId
 			default:
 				return null;
 		}
@@ -169,7 +226,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 							))}
 						</div>
 					</div>
-					<div className="dark:bg-neutral-900 flex items-center gap-3 rounded-xl mb-4">
+					<div className="dark:bg-gray-800 flex items-center gap-3 rounded-xl mb-4">
 						{user ? (
 							<>
 								<Image
@@ -209,11 +266,12 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 					{activeComponent}
 					{children}{" "}
 				</main>
-				<footer className="bg-gray-200 dark:bg-slate-800 text-center p-2 border-t border-neutral-300 dark:border-neutral-700">
+				<Footer />
+				{/* <footer className="bg-gray-200 dark:bg-slate-800 text-center p-2 border-t border-neutral-300 dark:border-neutral-700">
 					<p className="text-sm font-extralight text-gray-600 dark:text-gray-400">
 						© 2024 - PatientHub. Tous droits réservés.
 					</p>
-				</footer>
+				</footer> */}
 			</div>
 		</div>
 	);
