@@ -42,6 +42,12 @@ interface AppointmentDialogProps {
 	mode?: "create" | "edit";
 }
 
+interface FormValues {
+	patientId: string;
+	time: string;
+	reason: string;
+}
+
 export function AppointmentDialog({
 	open,
 	onOpenChange,
@@ -50,7 +56,7 @@ export function AppointmentDialog({
 	appointment,
 	mode = "create",
 }: AppointmentDialogProps) {
-	const form = useForm({
+	const form = useForm<FormValues>({
 		defaultValues: {
 			patientId: appointment?.patientId?.toString() || "",
 			time: appointment?.time || "09:00",
@@ -58,7 +64,7 @@ export function AppointmentDialog({
 		},
 	});
 
-	const onSubmit = async (data: any) => {
+	const onSubmit = async (data: FormValues) => {
 		try {
 			const endpoint =
 				mode === "create"
@@ -87,20 +93,21 @@ export function AppointmentDialog({
 			onOpenChange(false);
 			window.location.reload();
 		} catch (error) {
+			console.error("Erreur:", error);
 			toast.error("Une erreur est survenue");
 		}
 	};
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-[500px] p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl">
-				<DialogHeader className="mb-6">
-					<DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+			<DialogContent className="sm:max-w-[500px] p-6">
+				<DialogHeader>
+					<DialogTitle>
 						{mode === "create"
 							? "Nouveau rendez-vous"
 							: "Modifier le rendez-vous"}
 					</DialogTitle>
-					<p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+					<p className="text-sm text-gray-500 mt-2">
 						Date :{" "}
 						{format(selectedDate, "dd MMMM yyyy", { locale: fr })}
 					</p>
@@ -115,31 +122,28 @@ export function AppointmentDialog({
 							name="patientId"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel className="text-base font-medium text-gray-700 dark:text-gray-300">
-										Patient
-									</FormLabel>
+									<FormLabel>Patient</FormLabel>
 									<Select
 										onValueChange={field.onChange}
 										defaultValue={field.value}
 									>
 										<FormControl>
-											<SelectTrigger className="h-11 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+											<SelectTrigger>
 												<SelectValue placeholder="Sélectionner un patient" />
 											</SelectTrigger>
 										</FormControl>
-										<SelectContent className="bg-white dark:bg-gray-700">
+										<SelectContent>
 											{patients.map((patient) => (
 												<SelectItem
 													key={patient.id}
 													value={patient.id.toString()}
-													className="hover:bg-gray-100 dark:hover:bg-gray-600"
 												>
 													{patient.name}
 												</SelectItem>
 											))}
 										</SelectContent>
 									</Select>
-									<FormMessage className="text-sm text-red-500" />
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -149,19 +153,17 @@ export function AppointmentDialog({
 							name="time"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel className="text-base font-medium text-gray-700 dark:text-gray-300">
-										Heure
-									</FormLabel>
+									<FormLabel>Heure</FormLabel>
 									<Select
 										onValueChange={field.onChange}
 										defaultValue={field.value}
 									>
 										<FormControl>
-											<SelectTrigger className="h-11 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
+											<SelectTrigger>
 												<SelectValue placeholder="Sélectionner une heure" />
 											</SelectTrigger>
 										</FormControl>
-										<SelectContent className="bg-white dark:bg-gray-700">
+										<SelectContent>
 											{[
 												"09:00",
 												"10:00",
@@ -174,14 +176,13 @@ export function AppointmentDialog({
 												<SelectItem
 													key={time}
 													value={time}
-													className="hover:bg-gray-100 dark:hover:bg-gray-600"
 												>
 													{time}
 												</SelectItem>
 											))}
 										</SelectContent>
 									</Select>
-									<FormMessage className="text-sm text-red-500" />
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
@@ -191,33 +192,24 @@ export function AppointmentDialog({
 							name="reason"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel className="text-base font-medium text-gray-700 dark:text-gray-300">
-										Motif
-									</FormLabel>
+									<FormLabel>Motif</FormLabel>
 									<FormControl>
-										<Input
-											{...field}
-											className="h-11 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-										/>
+										<Input {...field} />
 									</FormControl>
-									<FormMessage className="text-sm text-red-500" />
+									<FormMessage />
 								</FormItem>
 							)}
 						/>
 
-						<div className="flex justify-end space-x-3 pt-6">
+						<div className="flex justify-end space-x-3 pt-4">
 							<Button
 								type="button"
 								variant="outline"
 								onClick={() => onOpenChange(false)}
-								className="px-6 py-2 text-base"
 							>
 								Annuler
 							</Button>
-							<Button
-								type="submit"
-								className="px-6 py-2 text-base"
-							>
+							<Button type="submit">
 								{mode === "create" ? "Créer" : "Modifier"}
 							</Button>
 						</div>

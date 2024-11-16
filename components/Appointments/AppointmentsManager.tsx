@@ -46,6 +46,7 @@ export default function AppointmentsManager() {
 			const data = await response.json();
 			setPatients(data);
 		} catch (error) {
+			console.error("Erreur:", error);
 			toast.error("Erreur lors du chargement des patients");
 		} finally {
 			setIsLoading(false);
@@ -71,6 +72,7 @@ export default function AppointmentsManager() {
 			toast.success("Rendez-vous supprimé avec succès");
 			window.location.reload();
 		} catch (error) {
+			console.error("Erreur:", error);
 			toast.error("Erreur lors de la suppression du rendez-vous");
 		}
 	};
@@ -89,14 +91,15 @@ export default function AppointmentsManager() {
 			toast.success("Rendez-vous annulé avec succès");
 			window.location.reload();
 		} catch (error) {
+			console.error("Erreur:", error);
 			toast.error("Erreur lors de l'annulation du rendez-vous");
 		}
 	};
 
 	if (isLoading) {
 		return (
-			<div className="flex justify-center items-center h-64">
-				<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+			<div className="flex justify-center items-center min-h-[60vh]">
+				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
 			</div>
 		);
 	}
@@ -105,7 +108,7 @@ export default function AppointmentsManager() {
 		<div className="container mx-auto p-4 max-w-7xl">
 			<div className="flex flex-col md:flex-row gap-8">
 				<div className="w-full md:w-1/3">
-					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl">
+					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
 						<Calendar
 							mode="single"
 							selected={selectedDate}
@@ -113,32 +116,10 @@ export default function AppointmentsManager() {
 							locale={fr}
 							className="rounded-lg border-none"
 							disabled={(date) => date < new Date()}
-							classNames={{
-								day_selected:
-									"bg-primary text-primary-foreground hover:bg-primary/90",
-								day_today: "bg-accent text-accent-foreground",
-								day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
-								day_disabled:
-									"text-gray-400 dark:text-gray-600 hover:bg-transparent",
-								nav_button:
-									"h-7 w-7 bg-transparent p-0 opacity-70 hover:opacity-100",
-								nav_button_previous: "absolute left-1",
-								nav_button_next: "absolute right-1",
-								caption:
-									"flex justify-center pt-1 relative items-center mb-4",
-								caption_label: "text-lg font-semibold",
-								table: "w-full border-collapse space-y-1",
-								head_row: "flex",
-								head_cell:
-									"text-gray-500 dark:text-gray-400 font-normal text-sm w-9",
-								row: "flex w-full mt-2",
-								cell: "text-center text-sm relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md",
-							}}
 						/>
 						<Button
-							className="w-full mt-6 py-6 text-lg font-medium shadow-md hover:shadow-lg transition-all duration-200"
+							className="w-full mt-6"
 							onClick={() => setIsNewAppointmentOpen(true)}
-							disabled={patients.length === 0}
 						>
 							Nouveau rendez-vous
 						</Button>
@@ -147,7 +128,7 @@ export default function AppointmentsManager() {
 
 				<div className="w-full md:w-2/3">
 					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-						<h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+						<h2 className="text-2xl font-bold mb-6">
 							Rendez-vous du{" "}
 							{format(selectedDate, "dd MMMM yyyy", {
 								locale: fr,

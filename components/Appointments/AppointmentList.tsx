@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
 	Table,
 	TableBody,
@@ -9,7 +9,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Edit2, Trash2, XCircle, CalendarX } from "lucide-react";
+import { fr } from "date-fns/locale";
+import { Edit2, Trash2, XCircle, Calendar } from "lucide-react";
 import { Appointment } from "./AppointmentsManager";
 
 interface AppointmentListProps {
@@ -25,84 +26,103 @@ export function AppointmentList({
 	onDelete,
 	onCancel,
 }: AppointmentListProps) {
-	const [appointments, setAppointments] = React.useState<Appointment[]>([]);
+	const [appointments, setAppointments] = useState<Appointment[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 
-	React.useEffect(() => {
-		fetchAppointments();
-	}, [date]);
-
-	const fetchAppointments = async () => {
+	const fetchAppointments = useCallback(async () => {
 		try {
+			setIsLoading(true);
+			setError(null);
 			const response = await fetch(
 				`/api/appointments?date=${format(date, "yyyy-MM-dd")}`
 			);
-			if (!response.ok)
+
+			if (!response.ok) {
 				throw new Error(
 					"Erreur lors de la récupération des rendez-vous"
 				);
+			}
+
 			const data = await response.json();
 			setAppointments(data);
-		} catch (error) {
-			console.error("Erreur:", error);
+		} catch (err) {
+			setError("Impossible de charger les rendez-vous");
+			console.error("Erreur:", err);
+		} finally {
+			setIsLoading(false);
 		}
-	};
+	}, [date]);
+
+	useEffect(() => {
+		fetchAppointments();
+	}, [fetchAppointments]);
+
+	if (isLoading) {
+		return (
+			<div className="flex justify-center items-center py-8">
+				<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+			</div>
+		);
+	}
+
+	if (error) {
+		return (
+			<div className="text-center py-8 text-red-500">
+				<p>{error}</p>
+				<Button
+					onClick={() => fetchAppointments()}
+					variant="outline"
+					className="mt-4"
+				>
+					Réessayer
+				</Button>
+			</div>
+		);
+	}
 
 	if (appointments.length === 0) {
 		return (
-			<div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
-				<CalendarX className="h-12 w-12 mb-4 opacity-50" />
+			<div className="flex flex-col items-center justify-center py-12 text-gray-500">
+				<Calendar className="h-12 w-12 mb-4 opacity-50" />
 				<p className="text-lg font-medium">
 					Aucun rendez-vous pour cette date
+				</p>
+				<p className="text-sm mt-2">
+					Cliquez sur "Nouveau rendez-vous" pour en créer un
 				</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+		<div className="rounded-lg border border-gray-200">
 			<Table>
 				<TableHeader>
-					<TableRow className="bg-gray-50 dark:bg-gray-800">
-						<TableHead className="py-4 font-semibold text-gray-900 dark:text-white">
-							Heure
-						</TableHead>
-						<TableHead className="py-4 font-semibold text-gray-900 dark:text-white">
-							Patient
-						</TableHead>
-						<TableHead className="py-4 font-semibold text-gray-900 dark:text-white">
-							Motif
-						</TableHead>
-						<TableHead className="py-4 font-semibold text-gray-900 dark:text-white">
-							Statut
-						</TableHead>
-						<TableHead className="py-4 font-semibold text-gray-900 dark:text-white">
-							Actions
-						</TableHead>
+					<TableRow>
+						<TableHead>Heure</TableHead>
+						<TableHead>Patient</TableHead>
+						<TableHead>Motif</TableHead>
+						<TableHead>Statut</TableHead>
+						<TableHead className="text-right">Actions</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
 					{appointments.map((appointment) => (
-						<TableRow
-							key={appointment.id}
-							className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-						>
-							<TableCell className="py-4 font-medium">
+						<TableRow key={appointment.id}>
+							<TableCell>
 								{format(new Date(appointment.date), "HH:mm")}
 							</TableCell>
-							<TableCell className="py-4">
-								{appointment.patientName}
-							</TableCell>
-							<TableCell className="py-4">
-								{appointment.reason}
-							</TableCell>
-							<TableCell className="py-4">
+							<TableCell>{appointment.patientName}</TableCell>
+							<TableCell>{appointment.reason}</TableCell>
+							<TableCell>
 								<span
-									className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+									className={`px-2 py-1 rounded-full text-sm ${
 										appointment.status === "SCHEDULED"
-											? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+											? "bg-blue-100 text-blue-800"
 											: appointment.status === "COMPLETED"
-											? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
-											: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
+											? "bg-green-100 text-green-800"
+											: "bg-red-100 text-red-800"
 									}`}
 								>
 									{appointment.status === "SCHEDULED" &&
@@ -113,8 +133,8 @@ export function AppointmentList({
 										"Annulé"}
 								</span>
 							</TableCell>
-							<TableCell className="py-4">
-								<div className="flex items-center space-x-3">
+							<TableCell className="text-right">
+								<div className="flex justify-end space-x-2">
 									<Button
 										variant="ghost"
 										size="sm"
@@ -122,7 +142,6 @@ export function AppointmentList({
 										disabled={
 											appointment.status === "CANCELED"
 										}
-										className="hover:bg-gray-100 dark:hover:bg-gray-700"
 									>
 										<Edit2 className="h-4 w-4" />
 									</Button>
@@ -130,7 +149,7 @@ export function AppointmentList({
 										variant="ghost"
 										size="sm"
 										onClick={() => onDelete(appointment.id)}
-										className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/30"
+										className="text-red-600 hover:text-red-700"
 									>
 										<Trash2 className="h-4 w-4" />
 									</Button>
@@ -141,7 +160,7 @@ export function AppointmentList({
 											onClick={() =>
 												onCancel(appointment.id)
 											}
-											className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-900/30"
+											className="text-orange-600 hover:text-orange-700"
 										>
 											<XCircle className="h-4 w-4" />
 										</Button>

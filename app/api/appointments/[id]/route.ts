@@ -23,7 +23,7 @@ export async function PUT(
 		});
 
 		return NextResponse.json(appointment);
-	} catch (error) {
+	} catch {
 		return NextResponse.json(
 			{ error: "Erreur lors de la modification du rendez-vous" },
 			{ status: 500 }
@@ -41,7 +41,7 @@ export async function DELETE(
 		});
 
 		return NextResponse.json({ success: true });
-	} catch (error) {
+	} catch {
 		return NextResponse.json(
 			{ error: "Erreur lors de la suppression du rendez-vous" },
 			{ status: 500 }
