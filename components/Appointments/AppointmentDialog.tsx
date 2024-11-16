@@ -26,11 +26,19 @@ import { Input } from "@/components/ui/input";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Appointment } from "./AppointmentsManager";
+import { Calendar, Clock, User, FileText } from "lucide-react";
 
 interface Patient {
 	id: number;
 	name: string;
+}
+
+interface Appointment {
+	id: number;
+	patientId: number;
+	date: string;
+	time: string;
+	reason: string;
 }
 
 interface AppointmentDialogProps {
@@ -100,43 +108,60 @@ export function AppointmentDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-[500px] p-6">
-				<DialogHeader>
-					<DialogTitle>
-						{mode === "create"
-							? "Nouveau rendez-vous"
-							: "Modifier le rendez-vous"}
+			<DialogContent className="sm:max-w-[500px] p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
+				<DialogHeader className="space-y-4">
+					<DialogTitle className="text-2xl font-bold flex items-center gap-3 text-gray-900 dark:text-white">
+						{mode === "create" ? (
+							<>
+								<Calendar className="h-6 w-6 text-primary" />
+								Nouveau rendez-vous
+							</>
+						) : (
+							<>
+								<Calendar className="h-6 w-6 text-primary" />
+								Modifier le rendez-vous
+							</>
+						)}
 					</DialogTitle>
-					<p className="text-sm text-gray-500 mt-2">
-						Date :{" "}
-						{format(selectedDate, "dd MMMM yyyy", { locale: fr })}
-					</p>
+					<div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
+						<Calendar className="h-4 w-4" />
+						<span>
+							{format(selectedDate, "EEEE dd MMMM yyyy", {
+								locale: fr,
+							})}
+						</span>
+					</div>
 				</DialogHeader>
+
 				<Form {...form}>
 					<form
 						onSubmit={form.handleSubmit(onSubmit)}
-						className="space-y-6"
+						className="space-y-6 mt-6"
 					>
 						<FormField
 							control={form.control}
 							name="patientId"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Patient</FormLabel>
+									<FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+										<User className="h-4 w-4" />
+										Patient
+									</FormLabel>
 									<Select
 										onValueChange={field.onChange}
 										defaultValue={field.value}
 									>
 										<FormControl>
-											<SelectTrigger>
+											<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
 												<SelectValue placeholder="Sélectionner un patient" />
 											</SelectTrigger>
 										</FormControl>
-										<SelectContent>
+										<SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
 											{patients.map((patient) => (
 												<SelectItem
 													key={patient.id}
 													value={patient.id.toString()}
+													className="py-3 hover:bg-gray-100 dark:hover:bg-gray-700"
 												>
 													{patient.name}
 												</SelectItem>
@@ -153,17 +178,20 @@ export function AppointmentDialog({
 							name="time"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Heure</FormLabel>
+									<FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+										<Clock className="h-4 w-4" />
+										Heure
+									</FormLabel>
 									<Select
 										onValueChange={field.onChange}
 										defaultValue={field.value}
 									>
 										<FormControl>
-											<SelectTrigger>
+											<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
 												<SelectValue placeholder="Sélectionner une heure" />
 											</SelectTrigger>
 										</FormControl>
-										<SelectContent>
+										<SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
 											{[
 												"09:00",
 												"10:00",
@@ -176,6 +204,7 @@ export function AppointmentDialog({
 												<SelectItem
 													key={time}
 													value={time}
+													className="py-3 hover:bg-gray-100 dark:hover:bg-gray-700"
 												>
 													{time}
 												</SelectItem>
@@ -192,24 +221,35 @@ export function AppointmentDialog({
 							name="reason"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Motif</FormLabel>
+									<FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+										<FileText className="h-4 w-4" />
+										Motif
+									</FormLabel>
 									<FormControl>
-										<Input {...field} />
+										<Input
+											{...field}
+											className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+											placeholder="Entrez le motif du rendez-vous"
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
 
-						<div className="flex justify-end space-x-3 pt-4">
+						<div className="flex justify-end gap-3 pt-6">
 							<Button
 								type="button"
 								variant="outline"
 								onClick={() => onOpenChange(false)}
+								className="h-12 px-6 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
 							>
 								Annuler
 							</Button>
-							<Button type="submit">
+							<Button
+								type="submit"
+								className="h-12 px-6 bg-primary hover:bg-primary/90 text-white"
+							>
 								{mode === "create" ? "Créer" : "Modifier"}
 							</Button>
 						</div>

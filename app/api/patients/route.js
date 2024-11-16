@@ -5,52 +5,32 @@ export async function GET(request) {
 	try {
 		const { searchParams } = new URL(request.url);
 		const fetchAll = searchParams.get("fetchAll") === "true";
-		const name = searchParams.get("name");
 		const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
 		const pageSize = parseInt(searchParams.get("pageSize") || "15", 10);
-		const searchTerm = searchParams.get("term");
+		const search = searchParams.get("search") || "";
+		const letter = searchParams.get("letter") || "";
 
-		// Construction de la condition where de base
-		const baseWhereCondition = {
+		const whereCondition = {
 			isDeceased: false,
-			...(name
-				? {
-						OR: [
-							{ name: { contains: name, mode: "insensitive" } },
-							{
-								firstName: {
-									contains: name,
-									mode: "insensitive",
-								},
-							},
-						],
-				  }
-				: {}),
-			...(searchTerm
-				? {
-						OR: [
-							{
-								name: {
-									contains: searchTerm,
-									mode: "insensitive",
-								},
-							},
-							{
-								email: {
-									contains: searchTerm,
-									mode: "insensitive",
-								},
-							},
-							{ phone: { contains: searchTerm } },
-						],
-				  }
-				: {}),
+			...(search && {
+				OR: [
+					{ name: { contains: search, mode: "insensitive" } },
+					{ email: { contains: search, mode: "insensitive" } },
+					{ phone: { contains: search } },
+				],
+			}),
+			...(letter && {
+				name: {
+					startsWith: letter,
+					mode: "insensitive",
+				},
+			}),
 		};
 
 		// Pour le sélecteur de rendez-vous, retourner une liste simplifiée
 		if (fetchAll) {
 			const patients = await prisma.patient.findMany({
-				where: baseWhereCondition,
+				where: whereCondition,
 				select: {
 					id: true,
 					name: true,
@@ -64,27 +44,32 @@ export async function GET(request) {
 			return NextResponse.json(patients);
 		}
 
-		// Pour la liste paginée
-		const [totalPatients, patients] = await Promise.all([
-			prisma.patient.count({ where: baseWhereCondition }),
+		// Pour la liste paginée complète
+		const [patients, totalCount] = await Promise.all([
 			prisma.patient.findMany({
-				where: baseWhereCondition,
+				where: whereCondition,
 				skip: (page - 1) * pageSize,
 				take: pageSize,
-				include: {
-					osteopath: true,
-					cabinet: true,
-				},
 				orderBy: {
 					name: "asc",
 				},
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					phone: true,
+					gender: true,
+					birthDate: true,
+					isDeceased: true,
+				},
 			}),
+			prisma.patient.count({ where: whereCondition }),
 		]);
 
 		return NextResponse.json({
 			patients,
-			totalPatients,
-			totalPages: Math.ceil(totalPatients / pageSize),
+			totalPatients: totalCount,
+			totalPages: Math.ceil(totalCount / pageSize),
 			currentPage: page,
 			pageSize,
 		});
