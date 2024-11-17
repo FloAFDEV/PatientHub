@@ -95,7 +95,7 @@ const PatientList = ({ user }) => {
 	if (isLoading) {
 		return (
 			<div className="flex justify-center items-center min-h-[60vh]">
-				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2  border-primary"></div>
 			</div>
 		);
 	}
@@ -251,7 +251,7 @@ const PatientList = ({ user }) => {
 			<div className="space-y-4">
 				{!patients?.length ? (
 					<div className="text-center py-8 bg-white dark:bg-gray-800 rounded-lg shadow">
-						<IconSearch className="mx-auto h-12 w-12 text-gray-400" />
+						<IconSearch className="mx-auto h-12 w-12  text-gray-400" />
 						<p className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
 							Aucun patient trouvé
 						</p>

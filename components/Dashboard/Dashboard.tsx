@@ -133,7 +133,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						</div>
 					}
 					title="Patients actifs"
-					value={dashboardData?.totalPatients || "Chargement..."}
+					value={
+						dashboardData?.totalPatients !== undefined
+							? dashboardData.totalPatients
+							: "Chargement..."
+					}
 					change="+12%"
 				/>
 				<StatCard

@@ -16,6 +16,8 @@ import { Appointment } from "./AppointmentsManager";
 interface AppointmentListProps {
 	date: Date;
 	onEdit: (appointment: Appointment) => void;
+	onDelete: (appointmentId: number) => Promise<void>;
+	onCancel: (appointmentId: number) => Promise<void>;
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
