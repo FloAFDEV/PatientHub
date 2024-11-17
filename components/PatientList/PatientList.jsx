@@ -35,7 +35,7 @@ const PatientDetails = React.lazy(() =>
 	import("@/components/PatientDetails/PatientDetails")
 );
 
-const PatientList = ({ user }) => {
+const PatientList = ({}) => {
 	const [selectedPatientId, setSelectedPatientId] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
