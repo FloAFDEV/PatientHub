@@ -28,7 +28,7 @@ export async function GET(request: Request) {
 				status: apt.status,
 			}))
 		);
-	} catch (error) {
+	} catch {
 		return NextResponse.json(
 			{ error: "Erreur lors de la récupération des rendez-vous" },
 			{ status: 500 }
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
 		});
 
 		return NextResponse.json(appointment);
-	} catch (error) {
+	} catch {
 		return NextResponse.json(
 			{ error: "Erreur lors de la création du rendez-vous" },
 			{ status: 500 }

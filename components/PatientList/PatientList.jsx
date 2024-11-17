@@ -16,6 +16,8 @@ import {
 	IconCalendar,
 	IconFilter,
 	IconRefresh,
+	IconPhone,
+	IconMail,
 } from "@tabler/icons-react";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
@@ -95,7 +97,7 @@ const PatientList = ({ user }) => {
 	if (isLoading) {
 		return (
 			<div className="flex justify-center items-center min-h-[60vh]">
-				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2  border-primary"></div>
+				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
 			</div>
 		);
 	}
@@ -120,18 +122,15 @@ const PatientList = ({ user }) => {
 
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
-			{/* Header */}
-			<header className="mb-6 md:mb-8">
-				<div className="flex items-center justify-between">
-					<div>
-						<h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+			{/* Header avec adaptation mobile */}
+			<header className="mb-4 sm:mb-6 md:mb-8">
+				<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+					<div className="text-center sm:text-left w-full sm:w-auto">
+						<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
 							Liste des patients
 						</h1>
-						<p className="mt-2 text-sm md:text-base text-gray-600 dark:text-gray-400">
-							Gérez vos patients,{" "}
-							{user?.user_metadata?.user_metadata?.first_name ||
-								user?.email ||
-								"Utilisateur"}
+						<p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">
+							Gérez vos patients et leurs rendez-vous
 						</p>
 					</div>
 					<Image
@@ -139,119 +138,123 @@ const PatientList = ({ user }) => {
 						alt="Logo"
 						width={60}
 						height={60}
-						className="object-contain rounded-xl shadow-lg md:w-20 md:h-20"
+						className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-xl shadow-lg"
 						priority
 					/>
 				</div>
 			</header>
 
-			{/* Search and Actions */}
-			<div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
-				<div className="relative w-full md:w-1/3">
-					<IconSearch
-						className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-						size={20}
-					/>
-					<Input
-						type="text"
-						placeholder="Rechercher un patient..."
-						value={searchTerm}
-						onChange={handleSearchChange}
-						className="pl-10"
-					/>
-				</div>
-				<div className="flex w-full md:w-auto gap-2">
-					{/* Mobile Filter Button */}
-					<Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-						<SheetTrigger asChild>
-							<Button
-								variant="outline"
-								className="md:hidden"
-								onClick={() => setIsFilterOpen(true)}
-							>
-								<IconFilter className="h-4 w-4 mr-2" />
-								Filtres
-							</Button>
-						</SheetTrigger>
-						<SheetContent side="bottom" className="h-[80vh]">
-							<SheetHeader>
-								<SheetTitle>Filtrer par lettre</SheetTitle>
-							</SheetHeader>
-							<div className="grid grid-cols-5 gap-2 p-4">
-								{alphabet.map((letter) => (
+			{/* Barre de recherche et actions */}
+			<div className="flex flex-col gap-3 sm:gap-4 mb-6">
+				<div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+					<div className="relative flex-1">
+						<IconSearch
+							className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+							size={20}
+						/>
+						<Input
+							type="text"
+							placeholder="Rechercher un patient..."
+							value={searchTerm}
+							onChange={handleSearchChange}
+							className="pl-10 h-11 w-full"
+						/>
+					</div>
+					<div className="flex gap-2">
+						<Sheet
+							open={isFilterOpen}
+							onOpenChange={setIsFilterOpen}
+						>
+							<SheetTrigger asChild>
+								<Button
+									variant="outline"
+									className="md:hidden flex-1 sm:flex-none"
+								>
+									<IconFilter className="h-4 w-4 sm:mr-2" />
+									<span className="hidden sm:inline">
+										Filtres
+									</span>
+								</Button>
+							</SheetTrigger>
+							<SheetContent side="bottom" className="h-[80vh]">
+								<SheetHeader>
+									<SheetTitle>Filtrer par lettre</SheetTitle>
+								</SheetHeader>
+								<div className="grid grid-cols-5 gap-2 p-4">
+									{alphabet.map((letter) => (
+										<Button
+											key={letter}
+											variant={
+												searchLetter === letter
+													? "default"
+													: "outline"
+											}
+											className="w-full"
+											onClick={() =>
+												handleLetterClick(letter)
+											}
+										>
+											{letter}
+										</Button>
+									))}
 									<Button
-										key={letter}
 										variant={
-											searchLetter === letter
+											!searchLetter && !searchTerm
 												? "default"
 												: "outline"
 										}
-										className="w-full"
-										onClick={() =>
-											handleLetterClick(letter)
-										}
+										className="w-full col-span-5"
+										onClick={handleResetFilters}
 									>
-										{letter}
+										Réinitialiser
 									</Button>
-								))}
-								<Button
-									variant={
-										!searchLetter && !searchTerm
-											? "default"
-											: "outline"
-									}
-									className="w-full col-span-5"
-									onClick={handleResetFilters}
-								>
-									Réinitialiser
-								</Button>
-							</div>
-						</SheetContent>
-					</Sheet>
+								</div>
+							</SheetContent>
+						</Sheet>
 
+						<Button
+							onClick={() => setShowAddFormPatient(true)}
+							className="flex-1 sm:flex-none h-11"
+						>
+							<IconPlus size={18} className="sm:mr-2" />
+							<span className="hidden sm:inline">
+								Ajouter un patient
+							</span>
+						</Button>
+					</div>
+				</div>
+
+				{/* Filtre alphabétique desktop */}
+				<div className="hidden md:flex flex-wrap justify-center gap-1.5">
+					{alphabet.map((letter) => (
+						<Button
+							key={letter}
+							variant={
+								searchLetter === letter ? "default" : "outline"
+							}
+							className="w-8 h-8 p-0 text-sm"
+							onClick={() => handleLetterClick(letter)}
+						>
+							{letter}
+						</Button>
+					))}
 					<Button
-						onClick={() => setShowAddFormPatient(true)}
-						className="flex-1 md:flex-none items-center gap-2"
+						variant={
+							!searchLetter && !searchTerm ? "default" : "outline"
+						}
+						className="px-3 text-sm"
+						onClick={handleResetFilters}
 					>
-						<IconPlus size={18} />
-						<span className="hidden sm:inline">
-							Ajouter un patient
-						</span>
-						<span className="sm:hidden">Ajouter</span>
+						Tous
 					</Button>
 				</div>
 			</div>
 
-			{/* Desktop Alphabet Filter */}
-			<div className="hidden md:flex flex-wrap justify-center gap-2 mb-6">
-				{alphabet.map((letter) => (
-					<Button
-						key={letter}
-						variant={
-							searchLetter === letter ? "default" : "outline"
-						}
-						className="w-10 h-10 p-0 rounded-full"
-						onClick={() => handleLetterClick(letter)}
-					>
-						{letter}
-					</Button>
-				))}
-				<Button
-					variant={
-						!searchLetter && !searchTerm ? "default" : "outline"
-					}
-					className="px-4"
-					onClick={handleResetFilters}
-				>
-					Tous
-				</Button>
-			</div>
-
-			{/* Patient List */}
-			<div className="space-y-4">
+			{/* Liste des patients */}
+			<div className="space-y-3 sm:space-y-4">
 				{!patients?.length ? (
-					<div className="text-center py-8 bg-white dark:bg-gray-800 rounded-lg shadow">
-						<IconSearch className="mx-auto h-12 w-12  text-gray-400" />
+					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+						<IconSearch className="mx-auto h-12 w-12 text-gray-400" />
 						<p className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
 							Aucun patient trouvé
 						</p>
@@ -264,27 +267,29 @@ const PatientList = ({ user }) => {
 					patients.map((patient) => (
 						<div
 							key={patient.id}
-							className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+							className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
 						>
-							<div className="p-4">
-								<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-									<div className="flex items-center gap-4">
-										{patient.gender === "Homme" ? (
-											<IconGenderMale
-												className="text-blue-500"
-												size={24}
-											/>
-										) : (
-											<IconGenderFemale
-												className="text-pink-500"
-												size={24}
-											/>
-										)}
-										<div>
-											<h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+							<div className="p-3 sm:p-4">
+								<div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+									<div className="flex items-start sm:items-center gap-3 flex-1">
+										<div className="mt-1 sm:mt-0">
+											{patient.gender === "Homme" ? (
+												<IconGenderMale
+													className="text-blue-500"
+													size={24}
+												/>
+											) : (
+												<IconGenderFemale
+													className="text-pink-500"
+													size={24}
+												/>
+											)}
+										</div>
+										<div className="flex-1 min-w-0">
+											<h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
 												{patient.name}
 												{patient.isDeceased && (
-													<span className="flex items-center gap-1 text-sm text-red-500">
+													<span className="inline-flex items-center gap-1 text-sm text-red-500">
 														<IconSkull size={16} />
 														<span className="hidden sm:inline">
 															Décédé(e)
@@ -292,35 +297,45 @@ const PatientList = ({ user }) => {
 													</span>
 												)}
 											</h3>
-											<div className="text-sm text-gray-500 dark:text-gray-400">
-												<p>
+											<div className="mt-1 flex flex-col sm:flex-row gap-1 sm:gap-4 text-sm text-gray-500 dark:text-gray-400">
+												<span>
 													Âge:{" "}
 													{calculateAge(
 														patient.birthDate
 													)}{" "}
 													ans
-												</p>
+												</span>
 												{patient.phone && (
 													<a
 														href={`tel:${patient.phone}`}
-														className="text-blue-600 dark:text-blue-400 hover:underline"
+														className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
 													>
+														<IconPhone size={14} />
 														{patient.phone}
+													</a>
+												)}
+												{patient.email && (
+													<a
+														href={`mailto:${patient.email}`}
+														className="hidden sm:flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
+													>
+														<IconMail size={14} />
+														{patient.email}
 													</a>
 												)}
 											</div>
 										</div>
 									</div>
-									<div className="flex items-center gap-2">
+									<div className="flex items-center justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-0 mt-2 sm:mt-0">
 										<Button
 											variant="outline"
 											size="sm"
 											onClick={() =>
 												handleAddAppointment(patient)
 											}
-											className="flex items-center gap-2"
+											className="flex-1 sm:flex-none h-9"
 										>
-											<IconCalendar className="h-4 w-4" />
+											<IconCalendar className="h-4 w-4 sm:mr-2" />
 											<span className="hidden sm:inline">
 												Rendez-vous
 											</span>
@@ -336,6 +351,7 @@ const PatientList = ({ user }) => {
 														: patient.id
 												)
 											}
+											className="flex-1 sm:flex-none h-9"
 										>
 											{selectedPatientId === patient.id
 												? "Fermer"
@@ -365,7 +381,7 @@ const PatientList = ({ user }) => {
 				)}
 			</div>
 
-			{/* Pagination */}
+			{/* Pagination adaptative */}
 			{totalPages > 1 && (
 				<div className="flex justify-between items-center mt-6">
 					<Button
@@ -374,13 +390,13 @@ const PatientList = ({ user }) => {
 							setCurrentPage((p) => Math.max(1, p - 1))
 						}
 						disabled={currentPage === 1}
-						className="gap-1"
+						className="h-9 px-2 sm:px-4"
 					>
-						<IconChevronLeft className="h-4 w-4" />
+						<IconChevronLeft className="h-4 w-4 sm:mr-2" />
 						<span className="hidden sm:inline">Précédent</span>
 					</Button>
 					<span className="text-sm text-gray-600 dark:text-gray-400">
-						Page {currentPage} sur {totalPages}
+						{currentPage} / {totalPages}
 					</span>
 					<Button
 						variant="outline"
@@ -388,15 +404,15 @@ const PatientList = ({ user }) => {
 							setCurrentPage((p) => Math.min(totalPages, p + 1))
 						}
 						disabled={currentPage === totalPages}
-						className="gap-1"
+						className="h-9 px-2 sm:px-4"
 					>
 						<span className="hidden sm:inline">Suivant</span>
-						<IconChevronRight className="h-4 w-4" />
+						<IconChevronRight className="h-4 w-4 sm:ml-2" />
 					</Button>
 				</div>
 			)}
 
-			{/* Modals */}
+			{/* Modales */}
 			{showAddFormPatient && (
 				<AddPatientForm
 					onClose={() => setShowAddFormPatient(false)}
