@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import AddPatientForm from "@/components/addPatientForm/addPatientForm";
+import { usePatients } from "@/hooks/usePatients";
+import { useDebounce } from "@/hooks/useDebounce";
 import {
 	IconGenderMale,
 	IconGenderFemale,
@@ -11,323 +13,259 @@ import {
 	IconChevronLeft,
 	IconChevronRight,
 	IconSkull,
+	IconCalendar,
+	IconRefresh,
 } from "@tabler/icons-react";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { AppointmentDialog } from "@/components/Appointments/AppointmentDialog";
+import { Input } from "@/components/ui/input";
 
 const PatientDetails = React.lazy(() =>
 	import("@/components/PatientDetails/PatientDetails")
 );
 
-const PatientList = ({ initialPatients, user }) => {
-	const [patients, setPatients] = useState(initialPatients || []);
-	const [allPatients, setAllPatients] = useState([]);
-	const [loading, setLoading] = useState(!initialPatients);
+const PatientList = ({ user }) => {
 	const [selectedPatientId, setSelectedPatientId] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
 	const [showAddFormPatient, setShowAddFormPatient] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [totalPages, setTotalPages] = useState(1);
-	const [isSearching, setIsSearching] = useState(false);
+	const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
+	const [selectedPatientForAppointment, setSelectedPatientForAppointment] =
+		useState(null);
 
-	const calculateAge = useMemo(
-		() => (birthDate) => {
-			if (!birthDate) return "N/A";
-			const dateOfBirth = new Date(birthDate);
-			if (isNaN(dateOfBirth.getTime())) return "N/A";
-			const today = new Date();
-			let age = today.getFullYear() - dateOfBirth.getFullYear();
-			const monthDifference = today.getMonth() - dateOfBirth.getMonth();
-			if (
-				monthDifference < 0 ||
-				(monthDifference === 0 &&
-					today.getDate() < dateOfBirth.getDate())
-			) {
-				age--;
-			}
-			return age;
-		},
-		[]
+	const debouncedSearchTerm = useDebounce(searchTerm);
+
+	const { patients, totalPages, isLoading, isError, mutate } = usePatients(
+		currentPage,
+		debouncedSearchTerm,
+		searchLetter
 	);
 
-	const fetchAllPatients = useCallback(async () => {
-		try {
-			const response = await fetch("/api/patients/search");
-			if (!response.ok)
-				throw new Error("Erreur dans le chargement des données.");
-			const data = await response.json();
-			setAllPatients(data.patients);
-		} catch (error) {
-			console.error(
-				"Erreur lors de la récupération de tous les patients :",
-				error
-			);
-		}
-	}, []);
-
-	const fetchPatients = useCallback(async (page) => {
-		setLoading(true);
-		try {
-			const response = await fetch(`/api/patients?page=${page}`);
-			if (!response.ok)
-				throw new Error("Erreur dans le chargement des données.");
-			const data = await response.json();
-			setPatients(data.patients);
-			setTotalPages(data.totalPages);
-			setLoading(false);
-		} catch (error) {
-			console.error(
-				"Erreur lors de la récupération des patients :",
-				error
-			);
-			setLoading(false);
-		}
-	}, []);
-
-	useEffect(() => {
-		if (!isSearching) {
-			fetchPatients(currentPage);
-		}
-	}, [currentPage, fetchPatients, isSearching]);
-
-	useEffect(() => {
-		fetchAllPatients();
-	}, [fetchAllPatients]);
-
-	useEffect(() => {
-		const delayDebounceFn = setTimeout(() => {
-			if (searchTerm || searchLetter) {
-				setIsSearching(true);
-				const searchResults = allPatients.filter((patient) => {
-					const matchesSearch = searchTerm
-						? patient.name
-								.toLowerCase()
-								.includes(searchTerm.toLowerCase()) ||
-						  (patient.phone &&
-								patient.phone.includes(searchTerm)) ||
-						  (patient.email &&
-								patient.email
-									.toLowerCase()
-									.includes(searchTerm.toLowerCase()))
-						: true;
-
-					const matchesLetter = searchLetter
-						? patient.name.charAt(0).toLowerCase() ===
-						  searchLetter.toLowerCase()
-						: true;
-
-					return matchesSearch && matchesLetter;
-				});
-				setPatients(searchResults);
-			} else {
-				setIsSearching(false);
-				fetchPatients(currentPage);
-			}
-		}, 300);
-
-		return () => clearTimeout(delayDebounceFn);
-	}, [searchTerm, searchLetter, allPatients, currentPage, fetchPatients]);
-
-	const handleLetterClick = (letter) => {
-		setSearchLetter(letter);
-		setIsSearching(true);
+	const handleAddAppointment = (patient) => {
+		setSelectedPatientForAppointment(patient);
+		setShowAppointmentDialog(true);
 	};
 
-	const handleResetFilters = () => {
-		setSearchLetter("");
-		setSearchTerm("");
-		setIsSearching(false);
-		fetchPatients(1);
+	const calculateAge = (birthDate) => {
+		if (!birthDate) return "N/A";
+		const today = new Date();
+		const birth = new Date(birthDate);
+		let age = today.getFullYear() - birth.getFullYear();
+		const monthDiff = today.getMonth() - birth.getMonth();
+		if (
+			monthDiff < 0 ||
+			(monthDiff === 0 && today.getDate() < birth.getDate())
+		) {
+			age--;
+		}
+		return age;
+	};
+
+	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+	const handleLetterClick = (letter) => {
+		setSearchLetter(letter === searchLetter ? "" : letter);
 		setCurrentPage(1);
 	};
 
-	const filteredPatients = useMemo(() => {
-		return patients
-			.filter((patient) => {
-				const matchesLetter =
-					searchLetter === "" ||
-					patient.name.charAt(0).toLowerCase() ===
-						searchLetter.toLowerCase();
-				return matchesLetter;
-			})
-			.sort((a, b) => a.name.localeCompare(b.name));
-	}, [patients, searchLetter]);
-
-	const handleNextPage = () => {
-		if (currentPage < totalPages && !isSearching) {
-			setCurrentPage(currentPage + 1);
-		}
+	const handleResetFilters = () => {
+		setSearchTerm("");
+		setSearchLetter("");
+		setCurrentPage(1);
 	};
 
-	const handlePrevPage = () => {
-		if (currentPage > 1 && !isSearching) {
-			setCurrentPage(currentPage - 1);
-		}
+	const handleSearchChange = (e) => {
+		setSearchTerm(e.target.value);
+		setCurrentPage(1);
 	};
 
-	const handlePageChange = (newPage) => {
-		if (!isSearching) {
-			setCurrentPage(Number(newPage));
-		}
-	};
-
-	if (loading) {
+	if (isLoading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen bg-gray-200 dark:bg-slate-800">
-				<div className="animate-spin h-16 w-16 border-t-4 border-blue-500 rounded-full mb-6"></div>
-				<p className="text-xl text-gray-800 dark:text-gray-300 mt-6">
-					Chargement en cours...
-				</p>
+			<div className="flex justify-center items-center min-h-[60vh]">
+				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
 			</div>
 		);
 	}
 
-	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+	if (isError) {
+		return (
+			<div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+				<p className="text-red-500">
+					Une erreur est survenue lors du chargement des patients
+				</p>
+				<Button
+					onClick={() => mutate()}
+					variant="outline"
+					className="flex items-center gap-2"
+				>
+					<IconRefresh className="h-4 w-4" />
+					Réessayer
+				</Button>
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
-			<ToastContainer
-				position="top-center"
-				autoClose={3000}
-				hideProgressBar={false}
-			/>
-
-			<header className="m-8">
-				<div className="flex items-center justify-between mt-8">
-					<h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-						Liste des patients
-					</h1>
+			<header className="mb-8">
+				<div className="flex items-center justify-between">
+					<div>
+						<h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+							Liste des patients
+						</h1>
+						<p className="mt-2 text-gray-600 dark:text-gray-400">
+							Gérez vos patients et leurs rendez-vous
+						</p>
+					</div>
 					<Image
 						src="/assets/icons/logo-full.svg"
 						alt="Logo"
 						width={80}
 						height={80}
-						className="object-contain shadow-xl rounded-xl"
+						className="object-contain rounded-xl shadow-lg"
 						priority
 					/>
 				</div>
-				<p className="mt-2 text-gray-600 dark:text-gray-400">
-					Gérez vos patients,{" "}
-					{user?.user_metadata?.user_metadata?.first_name ||
-						user?.email ||
-						"Utilisateur"}
-				</p>
 			</header>
 
-			<div className="flex flex-col md:flex-row justify-between items-center mb-6">
-				<div className="relative w-full md:w-1/3 mb-4 md:mb-0">
-					<input
-						type="text"
-						placeholder="Rechercher un patient..."
-						className="w-full p-3 pl-10 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
-						value={searchTerm}
-						onChange={(e) => setSearchTerm(e.target.value)}
-					/>
+			<div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+				<div className="relative w-full md:w-1/3">
 					<IconSearch
 						className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
 						size={20}
 					/>
+					<Input
+						type="text"
+						placeholder="Rechercher un patient..."
+						value={searchTerm}
+						onChange={handleSearchChange}
+						className="pl-10"
+					/>
 				</div>
-				<button
+				<Button
 					onClick={() => setShowAddFormPatient(true)}
-					className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 flex items-center"
+					className="w-full md:w-auto flex items-center gap-2"
 				>
-					<IconPlus className="mr-2" size={18} /> Ajouter un patient
-				</button>
+					<IconPlus size={18} />
+					Ajouter un patient
+				</Button>
 			</div>
 
-			<div className="hidden md:flex flex-wrap justify-center gap-2 mb-6">
+			<div className="flex flex-wrap justify-center gap-2 mb-6">
 				{alphabet.map((letter) => (
-					<button
+					<Button
 						key={letter}
-						className={`w-8 h-8 rounded-full transition duration-300 ${
-							searchLetter === letter
-								? "bg-blue-500 text-white"
-								: "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-blue-100 dark:hover:bg-blue-900"
-						}`}
+						variant={
+							searchLetter === letter ? "default" : "outline"
+						}
+						className="w-10 h-10 p-0 rounded-full"
 						onClick={() => handleLetterClick(letter)}
 					>
 						{letter}
-					</button>
+					</Button>
 				))}
-				<button
-					className={`px-3 py-1 rounded-full transition duration-300 ${
-						!searchLetter && !searchTerm
-							? "bg-blue-500 text-white"
-							: "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-blue-100 dark:hover:bg-blue-900"
-					}`}
+				<Button
+					variant={
+						!searchLetter && !searchTerm ? "default" : "outline"
+					}
+					className="px-4"
 					onClick={handleResetFilters}
 				>
 					Tous
-				</button>
+				</Button>
 			</div>
 
-			<ul className="space-y-4">
-				{filteredPatients.length === 0 ? (
-					<li className="text-center text-gray-500 dark:text-gray-400">
-						Aucun patient trouvé.
-					</li>
+			<div className="space-y-4">
+				{!patients?.length ? (
+					<div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
+						<IconSearch className="mx-auto h-12 w-12 text-gray-400" />
+						<p className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
+							Aucun patient trouvé
+						</p>
+						<p className="mt-2 text-gray-500">
+							Modifiez vos critères de recherche ou ajoutez un
+							nouveau patient
+						</p>
+					</div>
 				) : (
-					filteredPatients.map((patient) => (
-						<li
+					patients.map((patient) => (
+						<div
 							key={patient.id}
-							className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
+							className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
 						>
-							<div
-								className="p-0.5 sm:p-1 cursor-pointer"
-								onClick={() =>
-									setSelectedPatientId((prevId) =>
-										prevId === patient.id
-											? null
-											: patient.id
-									)
-								}
-							>
+							<div className="p-4">
 								<div className="flex items-center justify-between">
-									<div className="flex items-center">
+									<div className="flex items-center gap-4">
 										{patient.gender === "Homme" ? (
 											<IconGenderMale
-												className="text-blue-500 mr-2"
+												className="text-blue-500"
 												size={24}
 											/>
 										) : (
 											<IconGenderFemale
-												className="text-pink-500 mr-2"
+												className="text-pink-500"
 												size={24}
 											/>
 										)}
-										<h2 className="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
-											{patient.name}
-											{patient.isDeceased && (
-												<>
-													<span className="ml-2 text-sm font-normal text-red-500 dark:text-red-400">
+										<div>
+											<h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+												{patient.name}
+												{patient.isDeceased && (
+													<span className="flex items-center gap-1 text-sm text-red-500">
+														<IconSkull size={16} />
 														Décédé(e)
 													</span>
-													<IconSkull className="ml-2 w-5 h-5 text-red-500 dark:text-red-400" />
-												</>
-											)}
-										</h2>
+												)}
+											</h3>
+											<div className="text-sm text-gray-500 dark:text-gray-400">
+												<p>
+													Âge:{" "}
+													{calculateAge(
+														patient.birthDate
+													)}{" "}
+													ans
+												</p>
+												{patient.phone && (
+													<a
+														href={`tel:${patient.phone}`}
+														className="text-blue-600 dark:text-blue-400 hover:underline"
+													>
+														{patient.phone}
+													</a>
+												)}
+											</div>
+										</div>
 									</div>
-									<div className="text-sm text-gray-600 dark:text-gray-400">
-										<p>
-											Âge:{" "}
-											{calculateAge(patient.birthDate)}{" "}
-											ans
-										</p>
-										<p>
-											Tél:{" "}
-											{patient.phone ? (
-												<a
-													href={`tel:${patient.phone}`}
-													className="text-blue-600 dark:text-blue-400 hover:underline"
-												>
-													{patient.phone}
-												</a>
-											) : (
-												<span>Non renseigné</span>
-											)}
-										</p>
+									<div className="flex items-center gap-2">
+										<Button
+											variant="outline"
+											size="sm"
+											onClick={() =>
+												handleAddAppointment(patient)
+											}
+											className="flex items-center gap-2"
+										>
+											<IconCalendar className="h-4 w-4" />
+											Rendez-vous
+										</Button>
+										<Button
+											variant="ghost"
+											size="sm"
+											onClick={() =>
+												setSelectedPatientId(
+													selectedPatientId ===
+														patient.id
+														? null
+														: patient.id
+												)
+											}
+										>
+											{selectedPatientId === patient.id
+												? "Fermer"
+												: "Détails"}
+										</Button>
 									</div>
 								</div>
 							</div>
@@ -335,7 +273,7 @@ const PatientList = ({ initialPatients, user }) => {
 								<React.Suspense
 									fallback={
 										<div className="p-4 text-center">
-											Chargement des détails...
+											<div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto"></div>
 										</div>
 									}
 								>
@@ -347,77 +285,61 @@ const PatientList = ({ initialPatients, user }) => {
 									/>
 								</React.Suspense>
 							)}
-						</li>
+						</div>
 					))
 				)}
-			</ul>
+			</div>
 
-			{!isSearching && (
+			{totalPages > 1 && (
 				<div className="flex justify-between items-center mt-6">
-					<select
-						value={currentPage}
-						onChange={(e) =>
-							handlePageChange(Number(e.target.value))
+					<Button
+						variant="outline"
+						onClick={() =>
+							setCurrentPage((p) => Math.max(1, p - 1))
 						}
-						className="p-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
+						disabled={currentPage === 1}
 					>
-						{Array.from({ length: totalPages }, (_, index) => (
-							<option key={index} value={index + 1}>
-								Page {index + 1}
-							</option>
-						))}
-					</select>
-					<div className="flex space-x-2">
-						<button
-							onClick={handlePrevPage}
-							disabled={currentPage === 1}
-							className={`p-2 rounded-lg transition ${
-								currentPage === 1
-									? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
-									: "bg-blue-600 hover:bg-blue-700 text-white"
-							}`}
-						>
-							<IconChevronLeft size={24} />
-						</button>
-						<button
-							onClick={handleNextPage}
-							disabled={currentPage >= totalPages}
-							className={`p-2 rounded-lg transition ${
-								currentPage >= totalPages
-									? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed"
-									: "bg-blue-600 hover:bg-blue-700 text-white"
-							}`}
-						>
-							<IconChevronRight size={24} />
-						</button>
-					</div>
+						<IconChevronLeft className="h-4 w-4" />
+						Précédent
+					</Button>
+					<span className="text-sm text-gray-600 dark:text-gray-400">
+						Page {currentPage} sur {totalPages}
+					</span>
+					<Button
+						variant="outline"
+						onClick={() =>
+							setCurrentPage((p) => Math.min(totalPages, p + 1))
+						}
+						disabled={currentPage === totalPages}
+					>
+						Suivant
+						<IconChevronRight className="h-4 w-4" />
+					</Button>
 				</div>
 			)}
 
 			{showAddFormPatient && (
-				<React.Suspense
-					fallback={
-						<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-							Chargement...
-						</div>
-					}
-				>
-					<AddPatientForm
-						onClose={() => setShowAddFormPatient(false)}
-						onAddPatient={(newPatient) => {
-							setPatients([...patients, newPatient]);
-							setAllPatients([...allPatients, newPatient]);
-							toast.success("Patient ajouté avec succès !");
-							setTimeout(() => {
-								setShowAddFormPatient(false);
-							}, 2000);
-						}}
-					/>
-				</React.Suspense>
+				<AddPatientForm
+					onClose={() => setShowAddFormPatient(false)}
+					onAddPatient={() => {
+						mutate();
+						toast.success("Patient ajouté avec succès");
+						setShowAddFormPatient(false);
+					}}
+				/>
+			)}
+
+			{showAppointmentDialog && selectedPatientForAppointment && (
+				<AppointmentDialog
+					open={showAppointmentDialog}
+					onOpenChange={setShowAppointmentDialog}
+					patients={[selectedPatientForAppointment]}
+					selectedDate={new Date()}
+					mode="create"
+				/>
 			)}
 		</div>
 	);
 };
 
-PatientList.displayName = "PatientList";
 export default React.memo(PatientList);

@@ -19,7 +19,6 @@ export const getPatientKey = (
 export const getAllPatientsKey = () => `/api/patients?fetchAll=true`;
 
 export const mutatePatients = async () => {
-	// Cette fonction sera utilisée pour invalider le cache après les modifications
 	const event = new CustomEvent("mutate-patients");
 	window.dispatchEvent(event);
 };

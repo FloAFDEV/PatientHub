@@ -114,11 +114,6 @@ const PatientDetails = ({ patient, onClose }) => {
 
 	return (
 		<div className="p-1 w-full h-screen mx-auto dark:text-gray-300 overflow-y-auto">
-			{/* Bouton de fermeture */}
-			<button className="mb-4 text-red-500" onClick={onClose}>
-				&times; Fermer
-			</button>
-
 			{/* En-tête d'informations du patient */}
 			<div className="flex flex-col md:flex-row items-center md:items-start mb-6 space-y-4 md:space-y-0 md:space-x-6">
 				<Image

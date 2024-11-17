@@ -94,9 +94,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					<Image
 						src="/assets/images/ModernCabinet.webp"
 						alt="Modern Osteopathy Clinic"
-						layout="fill"
-						objectFit="cover"
-						objectPosition="center 60%"
+						fill
+						style={{
+							objectFit: "cover",
+							objectPosition: "center 60%",
+						}}
 						className="opacity-80"
 						priority
 					/>

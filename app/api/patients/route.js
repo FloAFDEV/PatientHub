@@ -7,16 +7,17 @@ export async function GET(request) {
 		const fetchAll = searchParams.get("fetchAll") === "true";
 		const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
 		const pageSize = parseInt(searchParams.get("pageSize") || "15", 10);
-		const search = searchParams.get("search") || "";
+		const searchTerm =
+			searchParams.get("search") || searchParams.get("term") || "";
 		const letter = searchParams.get("letter") || "";
 
+		// Construction de la condition where unifiée
 		const whereCondition = {
-			isDeceased: false,
-			...(search && {
+			...(searchTerm && {
 				OR: [
-					{ name: { contains: search, mode: "insensitive" } },
-					{ email: { contains: search, mode: "insensitive" } },
-					{ phone: { contains: search } },
+					{ name: { contains: searchTerm, mode: "insensitive" } },
+					{ email: { contains: searchTerm, mode: "insensitive" } },
+					{ phone: { contains: searchTerm } },
 				],
 			}),
 			...(letter && {
@@ -86,7 +87,6 @@ export async function POST(request) {
 	const patientData = await request.json();
 
 	try {
-		// Formater les données du patient
 		const formattedPatientData = {
 			name: patientData.name || "",
 			email: patientData.email || null,
