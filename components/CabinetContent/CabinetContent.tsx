@@ -10,6 +10,7 @@ import {
 	TrashIcon,
 	BuildingOfficeIcon,
 	UserGroupIcon,
+	ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
@@ -123,10 +124,10 @@ const CabinetContent: React.FC = () => {
 
 	if (loading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen bg-gray-200 dark:bg-slate-800">
-				<div className="animate-spin h-16 w-16 border-t-4 border-blue-500 rounded-full mb-6"></div>
-				<p className="text-xl text-gray-800 dark:text-gray-300 mt-6">
-					Chargement en cours...
+			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900">
+				<div className="animate-spin h-12 w-12 border-t-4 border-b-4 border-primary rounded-full"></div>
+				<p className="mt-4 text-gray-600 dark:text-gray-400">
+					Chargement...
 				</p>
 			</div>
 		);
@@ -134,37 +135,48 @@ const CabinetContent: React.FC = () => {
 
 	if (error) {
 		return (
-			<div className="text-center text-red-500 font-bold p-4">
-				<p>{error}</p>
+			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900 p-4">
+				<div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-6 max-w-md w-full text-center">
+					<div className="text-red-500 dark:text-red-400 text-lg font-medium mb-2">
+						{error}
+					</div>
+					<button
+						onClick={fetchCabinetInfo}
+						className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+					>
+						<ArrowPathIcon className="h-4 w-4 mr-2" />
+						Réessayer
+					</button>
+				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
-			<header className="mb-8">
-				<div className="flex items-center justify-between mt-8">
-					<div>
-						<h1 className="text-3xl font-bold mb-2">
+		<div className="flex-1 p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
+			<header className="mb-6 sm:mb-8">
+				<div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8">
+					<div className="text-center sm:text-left">
+						<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
 							Fiche de votre cabinet
 						</h1>
-						<p className="text-lg opacity-90">
+						<p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
 							Informations et paramètres de votre cabinet
 						</p>
 					</div>
 					<Image
 						src="/assets/icons/logo-full.svg"
 						alt="Logo"
-						width={100}
-						height={100}
-						className="object-contain rounded-xl shadow-xl"
+						width={80}
+						height={80}
+						className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-xl shadow-lg"
 						priority
 					/>
 				</div>
 			</header>
 
-			<main className="space-y-8">
-				<section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+			<main className="space-y-6 sm:space-y-8">
+				<section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
 					<InfoCard
 						icon={
 							<BuildingOfficeIcon className="h-6 w-6 text-blue-500" />
@@ -203,7 +215,7 @@ const CabinetContent: React.FC = () => {
 					/>
 				</section>
 
-				<section className="flex flex-wrap justify-center gap-4">
+				<section className="flex flex-wrap justify-center gap-3 sm:gap-4">
 					<ActionButton
 						onClick={() => setIsEditMode(true)}
 						icon={<PencilSquareIcon className="h-5 w-5" />}
@@ -219,7 +231,7 @@ const CabinetContent: React.FC = () => {
 					<ActionButton
 						onClick={handleDeleteCabinet}
 						icon={<TrashIcon className="h-5 w-5" />}
-						text="Supprimer le Cabinet"
+						text="Supprimer"
 						color="red"
 					/>
 				</section>
@@ -257,8 +269,6 @@ const CabinetContent: React.FC = () => {
 	);
 };
 
-export default CabinetContent;
-
 interface InfoCardProps {
 	icon: React.ReactNode;
 	title: string;
@@ -269,29 +279,30 @@ interface InfoCardProps {
 
 const InfoCard: React.FC<InfoCardProps> = React.memo(
 	({ icon, title, content, link, image }) => (
-		<div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
-			<Image
-				src={image}
-				alt={title}
-				className="w-full h-40 object-cover"
-				loading="lazy"
-				width={400}
-				height={200}
-			/>
+		<div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+			<div className="aspect-video relative">
+				<Image
+					src={image}
+					alt={title}
+					fill
+					className="object-cover rounded-t-lg"
+					sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+				/>
+			</div>
 			<div className="p-4">
-				<div className="flex items-center mb-2">
+				<div className="flex items-center gap-2 mb-3">
 					{icon}
-					<h2 className="text-lg font-semibold text-gray-800 dark:text-white ml-2">
+					<h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
 						{title}
 					</h2>
 				</div>
-				<p className="text-gray-600 dark:text-gray-300 break-words">
+				<p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 break-words">
 					{link ? (
 						<a
 							href={link}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="hover:underline text-blue-600 dark:text-blue-400"
+							className="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
 						>
 							{content}
 						</a>
@@ -315,15 +326,15 @@ interface ActionButtonProps {
 const ActionButton: React.FC<ActionButtonProps> = React.memo(
 	({ onClick, icon, text, color }) => {
 		const colorClasses = {
-			blue: "border-2 border-blue-500 hover:bg-blue-600 hover:text-white text-slate-700 dark:text-white",
-			green: "border-2 border-green-500 hover:bg-green-600 hover:text-white text-slate-700 dark:text-white",
-			red: "bg-red-500 hover:bg-red-700 text-white",
+			blue: "bg-white dark:bg-gray-800 border-2 border-blue-500 hover:bg-blue-500 hover:border-blue-600 text-blue-600 hover:text-white",
+			green: "bg-white dark:bg-gray-800 border-2 border-green-500 hover:bg-green-500 hover:border-green-600 text-green-600 hover:text-white",
+			red: "bg-white dark:bg-gray-800 border-2 border-red-500 hover:bg-red-500 hover:border-red-600 text-red-600 hover:text-white",
 		};
 
 		return (
 			<button
 				onClick={onClick}
-				className={`${colorClasses[color]} px-6 py-3 rounded-lg font-medium flex items-center justify-center transition duration-300 ease-in-out transform hover:scale-105`}
+				className={`${colorClasses[color]} px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium flex items-center justify-center transition-all duration-300 text-sm sm:text-base min-w-[120px] sm:min-w-[150px]`}
 			>
 				{icon}
 				<span className="ml-2">{text}</span>
@@ -332,3 +343,5 @@ const ActionButton: React.FC<ActionButtonProps> = React.memo(
 	}
 );
 ActionButton.displayName = "ActionButton";
+
+export default CabinetContent;

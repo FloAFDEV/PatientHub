@@ -126,7 +126,7 @@ const PatientList = ({ user }) => {
 			<header className="mb-4 sm:mb-6 md:mb-8">
 				<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 					<div className="text-center sm:text-left w-full sm:w-auto">
-						<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+						<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-10">
 							Liste des patients
 						</h1>
 						<p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">

@@ -189,7 +189,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 			</div>
 
 			{/* Section des graphiques */}
-			<section className="bg-white dark:bg-gray-800 rounded-lg p-6">
+			<section className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6">
 				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4 text-center">
 					Graphiques et visualisations
 				</h2>
