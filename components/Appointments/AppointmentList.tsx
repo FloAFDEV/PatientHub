@@ -10,25 +10,17 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { Edit2, Trash2, XCircle, Calendar } from "lucide-react";
 import { Appointment } from "./AppointmentsManager";
 
 interface AppointmentListProps {
 	date: Date;
 	onEdit: (appointment: Appointment) => void;
-	onDelete: (appointmentId: number) => void;
-	onCancel: (appointmentId: number) => void;
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export function AppointmentList({
-	date,
-	onEdit,
-	onDelete,
-	onCancel,
-}: AppointmentListProps) {
+export function AppointmentList({ date, onEdit }: AppointmentListProps) {
 	const {
 		data: appointments,
 		error,
