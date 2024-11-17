@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/components/lib/connect";
-
-import { getSession } from "@/lib/session";
+import prisma from "/lib/connect.ts";
+import { getSession } from "/lib/session.ts";
 
 export async function PUT(_request, { params }) {
 	try {
@@ -14,7 +13,7 @@ export async function PUT(_request, { params }) {
 		}
 
 		// Vérifier que le rendez-vous appartient à l'ostéopathe
-		const appointment = await prisma.appointment.findFirst({
+		const existingAppointment = await prisma.appointment.findFirst({
 			where: {
 				id: parseInt(params.id),
 				patient: {
@@ -23,24 +22,31 @@ export async function PUT(_request, { params }) {
 			},
 		});
 
-		if (!appointment) {
+		if (!existingAppointment) {
 			return NextResponse.json(
 				{ error: "Rendez-vous non trouvé" },
 				{ status: 404 }
 			);
 		}
 
-		const updatedAppointment = await prisma.appointment.update({
+		const appointment = await prisma.appointment.update({
 			where: { id: parseInt(params.id) },
 			data: { status: "CANCELED" },
 			include: {
-				patient: true,
+				patient: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						phone: true,
+					},
+				},
 			},
 		});
 
-		return NextResponse.json(updatedAppointment);
+		return NextResponse.json(appointment);
 	} catch (error) {
-		console.error("Erreur:", error);
+		console.error("Erreur lors de l'annulation:", error);
 		return NextResponse.json(
 			{ error: "Erreur lors de l'annulation du rendez-vous" },
 			{ status: 500 }

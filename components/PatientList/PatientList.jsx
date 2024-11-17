@@ -5,6 +5,7 @@ import Image from "next/image";
 import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import { usePatients } from "@/hooks/usePatients";
 import { useDebounce } from "@/hooks/useDebounce";
+
 import {
 	IconGenderMale,
 	IconGenderFemale,

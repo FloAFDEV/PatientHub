@@ -34,7 +34,9 @@
 		"app/logout/actions.js",
 		"node_modules/@prisma/client/index.d.ts",
 		"components/lib/prisma.js",
-		"components/PatientList/PatientList.tsx"
+		"components/PatientList/PatientList.jsx",
+		"components/SidebarDashboard/SidebarDashboard.jsx",
+		"app/patients/page.jsx"
 	],
 	"exclude": ["node_modules"],
 	"scripts": {

@@ -14,7 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
-import { cn } from "@/components/lib/utils";
+import { cn } from "@/lib/utils";
 import { signOut } from "@/app/logout/actions";
 import { createClient } from "@/utils/supabase/client";
 import PatientList from "@/components/PatientList/PatientList";
@@ -148,7 +148,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 			case "dashboard":
 				return <MemoizedDashboard user={user} />;
 			case "patients":
-				return <MemoizedPatientList user={user} />;
+				return <MemoizedPatientList />;
 			case "Cabinet":
 				return <MemoizedCabinetContent />;
 			case "appointments":
