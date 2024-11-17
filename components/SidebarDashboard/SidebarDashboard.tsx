@@ -4,7 +4,6 @@ import React, { useState, useLayoutEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import AppointmentsManager from "@/components/Appointments/AppointmentsManager";
-import { toast } from "react-toastify";
 import {
 	ArrowLeftIcon,
 	DocumentIcon,
@@ -149,12 +148,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 			case "dashboard":
 				return <MemoizedDashboard user={user} />;
 			case "patients":
-				return (
-					<MemoizedPatientList
-						initialPatients={undefined}
-						user={user}
-					/>
-				);
+				return <MemoizedPatientList user={user} />;
 			case "Cabinet":
 				return <MemoizedCabinetContent />;
 			case "appointments":
