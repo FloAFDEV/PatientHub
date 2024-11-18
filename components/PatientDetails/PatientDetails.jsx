@@ -1,6 +1,12 @@
+"use client";
+
 import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import {
+	ChevronUpIcon,
+	ChevronDownIcon,
+	UserIcon,
+} from "@heroicons/react/24/solid";
 
 const PatientDetails = ({ patient, onClose }) => {
 	const [error, setError] = useState(null);
@@ -309,7 +315,10 @@ const PatientDetails = ({ patient, onClose }) => {
 								patient.childrenAges.map((age, index) => (
 									<DetailItem
 										key={index}
-										label={`Enfant ${index + 1}`}
+										label=<div className="flex items-center space-x-2">
+											<UserIcon className="h-4 w-4 text-blue-500" />{" "}
+											<span>{`Enfant ${index + 1}`}</span>
+										</div>
 										value={`${age} ans`}
 									/>
 								))

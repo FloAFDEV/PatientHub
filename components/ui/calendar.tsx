@@ -2,37 +2,54 @@ import * as React from "react";
 import { DayPicker } from "react-day-picker";
 import { fr } from "date-fns/locale";
 
-function Calendar({ className, ...props }: React.ComponentProps<typeof DayPicker>) {
-  return (
-    <DayPicker
-      locale={fr}
-      className={`p-3 bg-white dark:bg-gray-800 rounded-lg ${className}`}
-      classNames={{
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
-        nav: "space-x-1 flex items-center",
-        nav_button: "h-7 w-7 bg-transparent p-0 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md border",
-        nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "flex",
-        head_cell: "text-gray-500 dark:text-gray-400 rounded-md w-9 font-normal text-[0.8rem]",
-        row: "flex w-full mt-2",
-        cell: "h-9 w-9 text-center text-sm p-0 relative",
-        day: "h-9 w-9 p-0 font-normal hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors",
-        day_selected: "bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700",
-        day_today: "bg-gray-100 dark:bg-gray-700 font-semibold",
-        day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
-        day_disabled: "text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed",
-        day_hidden: "invisible",
-      }}
-      showOutsideDays={true}
-      disabled={(date) => date < new Date() || date.getDay() === 0}
-      {...props}
-    />
-  );
+function Calendar({
+	className,
+	...props
+}: React.ComponentProps<typeof DayPicker>) {
+	return (
+		<DayPicker
+			locale={fr}
+			className={`p-4 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-lg ${className}`}
+			classNames={{
+				months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+				month: "space-y-4",
+				caption: "flex justify-between items-center pt-1 relative",
+				caption_label: "text-lg font-semibold",
+				nav: "flex items-center space-x-4",
+				nav_button:
+					"h-8 w-8 bg-gray-200 dark:bg-gray-600 p-0 flex items-center justify-center rounded-full hover:bg-gray-300 dark:hover:bg-gray-500 transition",
+				nav_button_previous: "order-first",
+				nav_button_next: "order-last",
+				table: "w-full border-collapse",
+				head_row: "flex",
+				head_cell:
+					"text-gray-600 dark:text-gray-400 rounded-md w-9 font-medium text-sm",
+				row: "flex w-full",
+				cell: "relative h-10 w-10 text-center text-sm p-0",
+				day: "h-10 w-10 p-1 font-medium text-gray-800 dark:text-gray-200 rounded-full hover:bg-blue-100 dark:hover:bg-blue-700 transition-colors",
+				day_selected:
+					"bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 font-semibold rounded-full",
+				day_today:
+					"bg-yellow-100 text-yellow-500 text-yellow-500 dark:bg-orange-400 dark:text-white font-semibold rounded-full",
+				day_outside: "text-gray-400 dark:text-gray-500 opacity-50",
+				day_disabled:
+					"text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed",
+				day_hidden: "invisible",
+			}}
+			modifiers={{
+				weekend: (date: Date) => [0, 6].includes(date.getDay()),
+				today: (date: Date) =>
+					date.toDateString() === new Date().toDateString(),
+			}}
+			modifiersClassNames={{
+				weekend: "text-red-500 dark:text-red-500 font-semibold",
+				today: "bg-yellow-100 text-yellow-700 dark:bg-orange-600 dark:text-white rounded-full",
+			}}
+			showOutsideDays
+			disabled={(date) => date < new Date()}
+			{...props}
+		/>
+	);
 }
 
 export { Calendar };

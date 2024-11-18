@@ -118,7 +118,7 @@ export default function AppointmentsManager() {
 							disabled={(date) => date < new Date()}
 						/>
 						<Button
-							className="w-full mt-6"
+							className="w-full mt-6 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800"
 							onClick={() => setIsNewAppointmentOpen(true)}
 						>
 							Nouveau rendez-vous

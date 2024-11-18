@@ -1,6 +1,59 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/connect";
 
+// Fonction pour formater les données du patient
+function formatPatientData(data) {
+	return {
+		name: data.name || "",
+		email: data.email || null,
+		phone: data.phone || null,
+		address: data.address || null,
+		gender:
+			data.gender === "Homme"
+				? "Homme"
+				: data.gender === "Femme"
+				? "Femme"
+				: null,
+		maritalStatus: data.maritalStatus
+			? data.maritalStatus.toUpperCase()
+			: null,
+		occupation: data.occupation || null,
+		hasChildren: data.hasChildren === "true",
+		childrenAges: Array.isArray(data.childrenAges)
+			? data.childrenAges.map((age) => parseInt(age, 10))
+			: [],
+		physicalActivity: data.physicalActivity || null,
+		isSmoker: data.isSmoker === "true",
+		handedness:
+			data.handedness === "Droitier"
+				? "RIGHT"
+				: data.handedness === "Gaucher"
+				? "LEFT"
+				: "AMBIDEXTROUS",
+		contraception:
+			data.contraception === "Préservatifs"
+				? "CONDOM"
+				: data.contraception || null,
+		currentTreatment: data.currentTreatment || null,
+		generalPractitioner: data.generalPractitioner || null,
+		surgicalHistory: data.surgicalHistory || null,
+		digestiveProblems: data.digestiveProblems || null,
+		digestiveDoctorName: data.digestiveDoctorName || null,
+		birthDate: data.birthDate ? new Date(data.birthDate) : null,
+		avatarUrl: data.avatarUrl || null,
+		traumaHistory: data.traumaHistory || null,
+		rheumatologicalHistory: data.rheumatologicalHistory || null,
+		hasVisionCorrection: data.hasVisionCorrection === "true",
+		ophtalmologistName: data.ophtalmologistName || null,
+		entProblems: data.entProblems || null,
+		entDoctorName: data.entDoctorName || null,
+		hdlm: data.hdlm || null,
+		isDeceased: data.isDeceased === "true",
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	};
+}
+
 export async function GET(request) {
 	try {
 		const { searchParams } = new URL(request.url);
@@ -11,7 +64,6 @@ export async function GET(request) {
 			searchParams.get("search") || searchParams.get("term") || "";
 		const letter = searchParams.get("letter") || "";
 
-		// Construction de la condition where unifiée
 		const whereCondition = {
 			...(searchTerm && {
 				OR: [
@@ -28,7 +80,6 @@ export async function GET(request) {
 			}),
 		};
 
-		// Pour le sélecteur de rendez-vous, retourner une liste simplifiée
 		if (fetchAll) {
 			const patients = await prisma.patient.findMany({
 				where: whereCondition,
@@ -45,7 +96,6 @@ export async function GET(request) {
 			return NextResponse.json(patients);
 		}
 
-		// Pour la liste paginée complète
 		const [patients, totalCount] = await Promise.all([
 			prisma.patient.findMany({
 				where: whereCondition,
@@ -54,21 +104,26 @@ export async function GET(request) {
 				orderBy: {
 					name: "asc",
 				},
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					phone: true,
-					gender: true,
-					birthDate: true,
-					isDeceased: true,
+				include: {
+					osteopath: true,
+					cabinet: true,
+					medicalDocuments: true,
+					consultations: true,
+					appointments: true,
 				},
 			}),
 			prisma.patient.count({ where: whereCondition }),
 		]);
 
 		return NextResponse.json({
-			patients,
+			patients: patients.map((patient) => ({
+				...patient,
+				birthDate: patient.birthDate
+					? patient.birthDate.toISOString()
+					: null,
+				createdAt: patient.createdAt.toISOString(),
+				updatedAt: patient.updatedAt.toISOString(),
+			})),
 			totalPatients: totalCount,
 			totalPages: Math.ceil(totalCount / pageSize),
 			currentPage: page,
@@ -87,97 +142,77 @@ export async function POST(request) {
 	const patientData = await request.json();
 
 	try {
-		const formattedPatientData = {
-			name: patientData.name || "",
-			email: patientData.email || null,
-			phone: patientData.phone || null,
-			address: patientData.address || null,
-			gender:
-				patientData.gender === "Homme"
-					? "Homme"
-					: patientData.gender === "Femme"
-					? "Femme"
-					: null,
-			maritalStatus: patientData.maritalStatus
-				? patientData.maritalStatus.toUpperCase()
-				: null,
-			occupation: patientData.occupation || null,
-			hasChildren: patientData.hasChildren === "true",
-			childrenAges: Array.isArray(patientData.childrenAges)
-				? patientData.childrenAges.map((age) => parseInt(age, 10))
-				: [],
-			physicalActivity: patientData.physicalActivity || null,
-			isSmoker: patientData.isSmoker === "true",
-			handedness:
-				patientData.handedness === "Droitier"
-					? "RIGHT"
-					: patientData.handedness === "Gaucher"
-					? "LEFT"
-					: "AMBIDEXTROUS",
-			contraception:
-				patientData.contraception === "Préservatifs"
-					? "CONDOM"
-					: patientData.contraception || null,
-			currentTreatment: patientData.currentTreatment || null,
-			generalPractitioner: patientData.generalPractitioner || null,
-			surgicalHistory: patientData.surgicalHistory || null,
-			digestiveProblems: patientData.digestiveProblems || null,
-			digestiveDoctorName: patientData.digestiveDoctorName || null,
-			birthDate: patientData.birthDate
-				? new Date(patientData.birthDate)
-				: null,
-			avatarUrl: patientData.avatarUrl || null,
-			traumaHistory: patientData.traumaHistory || null,
-			rheumatologicalHistory: patientData.rheumatologicalHistory || null,
-			hasVisionCorrection: patientData.hasVisionCorrection === "true",
-			ophtalmologistName: patientData.ophtalmologistName || null,
-			entProblems: patientData.entProblems || null,
-			entDoctorName: patientData.entDoctorName || null,
-			hdlm: patientData.hdlm || null,
-			isDeceased: patientData.isDeceased === "true",
-			osteopath: {
+		const formattedPatientData = formatPatientData(patientData);
+
+		if (patientData.cabinetId) {
+			const cabinetExists = await prisma.cabinet.findUnique({
+				where: { id: parseInt(patientData.cabinetId) },
+			});
+
+			if (!cabinetExists) {
+				return NextResponse.json(
+					{ error: "Cabinet not found" },
+					{ status: 404 }
+				);
+			}
+
+			formattedPatientData.cabinet = {
 				connect: {
-					id: 1, // À remplacer par l'ID de l'ostéopathe connecté
+					id: parseInt(patientData.cabinetId),
 				},
+			};
+		}
+
+		formattedPatientData.osteopath = {
+			connect: {
+				id: 1, // À remplacer par l'ID de l'ostéopathe connecté
 			},
-			...(patientData.cabinetId
-				? {
-						cabinet: {
-							connect: {
-								id: parseInt(patientData.cabinetId),
-							},
-						},
-				  }
-				: {}),
 		};
 
 		const newPatient = await prisma.patient.create({
 			data: formattedPatientData,
+			include: {
+				osteopath: true,
+				cabinet: true,
+				medicalDocuments: true,
+				consultations: true,
+				appointments: true,
+			},
 		});
 
 		return NextResponse.json(newPatient, { status: 201 });
 	} catch (error) {
 		console.error("Error creating patient:", error);
 		return NextResponse.json(
-			{ error: "Could not create patient" },
+			{ error: "Could not create patient", details: error.message },
 			{ status: 500 }
 		);
 	}
 }
 
 export async function DELETE(request) {
-	const { searchParams } = new URL(request.url);
-	const email = searchParams.get("email");
-
-	if (!email) {
-		return NextResponse.json(
-			{ error: "Email is required" },
-			{ status: 400 }
-		);
-	}
-
 	try {
-		const patient = await prisma.patient.findUnique({ where: { email } });
+		const { searchParams } = new URL(request.url);
+		const email = searchParams.get("email");
+
+		if (!email) {
+			return NextResponse.json(
+				{ error: "Email is required" },
+				{ status: 400 }
+			);
+		}
+
+		const patient = await prisma.patient.findUnique({
+			where: { email },
+			include: {
+				osteopath: true,
+				cabinet: true,
+				medicalDocuments: true,
+				consultations: true,
+				appointments: true,
+			},
+		});
+
 		if (!patient) {
 			return NextResponse.json(
 				{ error: "Patient not found" },
@@ -186,14 +221,15 @@ export async function DELETE(request) {
 		}
 
 		await prisma.patient.delete({ where: { email } });
+
 		return NextResponse.json(
-			{ message: "Patient deleted successfully" },
+			{ message: "Patient deleted successfully", patient },
 			{ status: 200 }
 		);
 	} catch (error) {
 		console.error("Error deleting patient:", error);
 		return NextResponse.json(
-			{ error: "Could not delete patient" },
+			{ error: "Could not delete patient", details: error.message },
 			{ status: 500 }
 		);
 	}

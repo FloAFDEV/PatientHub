@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // Import pour la redirection
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Footer from "@/components/Footer";
 import { createClient } from "@/utils/supabase/client";
 import { ModeToggle } from "@/components/ModeToggle";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
@@ -229,7 +228,11 @@ export default function LoginPage() {
 								plateforme).
 							</p>
 						</div>
-						<Footer />
+						<div className="mt-auto py-4">
+							<p className="text-secondary text-sm md:text-base font-light text-center ">
+								© 2024 AFDEV. Tous droits réservés.
+							</p>
+						</div>
 					</div>
 				</div>
 			</BackgroundBeamsWithCollision>

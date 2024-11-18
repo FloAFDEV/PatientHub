@@ -181,7 +181,7 @@ const PatientList = ({}) => {
 								<SheetHeader>
 									<SheetTitle>Filtrer par lettre</SheetTitle>
 								</SheetHeader>
-								<div className="grid grid-cols-5 gap-2 p-4">
+								<div className="grid grid-cols-5 gap-4 p-4 mt-8">
 									{alphabet.map((letter) => (
 										<Button
 											key={letter}
@@ -204,7 +204,7 @@ const PatientList = ({}) => {
 												? "default"
 												: "outline"
 										}
-										className="w-full col-span-5"
+										className="w-full col-span-5 border-2 border-neutral-900 dark:border-white"
 										onClick={handleResetFilters}
 									>
 										Réinitialiser
@@ -215,7 +215,7 @@ const PatientList = ({}) => {
 
 						<Button
 							onClick={() => setShowAddFormPatient(true)}
-							className="flex-1 sm:flex-none h-11"
+							className="flex-1 sm:flex-none h-9 dark:border-gray-400 dark:border-b-2"
 						>
 							<IconPlus size={18} className="sm:mr-2" />
 							<span className="hidden sm:inline">
@@ -329,6 +329,23 @@ const PatientList = ({}) => {
 									</div>
 									<div className="flex items-center justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-0 mt-2 sm:mt-0">
 										<Button
+											variant="ghost"
+											size="sm"
+											onClick={() =>
+												setSelectedPatientId(
+													selectedPatientId ===
+														patient.id
+														? null
+														: patient.id
+												)
+											}
+											className="flex-1 sm:flex-none h-9 dark:border-gray-400 dark:border-b-2"
+										>
+											{selectedPatientId === patient.id
+												? "Fermer"
+												: "Détails"}
+										</Button>{" "}
+										<Button
 											variant="outline"
 											size="sm"
 											onClick={() =>
@@ -340,23 +357,6 @@ const PatientList = ({}) => {
 											<span className="hidden sm:inline">
 												Rendez-vous
 											</span>
-										</Button>
-										<Button
-											variant="ghost"
-											size="sm"
-											onClick={() =>
-												setSelectedPatientId(
-													selectedPatientId ===
-														patient.id
-														? null
-														: patient.id
-												)
-											}
-											className="flex-1 sm:flex-none h-9"
-										>
-											{selectedPatientId === patient.id
-												? "Fermer"
-												: "Détails"}
 										</Button>
 									</div>
 								</div>
