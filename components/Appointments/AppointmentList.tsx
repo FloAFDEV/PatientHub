@@ -63,7 +63,7 @@ export function AppointmentList({ date, onEdit }: AppointmentListProps) {
 
 	if (!appointments?.length) {
 		return (
-			<div className="flex flex-col items-center justify-center py-12 text-gray-500">
+			<div className="flex flex-col items-center justify-center py-12 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800">
 				<Calendar className="h-12 w-12 mb-4 opacity-50" />
 				<p className="text-lg font-medium">
 					Aucun rendez-vous pour cette date

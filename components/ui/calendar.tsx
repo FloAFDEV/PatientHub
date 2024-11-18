@@ -14,8 +14,8 @@ function Calendar({
 				months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
 				month: "space-y-8",
 				caption: "flex justify-between items-center pt-1 relative",
-				caption_label: "text-lg font-semibold",
-				nav: "flex items-center space-x-4",
+				caption_label: "text-2xl font-semibold capitalize",
+				nav: "flex items-start space-x-4",
 				nav_button:
 					"h-8 w-8 bg-gray-200 dark:bg-gray-600 p-0 flex items-center justify-center rounded-full hover:bg-gray-300 dark:hover:bg-gray-500 transition",
 				nav_button_previous: "order-first",
@@ -31,9 +31,8 @@ function Calendar({
 					"bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 font-semibold rounded-full",
 				day_today:
 					"bg-yellow-100 text-yellow-500 text-yellow-500 dark:bg-orange-400 dark:text-white font-semibold rounded-full",
-				// Appliquer les styles aux jours extérieurs
 				day_outside:
-					"text-gray-400 dark:text-gray-500 border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 opacity-70", // Ajouter bordure et fond
+					"text-gray-400 dark:text-gray-500 border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 opacity-70",
 				day_disabled:
 					"text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed",
 				day_hidden: "invisible",
@@ -61,12 +60,12 @@ function Calendar({
 			modifiersClassNames={{
 				weekend: "text-red-500 dark:text-red-500 font-semibold",
 				today: "bg-yellow-100 text-yellow-700 dark:bg-orange-600 dark:text-white rounded-full font-thin",
-				// Appliquer un style spécifique aux jours extérieurs
+
 				outside:
-					"text-gray-400 dark:text-gray-500 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 opacity-70", // ajouter une bordure et fond
+					"text-gray-400 dark:text-gray-500 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 opacity-70",
 			}}
 			showOutsideDays
-			disabled={(date) => date < new Date()} // Disable past dates (optional)
+			disabled={(date) => date < new Date()}
 			{...props}
 		/>
 	);
