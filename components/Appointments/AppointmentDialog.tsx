@@ -59,7 +59,7 @@ interface FormValues {
 // Fonction pour générer les horaires de 8h à 19h par tranche de 45 minutes
 const generateTimes = () => {
 	const times = [];
-	let currentTime = new Date();
+	const currentTime = new Date();
 	currentTime.setHours(8, 0, 0, 0); // Début à 8h00
 
 	// Boucle pour ajouter des créneaux de 45 minutes de 8h à 19h
