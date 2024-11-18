@@ -107,7 +107,7 @@ export default function AppointmentsManager() {
 	return (
 		<div className="container mx-auto p-4 max-w-7xl">
 			<div className="flex flex-col md:flex-row gap-8">
-				<div className="w-full md:w-1/3">
+				<div className="w-full md:w-2/3">
 					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
 						<Calendar
 							mode="single"

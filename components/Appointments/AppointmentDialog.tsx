@@ -56,6 +56,23 @@ interface FormValues {
 	reason: string;
 }
 
+// Fonction pour générer les horaires de 8h à 19h par tranche de 45 minutes
+const generateTimes = () => {
+	const times = [];
+	let currentTime = new Date();
+	currentTime.setHours(8, 0, 0, 0); // Début à 8h00
+
+	// Boucle pour ajouter des créneaux de 45 minutes de 8h à 19h
+	while (currentTime.getHours() < 19) {
+		const hour = currentTime.getHours().toString().padStart(2, "0");
+		const minutes = currentTime.getMinutes().toString().padStart(2, "0");
+		times.push(`${hour}:${minutes}`);
+		currentTime.setMinutes(currentTime.getMinutes() + 45);
+	}
+
+	return times;
+};
+
 export function AppointmentDialog({
 	open,
 	onOpenChange,
@@ -67,7 +84,7 @@ export function AppointmentDialog({
 	const form = useForm<FormValues>({
 		defaultValues: {
 			patientId: appointment?.patientId?.toString() || "",
-			time: appointment?.time || "09:00",
+			time: appointment?.time || "08:00", // Valeur par défaut
 			reason: appointment?.reason || "",
 		},
 	});
@@ -125,7 +142,7 @@ export function AppointmentDialog({
 					</DialogTitle>
 					<div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
 						<Calendar className="h-4 w-4" />
-						<span>
+						<span className="text-lg">
 							{format(selectedDate, "EEEE dd MMMM yyyy", {
 								locale: fr,
 							})}
@@ -192,15 +209,7 @@ export function AppointmentDialog({
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-											{[
-												"09:00",
-												"10:00",
-												"11:00",
-												"14:00",
-												"15:00",
-												"16:00",
-												"17:00",
-											].map((time) => (
+											{generateTimes().map((time) => (
 												<SelectItem
 													key={time}
 													value={time}
