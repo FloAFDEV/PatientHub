@@ -63,12 +63,12 @@ export function AppointmentList({ date, onEdit }: AppointmentListProps) {
 
 	if (!appointments?.length) {
 		return (
-			<div className="flex flex-col items-center justify-center py-12 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800">
+			<div className="flex flex-col items-center justify-center py-12 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl">
 				<Calendar className="h-12 w-12 mb-4 opacity-50" />
-				<p className="text-lg font-medium">
+				<p className="text-2xl font-medium p-4">
 					Aucun rendez-vous pour cette date
 				</p>
-				<p className="text-sm mt-2">
+				<p className="text-sm mt-2 p-4">
 					Cliquez sur &quot;Nouveau rendez-vous&quot; pour en créer un
 				</p>
 			</div>
@@ -84,15 +84,11 @@ export function AppointmentList({ date, onEdit }: AppointmentListProps) {
 				action === "delete"
 					? `/api/appointments/${appointmentId}`
 					: `/api/appointments/${appointmentId}/cancel`;
-
 			const method = action === "delete" ? "DELETE" : "PUT";
-
 			const response = await fetch(endpoint, { method });
-
 			if (!response.ok) {
 				throw new Error(`Erreur lors de l'action ${action}`);
 			}
-
 			// Revalider les données après une action réussie
 			mutate();
 		} catch (error) {

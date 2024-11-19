@@ -86,7 +86,7 @@ const PatientDetails = ({ patient, onClose }) => {
 			</button>
 			<div
 				className={`transition-all duration-300 ease-in-out overflow-hidden ${
-					isOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+					isOpen ? "max-h-max opacity-100" : "max-h-0 opacity-0"
 				}`}
 			>
 				<div className="p-4 bg-white dark:bg-gray-800">{children}</div>
@@ -108,11 +108,11 @@ const PatientDetails = ({ patient, onClose }) => {
 	}
 
 	const DetailItem = ({ label, value }) => (
-		<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-2 border-b border-gray-300 dark:border-gray-700">
+		<div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-gray-300 dark:border-gray-700">
 			<span className="font-semibold text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 sm:mb-0">
 				{label}
 			</span>
-			<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words sm:text-right sm:max-w-[60%]">
+			<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words w-full sm:text-right">
 				{value}
 			</p>
 		</div>
@@ -271,7 +271,6 @@ const PatientDetails = ({ patient, onClose }) => {
 					<DetailItem
 						label="Informations HDLM"
 						value={patient.hdlm || "Non renseignées"}
-						className="bg-yellow-100 dark:bg-yellow-700 p-3 rounded-lg text-sm sm:text-base font-medium"
 					/>
 					<DetailItem
 						label="Traitements en cours"
