@@ -123,28 +123,35 @@ const PatientList = ({}) => {
 
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
-			{/* Header avec adaptation mobile */}
-			<header className="mb-4 sm:mb-6 md:mb-8">
-				<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-					<div className="text-center sm:text-left w-full sm:w-auto">
-						<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-10">
-							Liste des patients
-						</h1>
-						<p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">
-							Gérez vos patients et leurs rendez-vous
-						</p>
-					</div>
+			<header className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
+				<Image
+					src="/assets/images/PatientRoom.webp"
+					alt="Cabinet d'ostéopathie moderne"
+					fill
+					style={{
+						objectFit: "cover",
+						objectPosition: "center 55%",
+					}}
+					className="opacity-80 border-2 border-white"
+					priority
+				/>
+				<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
 					<Image
 						src="/assets/icons/logo-full.svg"
 						alt="Logo"
-						width={60}
-						height={60}
-						className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-xl shadow-lg"
+						width={80}
+						height={80}
+						className="object-contain shadow-xl rounded-xl mb-4"
 						priority
 					/>
+					<h1 className="text-3xl font-bold drop-shadow-md">
+						Liste des patients
+					</h1>
+					<p className="mt-2 text-xl drop-shadow-sm">
+						Gérez vos patients et leurs rendez-vous
+					</p>
 				</div>
 			</header>
-
 			{/* Barre de recherche et actions */}
 			<div className="flex flex-col gap-3 sm:gap-4 mb-6">
 				<div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
@@ -250,7 +257,6 @@ const PatientList = ({}) => {
 					</Button>
 				</div>
 			</div>
-
 			{/* Liste des patients */}
 			<div className="space-y-3 sm:space-y-4">
 				{!patients?.length ? (
@@ -381,7 +387,6 @@ const PatientList = ({}) => {
 					))
 				)}
 			</div>
-
 			{/* Pagination adaptative */}
 			{totalPages > 1 && (
 				<div className="flex justify-between items-center mt-6">
@@ -412,7 +417,6 @@ const PatientList = ({}) => {
 					</Button>
 				</div>
 			)}
-
 			{/* Modales */}
 			{showAddFormPatient && (
 				<AddPatientForm
@@ -424,7 +428,6 @@ const PatientList = ({}) => {
 					}}
 				/>
 			)}
-
 			{showAppointmentDialog && selectedPatientForAppointment && (
 				<AppointmentDialog
 					open={showAppointmentDialog}

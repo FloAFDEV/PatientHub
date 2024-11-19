@@ -211,7 +211,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								/>
 								<XAxis
 									dataKey="name"
-									tick={{ fill: "#A0AEC0", fontSize: 12 }}
+									tick={{ fill: "#A0AEC0", fontSize: 14 }}
 									tickLine={false}
 									interval={0}
 								/>
@@ -228,14 +228,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 											"0 4px 6px rgba(0, 0, 0, 0.1)",
 									}}
 								/>
-								<Legend
-									wrapperStyle={{ paddingTop: "10px" }}
-									formatter={(value) => (
-										<span className="text-indigo-600 dark:text-indigo-400 font-normal">
-											{value}
-										</span>
-									)}
-								/>
+
 								<Bar dataKey="Age" barSize={70} fill="#4C51BF">
 									<LabelList
 										dataKey="Age"

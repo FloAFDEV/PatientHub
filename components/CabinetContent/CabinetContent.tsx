@@ -302,7 +302,7 @@ const InfoCard: React.FC<InfoCardProps> = React.memo(
 							href={link}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+							className="text-blue-400 dark:text-blue-300 hover:underline inline-flex items-center gap-1"
 						>
 							{content}
 						</a>
@@ -326,9 +326,9 @@ interface ActionButtonProps {
 const ActionButton: React.FC<ActionButtonProps> = React.memo(
 	({ onClick, icon, text, color }) => {
 		const colorClasses = {
-			blue: "bg-white dark:bg-gray-800 border-2 border-blue-500 hover:bg-blue-500 hover:border-blue-600 text-blue-600 hover:text-white",
-			green: "bg-white dark:bg-gray-800 border-2 border-green-500 hover:bg-green-500 hover:border-green-600 text-green-600 hover:text-white",
-			red: "bg-white dark:bg-gray-800 border-2 border-red-500 hover:bg-red-500 hover:border-red-600 text-red-600 hover:text-white",
+			blue: "bg-white dark:bg-gray-900 border-2 border-blue-500 hover:bg-blue-500 hover:border-blue-600 text-blue-600 hover:text-white",
+			green: "bg-white dark:bg-gray-900 border-2 border-green-500 hover:bg-green-500 hover:border-green-600 text-green-600 hover:text-white",
+			red: "bg-white dark:bg-gray-900 border-2 border-red-500 hover:bg-red-500 hover:border-red-600 text-red-600 hover:text-white",
 		};
 
 		return (
