@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import AddPatientForm from "@/components/AddPatientForm/addPatientForm";
+// import AddPatientForm from "@/components/AddPatientForm/addPatientForm";
 import { usePatients } from "@/hooks/usePatients";
 import { useDebounce } from "@/hooks/useDebounce";
 
@@ -419,7 +419,7 @@ const PatientList = ({}) => {
 				</div>
 			)}
 			{/* Modales */}
-			{showAddFormPatient && (
+			{/* {showAddFormPatient && (
 				<AddPatientForm
 					onClose={() => setShowAddFormPatient(false)}
 					onAddPatient={() => {
@@ -428,7 +428,7 @@ const PatientList = ({}) => {
 						setShowAddFormPatient(false);
 					}}
 				/>
-			)}
+			)} */}
 			{showAppointmentDialog && selectedPatientForAppointment && (
 				<AppointmentDialog
 					open={showAppointmentDialog}
