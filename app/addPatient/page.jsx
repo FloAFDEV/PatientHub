@@ -1,6 +1,6 @@
 // /pages/app/addPatient/pages.jsx
 import React from "react";
-import AddPatientForm from "@/components/AddPatientForm/addPatientForm";
+import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 
 const AddPatientPage = () => {
 	return (

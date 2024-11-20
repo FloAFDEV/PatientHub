@@ -19,7 +19,7 @@ import { signOut } from "@/app/logout/actions";
 import { createClient } from "@/utils/supabase/client";
 import PatientList from "@/components/PatientList/PatientList";
 import CabinetContent from "@/components/CabinetContent/CabinetContent";
-import AddPatientForm from "@/components/AddPatientForm/addPatientForm";
+import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import { Logo, LogoIcon } from "@/components/Logo/Logo";
 import Dashboard from "@/components/Dashboard/Dashboard";
 import { User } from "@supabase/supabase-js";
