@@ -30,9 +30,9 @@ function Calendar({
 				day_selected:
 					"bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 font-semibold rounded-full",
 				day_today:
-					"bg-yellow-100 text-yellow-500 text-yellow-500 dark:bg-orange-400 dark:text-white font-semibold rounded-full",
+					"bg-yellow-100 text-yellow-500 text-amber-500 dark:bg-orange-400 dark:text-white font-semibold rounded-full",
 				day_outside:
-					"text-gray-400 dark:text-gray-500 border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 opacity-70",
+					"text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 opacity-70",
 				day_disabled:
 					"text-gray-400 dark:text-gray-500 opacity-50 cursor-not-allowed",
 				day_hidden: "invisible",
@@ -59,10 +59,9 @@ function Calendar({
 			}}
 			modifiersClassNames={{
 				weekend: "text-red-500 dark:text-red-500 font-semibold",
-				today: "bg-yellow-100 text-yellow-700 dark:bg-orange-600 dark:text-white rounded-full font-thin",
+				today: "bg-yellow-100 text-yellow-700 dark:bg-amber-500 dark:text-white rounded-full font-light",
 
-				outside:
-					"text-gray-400 dark:text-gray-500 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 opacity-70",
+				outside: "text-gray-400 dark:text-gray-500 opacity-40",
 			}}
 			showOutsideDays
 			disabled={(date) => date < new Date()}

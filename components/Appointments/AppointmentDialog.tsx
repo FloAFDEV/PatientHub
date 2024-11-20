@@ -251,13 +251,13 @@ export function AppointmentDialog({
 								type="button"
 								variant="outline"
 								onClick={() => onOpenChange(false)}
-								className="h-12 px-6 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+								className="h-12 px-6 bg-white dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700"
 							>
 								Annuler
 							</Button>
 							<Button
 								type="submit"
-								className="h-12 px-6 bg-primary hover:bg-primary/90 text-white"
+								className="h-12 px-6 bg-blue-400 dark:bg-gray-800 hover:bg-blue-500 dark:hover:bg-gray-700"
 							>
 								{mode === "create" ? "Créer" : "Modifier"}
 							</Button>

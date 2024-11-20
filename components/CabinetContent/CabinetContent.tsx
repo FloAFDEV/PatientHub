@@ -153,8 +153,8 @@ const CabinetContent: React.FC = () => {
 	}
 
 	return (
-		<div className="flex-1 p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
-			<header className="mb-6 sm:mb-8">
+		<div className="flex-1 p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto min-h-screen">
+			<header className="m-6 sm:mb-8">
 				<div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8">
 					<div className="text-center sm:text-left">
 						<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -279,7 +279,7 @@ interface InfoCardProps {
 
 const InfoCard: React.FC<InfoCardProps> = React.memo(
 	({ icon, title, content, link, image }) => (
-		<div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+		<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
 			<div className="aspect-video relative">
 				<Image
 					src={image}

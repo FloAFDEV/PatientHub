@@ -132,7 +132,7 @@ const PatientList = ({}) => {
 						objectFit: "cover",
 						objectPosition: "center 55%",
 					}}
-					className="opacity-80 border-2 border-white"
+					className="opacity-80 border-2 border-white object-cover object-center lg:object-[center_55%] sm:object-[center_top]"
 					priority
 				/>
 				<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
@@ -257,8 +257,9 @@ const PatientList = ({}) => {
 					</Button>
 				</div>
 			</div>
+
 			{/* Liste des patients */}
-			<div className="space-y-3 sm:space-y-4">
+			<div className="space-y-2 sm:space-y-4">
 				{!patients?.length ? (
 					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
 						<IconSearch className="mx-auto h-12 w-12 text-gray-400" />
@@ -276,8 +277,8 @@ const PatientList = ({}) => {
 							key={patient.id}
 							className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
 						>
-							<div className="p-3 sm:p-4">
-								<div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+							<div className="p-3 sm:p-2 ">
+								<div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
 									<div className="flex items-start sm:items-center gap-3 flex-1">
 										<div className="mt-1 sm:mt-0">
 											{patient.gender === "Homme" ? (
@@ -304,7 +305,7 @@ const PatientList = ({}) => {
 													</span>
 												)}
 											</h3>
-											<div className="mt-1 flex flex-col sm:flex-row gap-1 sm:gap-4 text-sm text-gray-500 dark:text-gray-400">
+											<div className="mt-1 flex flex-row gap-1 text-sm text-gray-500 dark:text-gray-400 sm:flex-row sm:gap-4">
 												<span>
 													Âge:{" "}
 													{calculateAge(
@@ -345,7 +346,7 @@ const PatientList = ({}) => {
 														: patient.id
 												)
 											}
-											className="flex-1 sm:flex-none h-9 dark:border-gray-400 dark:border-b-2"
+											className="flex-1 sm:flex-none h-9 dark:border-gray-400 dark:border-2 border-2 border-gray-100"
 										>
 											{selectedPatientId === patient.id
 												? "Fermer"

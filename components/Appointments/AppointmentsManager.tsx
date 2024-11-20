@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import Image from "next/image";
 
 interface Patient {
 	id: number;
@@ -105,10 +106,30 @@ export default function AppointmentsManager() {
 	}
 
 	return (
-		<div className="container mx-auto p-4 max-w-7xl">
+		<div className="container mx-auto p-4 max-w-7xl bg-gray-50 dark:bg-gray-900 min-h-screen">
+			<header className="m-6 sm:mb-8">
+				<div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8">
+					<div className="text-center sm:text-left">
+						<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+							Rendez-vous / Planning
+						</h1>
+						<p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
+							Informations et paramètres de votre agenda médical
+						</p>
+					</div>
+					<Image
+						src="/assets/icons/logo-full.svg"
+						alt="Logo"
+						width={80}
+						height={80}
+						className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-xl shadow-lg"
+						priority
+					/>
+				</div>
+			</header>
 			<div className="flex flex-col md:flex-row gap-8">
 				<div className="w-full md:w-2/3">
-					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+					<div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl shadow-lg">
 						<Calendar
 							mode="single"
 							selected={selectedDate}
@@ -118,7 +139,7 @@ export default function AppointmentsManager() {
 							disabled={(date) => date < new Date()}
 						/>
 						<Button
-							className="w-full mt-6 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800"
+							className="w-full mt-6 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-600 dark:hover:to-gray-700"
 							onClick={() => setIsNewAppointmentOpen(true)}
 						>
 							Nouveau rendez-vous
