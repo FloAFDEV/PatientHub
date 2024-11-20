@@ -19,6 +19,7 @@ import { signOut } from "@/app/logout/actions";
 import { createClient } from "@/utils/supabase/client";
 import PatientList from "@/components/PatientList/PatientList";
 import CabinetContent from "@/components/CabinetContent/CabinetContent";
+import AddPatientForm from "@/components/AddPatientForm/addPatientForm";
 import { Logo, LogoIcon } from "@/components/Logo/Logo";
 import Dashboard from "@/components/Dashboard/Dashboard";
 import { User } from "@supabase/supabase-js";
@@ -100,12 +101,20 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 				onClick: () => handleTabChange("dashboard"),
 			},
 			{
-				label: "Patients",
+				label: "Vos patients",
 				href: "#",
+				onClick: () => handleTabChange("patients"),
 				icon: (
 					<UserCircleIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 				),
-				onClick: () => handleTabChange("patients"),
+
+				subItems: [
+					{
+						label: "Ajouter un patient",
+						href: "#",
+						onClick: () => handleTabChange("addPatient"),
+					},
+				],
 			},
 			{
 				label: "Cabinet",
@@ -153,6 +162,8 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 				return <MemoizedCabinetContent />;
 			case "appointments":
 				return <MemoizedAppointmentsManager />;
+			case "addPatient":
+				return <AddPatientForm onClose={undefined} />;
 			default:
 				return null;
 		}

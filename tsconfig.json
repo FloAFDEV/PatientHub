@@ -36,7 +36,8 @@
 		"components/lib/prisma.js",
 		"components/PatientList/PatientList.jsx",
 		"components/SidebarDashboard/SidebarDashboard.jsx",
-		"app/patients/page.jsx"
+		"app/patients/page.jsx",
+		"app/AddPatient/page.jsx"
 	],
 	"exclude": ["node_modules"],
 	"scripts": {

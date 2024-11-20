@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import AddPatientForm from "@/components/addPatientForm/addPatientForm";
+import AddPatientForm from "@/components/AddPatientForm/addPatientForm";
 import { usePatients } from "@/hooks/usePatients";
 import { useDebounce } from "@/hooks/useDebounce";
 
