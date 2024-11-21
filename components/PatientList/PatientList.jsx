@@ -97,8 +97,11 @@ const PatientList = ({}) => {
 
 	if (isLoading) {
 		return (
-			<div className="flex justify-center items-center min-h-[60vh]">
-				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900">
+				<div className="animate-spin h-12 w-12 border-t-4 border-b-4 border-primary rounded-full"></div>
+				<p className="mt-4 text-gray-600 dark:text-gray-400">
+					Chargement...
+				</p>
 			</div>
 		);
 	}
@@ -222,9 +225,9 @@ const PatientList = ({}) => {
 
 						<Button
 							onClick={() => setShowAddFormPatient(true)}
-							className="flex-1 sm:flex-none h-9 dark:border-gray-400 dark:border-b-2"
+							className="flex-1 sm:flex-none h-9 dark:border-gray-400 dark:border-b-2 hover:bg-blue-400"
 						>
-							<IconPlus size={18} className="sm:mr-2" />
+							<IconPlus size={18} className="sm:mr-2 " />
 							<span className="hidden sm:inline">
 								Ajouter un patient
 							</span>
@@ -346,7 +349,7 @@ const PatientList = ({}) => {
 														: patient.id
 												)
 											}
-											className="flex-1 sm:flex-none h-9 dark:border-gray-400 dark:border-2 border-2 border-gray-100"
+											className="flex-1 sm:flex-none h-9 dark:hover:bg-amber-500  dark:hover:text-gray-900 dark:border-gray-400 dark:border-2 border-2 hover:bg-blue-400 border-gray-100"
 										>
 											{selectedPatientId === patient.id
 												? "Fermer"
@@ -358,10 +361,10 @@ const PatientList = ({}) => {
 											onClick={() =>
 												handleAddAppointment(patient)
 											}
-											className="flex-1 sm:flex-none h-9"
+											className="flex-1 sm:flex-none h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
 										>
 											<IconCalendar className="h-4 w-4 sm:mr-2" />
-											<span className="hidden sm:inline">
+											<span className="hidden sm:inline ">
 												Rendez-vous
 											</span>
 										</Button>
