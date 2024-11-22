@@ -1,162 +1,147 @@
-// Configuration du générateur client Prisma
 generator client {
   provider = "prisma-client-js"
 }
 
-// Configuration de la source de données PostgreSQL
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // L'URL de connexion à la base de données
+  url      = env("DATABASE_URL")
 }
 
-// Modèle pour les utilisateurs (Administrateurs et Ostéopathes)
 model User {
-  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Identifiant unique
-  email       String     @unique // Adresse email unique
-  first_name  String? // Prénom
-  last_name   String? // Nom de famille
-  role        Role // Rôle de l'utilisateur (ADMIN ou OSTEOPATH)
-  osteopath   Osteopath? @relation // Relation avec l'ostéopathe (si applicable)
-  osteopathId Int? // Clé étrangère optionnelle vers Osteopath
-  created_at  DateTime   @default(now()) // Date de création
-  updated_at  DateTime   @updatedAt // Date de dernière mise à jour
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email       String     @unique
+  first_name  String?
+  last_name   String?
+  role        Role
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  osteopathId Int?
+  osteopath   Osteopath?
 }
 
-// Enum pour les rôles d'utilisateur possibles
-enum Role {
-  ADMIN // Administrateur
-  OSTEOPATH // Ostéopathe
-}
-
-// Modèle pour les Ostéopathes
 model Osteopath {
-  id        Int       @id @default(autoincrement()) // Identifiant unique
-  user      User      @relation(fields: [userId], references: [id]) // Relation vers User
-  userId    String    @unique @db.Uuid // Clé étrangère unique vers User
-  name      String // Nom de l'ostéopathe
-  cabinets  Cabinet[] // Un ostéopathe peut avoir plusieurs cabinets
-  patients  Patient[] // Un ostéopathe peut avoir plusieurs patients
-  createdAt DateTime  @default(now()) // Date de création
-  updatedAt DateTime  @updatedAt // Date de dernière mise à jour
+  id        Int       @id @default(autoincrement())
+  userId    String    @unique @db.Uuid
+  createdAt DateTime  @default(now())
+  name      String
+  updatedAt DateTime  @updatedAt
+  cabinets  Cabinet[]
+  user      User      @relation(fields: [userId], references: [id])
+  patients  Patient[]
 }
 
-// Modèle pour les Cabinets
 model Cabinet {
-  id          Int       @id @default(autoincrement()) // Identifiant unique
-  name        String // Nom du cabinet
-  address     String // Adresse du cabinet
-  phone       String? // Numéro de téléphone du cabinet
-  osteopath   Osteopath @relation(fields: [osteopathId], references: [id]) // Relation avec l'ostéopathe
-  osteopathId Int // Clé étrangère vers l'ostéopathe
-  patients    Patient[] // Patients associés à ce cabinet
-  createdAt   DateTime  @default(now()) // Date de création
-  updatedAt   DateTime  @updatedAt // Date de dernière mise à jour
+  id          Int       @id @default(autoincrement())
+  address     String
+  createdAt   DateTime  @default(now())
+  name        String
+  osteopathId Int
+  phone       String?
+  updatedAt   DateTime  @updatedAt
+  osteopath   Osteopath @relation(fields: [osteopathId], references: [id])
+  patients    Patient[]
 }
 
-// Modèle pour les Patients
 model Patient {
-  id                     Int               @id @default(autoincrement()) // Identifiant unique
-  userId                 String? // ID utilisateur associé (si applicable)
-  name                   String // Nom du patient
-  email                  String? // Email du patient
-  phone                  String? // Numéro de téléphone du patient
-  birthDate              DateTime? // Date de naissance
-  gender                 Gender? // Genre (Homme/Femme)
-  address                String? // Adresse
-  avatarUrl              String? // URL de la photo/avatar du patient
-  maritalStatus          MaritalStatus? // Statut marital
-  occupation             String? // Métier
-  isSmoker               Boolean           @default(false) // Indique si le patient est fumeur
-  contraception          Contraception? // Méthode de contraception
-  currentTreatment       String? // Liste des traitements en cours
-  handedness             Handedness? // Latéralité
-  generalPractitioner    String? // Nom du médecin traitant
-  surgicalHistory        String? // Antécédents chirurgicaux
-  traumaHistory          String? // Antécédents traumatiques
-  rheumatologicalHistory String? // Antécédents rhumatologiques
-  hasVisionCorrection    Boolean           @default(false) // Correction de la vision
-  ophtalmologistName     String? // Nom de l'ophtalmologiste
-  entProblems            String? // Problèmes ORL
-  entDoctorName          String? // Nom du médecin ORL
-  digestiveProblems      String? // Problèmes digestifs
-  digestiveDoctorName    String? // Nom du médecin digestif (gastro-entérologue)
-  hdlm                   String? // Informations HDLM
-  isDeceased             Boolean           @default(false) // Indique si le patient est décédé
-  hasChildren            String? // Indique si le patient a des enfants
-  childrenAges           Int[] // Liste des âges des enfants, peut être null si pas d'enfants
-  physicalActivity       String? // Activité physique
-  osteopathId            Int // Clé étrangère vers l'ostéopathe
-  osteopath              Osteopath         @relation(fields: [osteopathId], references: [id]) // Relation avec l'ostéopathe
-  cabinet                Cabinet?          @relation(fields: [cabinetId], references: [id]) // Relation avec le cabinet
-  cabinetId              Int? // Clé étrangère optionnelle vers le cabinet
-  medicalDocuments       MedicalDocument[] // Documents médicaux associés
-  consultations          Consultation[] // Historique des consultations
-  createdAt              DateTime          @default(now()) // Date de création
-  updatedAt              DateTime          @updatedAt // Date de dernière mise à jour
-  appointments           Appointment[] // Rendez-vous associés au patient
+  id                     Int               @id @default(autoincrement())
+  userId                 String?
+  name                   String
+  osteopathId            Int
+  cabinetId              Int?
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  address                String?
+  avatarUrl              String?
+  birthDate              DateTime?
+  currentTreatment       String?
+  digestiveProblems      String?
+  email                  String?
+  entDoctorName          String?
+  entProblems            String?
+  gender                 Gender?
+  generalPractitioner    String?
+  hasVisionCorrection    Boolean           @default(false)
+  hdlm                   String?
+  isDeceased             Boolean           @default(false)
+  isSmoker               Boolean           @default(false)
+  occupation             String?
+  ophtalmologistName     String?
+  phone                  String?
+  rheumatologicalHistory String?
+  surgicalHistory        String?
+  traumaHistory          String?
+  maritalStatus          MaritalStatus?
+  contraception          Contraception?
+  handedness             Handedness?
+  childrenAges           Int[]
+  hasChildren            String?
+  physicalActivity       String?
+  digestiveDoctorName    String?
+  appointments           Appointment[]
+  consultations          Consultation[]
+  medicalDocuments       MedicalDocument[]
+  cabinet                Cabinet?          @relation(fields: [cabinetId], references: [id])
+  osteopath              Osteopath         @relation(fields: [osteopathId], references: [id])
 }
 
-// Modèle pour les consultations
 model Consultation {
-  id        Int      @id @default(autoincrement()) // Identifiant unique
-  date      DateTime // Date de la consultation
-  notes     String // Notes de la consultation
-  patient   Patient  @relation(fields: [patientId], references: [id]) // Relation avec le patient
-  patientId Int // Clé étrangère vers le patient
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  notes     String
+  patientId Int
+  patient   Patient  @relation(fields: [patientId], references: [id])
 }
 
-// Modèle pour les rendez-vous
 model Appointment {
-  id        Int               @id @default(autoincrement()) // Identifiant unique
-  date      DateTime // Date et heure du rendez-vous
-  reason    String // Raison du rendez-vous
-  status    AppointmentStatus // Statut (scheduled, completed, canceled)
-  patient   Patient           @relation(fields: [patientId], references: [id]) // Relation avec le patient
-  patientId Int // Clé étrangère vers le patient
+  id        Int               @id @default(autoincrement())
+  date      DateTime
+  reason    String
+  patientId Int
+  status    AppointmentStatus
+  patient   Patient           @relation(fields: [patientId], references: [id])
 }
 
-// Modèle pour les documents médicaux
 model MedicalDocument {
-  id          Int     @id @default(autoincrement()) // Identifiant unique
-  url         String // URL du document médical
-  description String // Description du document
-  patient     Patient @relation(fields: [patientId], references: [id]) // Relation avec le patient
-  patientId   Int // Clé étrangère vers le patient
+  id          Int     @id @default(autoincrement())
+  url         String
+  description String
+  patientId   Int
+  patient     Patient @relation(fields: [patientId], references: [id])
 }
 
-// Enum pour le genre
+enum Role {
+  ADMIN
+  OSTEOPATH
+}
+
 enum Gender {
-  Homme // Homme
-  Femme // Femme
+  Homme
+  Femme
 }
 
-// Enum pour le statut marital
 enum MaritalStatus {
-  SINGLE // Célibataire
-  MARRIED // Marié(e)
-  DIVORCED // Divorcé(e)
-  WIDOWED // Veuf/veuve
-  SEPARATED // Séparé(e)
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+  SEPARATED
 }
 
-// Enum pour la latéralité
 enum Handedness {
-  LEFT // Gaucher
-  RIGHT // Droitier
-  AMBIDEXTROUS // Ambidextre
+  LEFT
+  RIGHT
+  AMBIDEXTROUS
 }
 
-// Enum pour la contraception
 enum Contraception {
-  NONE // Aucun
-  PILLS // Pilules
-  CONDOM // Préservatifs
-  IMPLANTS // Implants
+  NONE
+  PILLS
+  CONDOM
+  IMPLANTS
 }
 
-// Enum pour le statut des rendez-vous
 enum AppointmentStatus {
-  SCHEDULED // Prévu
-  COMPLETED // Terminé
-  CANCELED // Annulé
+  SCHEDULED
+  COMPLETED
+  CANCELED
 }

@@ -119,10 +119,7 @@ const CabinetContent: React.FC = () => {
 			const response = await fetch(`/api/cabinet?id=${id}`, {
 				method: "DELETE",
 			});
-			if (response.ok) {
-				setCabinetInfo(null);
-				toast.success("Cabinet supprimé avec succès !"); // Succès
-			}
+			if (response.ok) setCabinetInfo(null);
 		} catch (error) {
 			console.error("Erreur de suppression :", error);
 			setError("Erreur lors de la suppression du cabinet");
@@ -255,7 +252,7 @@ const CabinetContent: React.FC = () => {
 					<ActionButton
 						onClick={handleDeleteCabinet}
 						icon={<TrashIcon className="h-5 w-5" />}
-						text="Supprimer"
+						text="Supprimer le Cabinet"
 						color="red"
 					/>
 				</section>

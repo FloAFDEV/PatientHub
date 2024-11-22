@@ -18,7 +18,7 @@ function formatPatientData(data) {
 			? data.maritalStatus.toUpperCase()
 			: null,
 		occupation: data.occupation || null,
-		hasChildren: data.hasChildren === "true",
+		hasChildren: data.hasChildren === "true" ? "true" : "false",
 		childrenAges: Array.isArray(data.childrenAges)
 			? data.childrenAges.map((age) => parseInt(age, 10))
 			: [],
@@ -142,50 +142,65 @@ export async function POST(request) {
 	const patientData = await request.json();
 
 	try {
+		// Formater les données du patient
 		const formattedPatientData = formatPatientData(patientData);
-
+		// Valeur d'ostéopathe, ici elle est en dur pour tester
+		const osteopathId = 1;
+		if (!osteopathId) {
+			return new Response("Osteopath ID is required", { status: 400 });
+		}
+		// Connexion de l'ostéopathe à la donnée du patient
+		formattedPatientData.osteopath = {
+			connect: {
+				id: osteopathId,
+			},
+		};
+		// Vérification de l'ID du cabinet si fourni
 		if (patientData.cabinetId) {
 			const cabinetExists = await prisma.cabinet.findUnique({
 				where: { id: parseInt(patientData.cabinetId) },
 			});
-
 			if (!cabinetExists) {
-				return NextResponse.json(
-					{ error: "Cabinet not found" },
-					{ status: 404 }
-				);
+				return new Response("Cabinet not found", { status: 404 });
 			}
-
 			formattedPatientData.cabinet = {
 				connect: {
-					id: parseInt(patientData.cabinetId),
+					id: patientData.cabinetId,
 				},
 			};
 		}
-
-		formattedPatientData.osteopath = {
-			connect: {
-				id: 1, // À remplacer par l'ID de l'ostéopathe connecté
-			},
-		};
-
+		// Traitement de `hasChildren` : Conversion en booléen si nécessaire
+		if (patientData.hasChildren === "true") {
+			formattedPatientData.hasChildren = true;
+		} else if (patientData.hasChildren === "false") {
+			formattedPatientData.hasChildren = false;
+		}
+		// Vérification des âges des enfants si `hasChildren` est vrai
+		if (
+			patientData.hasChildren === "true" &&
+			Array.isArray(patientData.childrenAges)
+		) {
+			formattedPatientData.childrenAges = patientData.childrenAges.map(
+				(age) => parseInt(age, 10)
+			);
+		}
+		// Création d'un nouveau patient dans la base de données avec Prisma
 		const newPatient = await prisma.patient.create({
 			data: formattedPatientData,
-			include: {
-				osteopath: true,
-				cabinet: true,
-				medicalDocuments: true,
-				consultations: true,
-				appointments: true,
-			},
 		});
-
-		return NextResponse.json(newPatient, { status: 201 });
+		// Retourner la réponse de création avec les données du patient
+		return new Response(JSON.stringify(newPatient), {
+			status: 201,
+			headers: { "Content-Type": "application/json" },
+		});
 	} catch (error) {
 		console.error("Error creating patient:", error);
-		return NextResponse.json(
-			{ error: "Could not create patient", details: error.message },
-			{ status: 500 }
+		return new Response(
+			JSON.stringify({
+				message: "Could not create patient",
+				error: error.message,
+			}),
+			{ status: 500, headers: { "Content-Type": "application/json" } }
 		);
 	}
 }

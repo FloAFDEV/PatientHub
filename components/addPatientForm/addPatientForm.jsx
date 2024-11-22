@@ -5,13 +5,16 @@ import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
-const AddPatientForm = ({ onClose }) => {
+const AddPatientForm = ({}) => {
 	const {
 		control,
 		handleSubmit,
 		reset,
 		formState: { errors, isSubmitting },
+		setValue,
 	} = useForm();
 
 	const [hasChildren, setHasChildren] = useState(false);
@@ -91,6 +94,17 @@ const AddPatientForm = ({ onClose }) => {
 			if (!response.ok)
 				throw new Error(`Erreur serveur: ${await response.text()}`);
 			await response.json();
+			toast.success(
+				<div>
+					🎉 Patient <b>{data.name}</b> ajouté avec succès !
+				</div>,
+				{
+					position: "top-center",
+					className: "custom-toast",
+					icon: "🎉",
+				}
+			);
+
 			reset({
 				name: "",
 				email: "",
@@ -121,12 +135,17 @@ const AddPatientForm = ({ onClose }) => {
 			// Réinitialisation des états locaux
 			setHasChildren(false);
 			setChildrenAges([0]);
-			onClose();
 
 			// Réinitialisation des champs qui ne sont pas directement gérés par react-hook-form
 			setValue("birthDate", null);
 		} catch (error) {
-			error(`Erreur lors de la création du patient: ${error.message}`);
+			toast.error(
+				`Erreur lors de la création du patient: ${error.message}`,
+				{
+					position: "top-center",
+					icon: "❌",
+				}
+			);
 		}
 	};
 
@@ -164,6 +183,7 @@ const AddPatientForm = ({ onClose }) => {
 				</div>
 			</header>
 			<div className="p-5 w-full max-w-7xl border border-blue-300 rounded-lg shadow-md bg-white dark:bg-slate-800 relative mx-auto">
+				<ToastContainer />
 				<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 					<h2 className="text-2xl font-bold mb-6 text-center">
 						Ajouter un Patient

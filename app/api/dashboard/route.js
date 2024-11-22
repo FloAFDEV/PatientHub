@@ -5,41 +5,49 @@ const prisma = new PrismaClient();
 
 export async function GET() {
 	try {
-		// Récupération des patients depuis la base de données
-		const patients = await prisma.patient.findMany({
-			select: {
-				createdAt: true, // date de création
-				gender: true,
-				birthDate: true,
+		// Comptage total des patients
+		const totalPatientCount = await prisma.patient.count();
+
+		// Récupérer tous les patients sans limitation ni sélection de colonnes
+		const patients = await prisma.patient.findMany(); // Sans `select`
+
+		// Afficher les patients pour débogage
+		console.log(patients);
+
+		// Nombre d'hommes et de femmes
+		const maleCount = await prisma.patient.count({
+			where: {
+				gender: "Homme",
 			},
 		});
 
-		// Total des patients
-		const totalPatients = patients.length;
-
-		// Répartition homme/femme
-		const maleCount = patients.filter((p) => p.gender === "Homme").length;
-		const femaleCount = patients.filter((p) => p.gender === "Femme").length;
+		const femaleCount = await prisma.patient.count({
+			where: {
+				gender: "Femme",
+			},
+		});
 
 		// Calcul des âges
 		const ages = patients.map((p) => {
 			const birthDate = new Date(p.birthDate);
 			const ageDifMs = Date.now() - birthDate.getTime();
 			const ageDate = new Date(ageDifMs);
-			return Math.abs(ageDate.getUTCFullYear() - 1970);
+			return Math.abs(ageDate.getUTCFullYear() - 1900);
 		});
 
-		// Âge moyen
-		const averageAge = ages.reduce((a, b) => a + b, 0) / ages.length;
+		// Âge moyen global
+		const averageAge = ages.length
+			? ages.reduce((a, b) => a + b, 0) / ages.length
+			: 0;
 
-		// Calcul de l'âge moyen par genre
+		// Calcul des âges moyens par genre
 		const maleAges = patients
 			.filter((p) => p.gender === "Homme")
 			.map((p) => {
 				const birthDate = new Date(p.birthDate);
 				const ageDifMs = Date.now() - birthDate.getTime();
 				const ageDate = new Date(ageDifMs);
-				return Math.abs(ageDate.getUTCFullYear() - 1970);
+				return Math.abs(ageDate.getUTCFullYear() - 1900);
 			});
 
 		const femaleAges = patients
@@ -48,13 +56,13 @@ export async function GET() {
 				const birthDate = new Date(p.birthDate);
 				const ageDifMs = Date.now() - birthDate.getTime();
 				const ageDate = new Date(ageDifMs);
-				return Math.abs(ageDate.getUTCFullYear() - 1970);
+				return Math.abs(ageDate.getUTCFullYear() - 1900);
 			});
 
+		// Âge moyen par genre
 		const averageAgeMale = maleAges.length
 			? maleAges.reduce((a, b) => a + b, 0) / maleAges.length
 			: 0;
-
 		const averageAgeFemale = femaleAges.length
 			? femaleAges.reduce((a, b) => a + b, 0) / femaleAges.length
 			: 0;
@@ -78,9 +86,78 @@ export async function GET() {
 			(p) => new Date(p.createdAt) >= startOfYear
 		).length;
 
+		// Calcul du pourcentage de croissance mensuelle
+		const monthlyGrowth = [];
+		for (let i = 11; i >= 0; i--) {
+			const monthDate = new Date(
+				currentDate.getFullYear(),
+				currentDate.getMonth() - i,
+				1
+			);
+			const startOfMonth = new Date(
+				monthDate.getFullYear(),
+				monthDate.getMonth(),
+				1
+			);
+			const endOfMonth = new Date(
+				monthDate.getFullYear(),
+				monthDate.getMonth() + 1,
+				0,
+				23,
+				59,
+				59
+			);
+
+			// Nombre de patients créés ce mois-ci
+			const patientsThisMonth = await prisma.patient.count({
+				where: {
+					createdAt: {
+						gte: startOfMonth,
+						lte: endOfMonth,
+					},
+				},
+			});
+
+			// Nombre de patients créés le mois précédent
+			const previousMonthStart = new Date(
+				monthDate.getFullYear(),
+				monthDate.getMonth() - 1,
+				1
+			);
+			const previousMonthEnd = new Date(
+				monthDate.getFullYear(),
+				monthDate.getMonth(),
+				0,
+				23,
+				59,
+				59
+			);
+
+			const patientsLastMonth = await prisma.patient.count({
+				where: {
+					createdAt: {
+						gte: previousMonthStart,
+						lte: previousMonthEnd,
+					},
+				},
+			});
+
+			// Calcul de la croissance mensuelle
+			const growth =
+				patientsLastMonth === 0
+					? 100
+					: ((patientsThisMonth - patientsLastMonth) /
+							patientsLastMonth) *
+					  100;
+			monthlyGrowth.push({
+				month: monthDate.toLocaleString("default", { month: "long" }),
+				growth: growth.toFixed(2),
+			});
+		}
+
 		// Retourner la réponse JSON avec les données calculées
 		return NextResponse.json({
-			totalPatients,
+			totalPatients: totalPatientCount, // Utilisation du comptage direct
 			maleCount,
 			femaleCount,
 			averageAge: Math.round(averageAge * 10) / 10, // Arrondi à 1 décimale
@@ -88,9 +165,9 @@ export async function GET() {
 			averageAgeFemale: Math.round(averageAgeFemale * 10) / 10,
 			newPatientsThisMonth,
 			newPatientsThisYear,
+			monthlyGrowth,
 		});
 	} catch (error) {
-		// En cas d'erreur
 		console.error(
 			"Erreur lors de la récupération des données du tableau de bord:",
 			error

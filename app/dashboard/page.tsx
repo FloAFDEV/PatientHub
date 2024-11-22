@@ -8,7 +8,6 @@ const DashboardPage = () => {
 		<SidebarDashboard>
 			{/* Contenu spécifique à la page du tableau de bord */}
 			<></>
-			{/* Vous pouvez ajouter d'autres composants ou éléments ici */}
 		</SidebarDashboard>
 	);
 };

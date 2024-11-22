@@ -22,6 +22,8 @@ import {
 	Legend,
 	ResponsiveContainer,
 	LabelList,
+	Line,
+	LineChart,
 } from "recharts";
 
 interface DashboardProps {
@@ -37,6 +39,9 @@ interface DashboardData {
 	averageAgeFemale: number;
 	newPatientsThisMonth: number;
 	newPatientsThisYear: number;
+	appointmentsToday: number;
+	nextAppointment: string;
+	monthlyGrowth: { month: string; growth: string }[];
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
@@ -49,18 +54,24 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 		const fetchDashboardData = async () => {
 			try {
 				const response = await fetch("/api/dashboard");
+				if (!response.ok) {
+					throw new Error(
+						`Erreur serveur: ${response.status} - ${response.statusText}`
+					);
+				}
 				const data = await response.json();
 				if (isMounted) {
 					setDashboardData(data);
 				}
 			} catch (error) {
 				console.error(
-					"Erreur lors de la récupération des données du tableau de bord",
+					"Erreur lors de la récupération des données:",
 					error
 				);
 			}
 		};
 		fetchDashboardData();
+		// Cleanup function pour éviter les mises à jour après démontage
 		return () => {
 			isMounted = false;
 		};
@@ -158,7 +169,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					}
 					title="Nouveaux patients (Ce mois-ci)"
 					value={
-						dashboardData?.newPatientsThisMonth || "Chargement..."
+						dashboardData?.newPatientsThisMonth !== undefined
+							? dashboardData.newPatientsThisMonth
+							: "Chargement..."
 					}
 				/>
 				<StatCard
@@ -169,7 +182,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					}
 					title="Nouveaux patients (Cette année)"
 					value={
-						dashboardData?.newPatientsThisYear || "Chargement..."
+						dashboardData?.newPatientsThisYear !== undefined
+							? dashboardData.newPatientsThisYear
+							: "Chargement..."
 					}
 				/>
 				<StatCard
@@ -244,7 +259,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							</BarChart>
 						</ResponsiveContainer>
 					</div>
-
 					{/* Graphique pour la répartition Hommes/Femmes */}
 					<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg">
 						<h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-4 text-gray-800 dark:text-white text-center flex items-center justify-center gap-2">
@@ -311,6 +325,50 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 									)}
 								/>
 							</PieChart>
+						</ResponsiveContainer>
+					</div>
+				</div>
+				<div className="w-full mt-8">
+					{/* Graphique pour la croissance mensuelle */}
+					<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg">
+						<h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 sm:mb-6 text-gray-800 dark:text-white text-center flex items-center justify-center gap-2">
+							<IconChartBar
+								className="text-green-600 dark:text-amber-500"
+								size={20}
+							/>
+							Croissance mensuelle des patients
+						</h3>
+						<ResponsiveContainer width="100%" height={250}>
+							<LineChart
+								data={dashboardData?.monthlyGrowth || []}
+							>
+								<CartesianGrid
+									strokeDasharray="3 3"
+									stroke="#ccc"
+								/>
+								<XAxis
+									dataKey="month"
+									tick={{ fill: "#A0AEC0", fontSize: 12 }}
+								/>
+								<YAxis
+									tick={{ fill: "#A0AEC0", fontSize: 12 }}
+								/>
+								<Tooltip
+									contentStyle={{
+										backgroundColor: "#f8fafc",
+										border: "none",
+										borderRadius: "8px",
+										boxShadow:
+											"0 4px 6px rgba(0, 0, 0, 0.1)",
+									}}
+								/>
+								<Line
+									type="monotone"
+									dataKey="growth"
+									stroke="rgb(138, 43, 226)"
+									strokeWidth={2}
+								/>
+							</LineChart>
 						</ResponsiveContainer>
 					</div>
 				</div>

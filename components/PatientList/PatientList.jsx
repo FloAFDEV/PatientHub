@@ -20,7 +20,6 @@ import {
 	IconPhone,
 	IconMail,
 } from "@tabler/icons-react";
-import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AppointmentDialog } from "@/components/Appointments/AppointmentDialog";
@@ -428,7 +427,6 @@ const PatientList = ({}) => {
 					onClose={() => setShowAddFormPatient(false)}
 					onAddPatient={() => {
 						mutate();
-						toast.success("Patient ajouté avec succès");
 						setShowAddFormPatient(false);
 					}}
 				/>
