@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import AddModal from "@/components/AddModal/AddModal";
 import EditModal from "@/components/EditModal/EditModal";
 import DeleteModal from "@/components/DeleteModal/DeleteModal";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
 	MapPinIcon,
 	PhoneIcon,
@@ -68,17 +70,17 @@ const CabinetContent: React.FC = () => {
 				body: JSON.stringify(newCabinet),
 			});
 			if (!response.ok)
-				throw new Error("Erreur de récupération du cabinet");
+				throw new Error("Erreur lors de l'ajout du cabinet");
 			const data = await response.json();
 			setCabinetInfo(data[0]);
+			toast.success("Nouveau cabinet ajouté avec succès !"); // Succès
 		} catch (error) {
 			setError(
 				error instanceof Error
 					? error.message
 					: "Une erreur inconnue s'est produite"
 			);
-		} finally {
-			setLoading(false);
+			toast.error("Échec de l'ajout du cabinet !"); // Erreur
 		}
 	}, []);
 
@@ -96,10 +98,16 @@ const CabinetContent: React.FC = () => {
 						"cabinetInfo",
 						JSON.stringify(updatedCabinet)
 					);
+					toast.success(
+						"Informations du cabinet mises à jour avec succès !"
+					); // Succès
+				} else {
+					throw new Error("Erreur lors de la mise à jour.");
 				}
 			} catch (error) {
 				console.error("Erreur de mise à jour :", error);
 				setError("Erreur lors de la mise à jour du cabinet");
+				toast.error("Échec de la mise à jour du cabinet !"); // Erreur
 			}
 		},
 		[]
@@ -111,10 +119,14 @@ const CabinetContent: React.FC = () => {
 			const response = await fetch(`/api/cabinet?id=${id}`, {
 				method: "DELETE",
 			});
-			if (response.ok) setCabinetInfo(null);
+			if (response.ok) {
+				setCabinetInfo(null);
+				toast.success("Cabinet supprimé avec succès !"); // Succès
+			}
 		} catch (error) {
 			console.error("Erreur de suppression :", error);
 			setError("Erreur lors de la suppression du cabinet");
+			toast.error("Échec de la suppression du cabinet !"); // Erreur
 		}
 	}, []);
 
@@ -154,24 +166,36 @@ const CabinetContent: React.FC = () => {
 
 	return (
 		<div className="flex-1 p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto min-h-screen">
-			<header className="m-6 sm:mb-8">
-				<div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8">
-					<div className="text-center sm:text-left">
-						<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+			<ToastContainer />
+			<header className="mb-8">
+				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
+					<Image
+						src="/assets/images/CabinetDetails.webp"
+						alt="Cabinet design et moderne"
+						fill
+						style={{
+							objectFit: "cover",
+							objectPosition: "center 30%",
+						}}
+						className="opacity-80"
+						priority
+					/>
+					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
+						<Image
+							src="/assets/icons/logo-full.svg"
+							alt="Logo"
+							width={80}
+							height={80}
+							className="object-contain shadow-xl rounded-xl mb-4"
+							priority
+						/>
+						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">
 							Fiche de votre cabinet
 						</h1>
-						<p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
+						<p className="hidden sm:block text-base sm:text-lg md:text-xl drop-shadow-sm max-w-2xl">
 							Informations et paramètres de votre cabinet
 						</p>
 					</div>
-					<Image
-						src="/assets/icons/logo-full.svg"
-						alt="Logo"
-						width={80}
-						height={80}
-						className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-xl shadow-lg"
-						priority
-					/>
 				</div>
 			</header>
 

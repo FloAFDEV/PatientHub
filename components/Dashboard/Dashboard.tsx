@@ -111,14 +111,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							className="object-contain shadow-xl rounded-xl mb-4"
 							priority
 						/>
-						<h1 className="text-3xl font-bold drop-shadow-md">
-							Tableau de bord
-						</h1>
-						<p className="mt-2 text-xl drop-shadow-sm">
+						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">
 							Bienvenue,{" "}
 							{user?.user_metadata?.user_metadata?.first_name ||
 								user?.email ||
 								"Utilisateur"}
+						</h1>
+						<p className="text-xl drop-shadow-md">
+							Tableau de bord
 						</p>
 					</div>
 				</div>

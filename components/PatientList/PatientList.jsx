@@ -126,33 +126,34 @@ const PatientList = ({}) => {
 
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
-			<header className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
-				<Image
-					src="/assets/images/PatientRoom.webp"
-					alt="Cabinet d'ostéopathie moderne"
-					fill
-					style={{
-						objectFit: "cover",
-						objectPosition: "center 55%",
-					}}
-					className="opacity-80 border-2 border-white object-cover object-center lg:object-[center_55%] sm:object-[center_top]"
-					priority
-				/>
-				<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
+			<header className="mb-8">
+				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
 					<Image
-						src="/assets/icons/logo-full.svg"
-						alt="Logo"
-						width={80}
-						height={80}
-						className="object-contain shadow-xl rounded-xl mb-4"
+						src="/assets/images/PatientRoom.webp"
+						alt="Fauteuil de cabinet designe et moderne"
+						fill
+						style={{
+							objectFit: "cover",
+						}}
+						className="opacity-80 object-[center_50%] sm:object-[center_50%] sm:object-cover"
 						priority
 					/>
-					<h1 className="text-3xl font-bold drop-shadow-md">
-						Liste des patients
-					</h1>
-					<p className="mt-2 text-xl drop-shadow-sm">
-						Gérez vos patients et leurs rendez-vous
-					</p>
+					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
+						<Image
+							src="/assets/icons/logo-full.svg"
+							alt="Logo"
+							width={80}
+							height={80}
+							className="object-contain shadow-xl rounded-xl mb-4"
+							priority
+						/>
+						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">
+							Liste de vos patients
+						</h1>
+						<p className="hidden sm:block text-base sm:text-lg md:text-xl drop-shadow-sm max-w-2xl">
+							Gérez vos patients et leurs rendez-vous
+						</p>
+					</div>
 				</div>
 			</header>
 			{/* Barre de recherche et actions */}

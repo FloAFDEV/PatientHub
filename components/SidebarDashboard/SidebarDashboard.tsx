@@ -11,6 +11,7 @@ import {
 	ChartBarIcon,
 	CalendarIcon,
 	BuildingOfficeIcon,
+	UserPlusIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -107,14 +108,14 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 				icon: (
 					<UserCircleIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
 				),
-
-				subItems: [
-					{
-						label: "Ajouter un patient",
-						href: "#",
-						onClick: () => handleTabChange("addPatient"),
-					},
-				],
+			},
+			{
+				label: "Ajouter un patient",
+				href: "#",
+				onClick: () => handleTabChange("addPatient"),
+				icon: (
+					<UserPlusIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+				),
 			},
 			{
 				label: "Cabinet",

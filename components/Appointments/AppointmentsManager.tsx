@@ -109,14 +109,27 @@ export default function AppointmentsManager() {
 	}
 
 	return (
-		<div className="container mx-auto p-4 max-w-7xl bg-gray-50 dark:bg-gray-900 min-h-screen">
-			<header className="m-6 sm:mb-8">
-				<div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-8">
-					<div className="text-center sm:text-left">
-						<h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
+			<header className="mb-8">
+				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
+					<img
+						src="/assets/images/Planning.webp"
+						alt="Image agenda"
+						className="w-full h-full object-cover opacity-90 object-center"
+					/>
+					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
+						<Image
+							src="/assets/icons/logo-full.svg"
+							alt="Logo"
+							width={80}
+							height={80}
+							className="object-contain shadow-xl rounded-xl mb-4"
+							priority
+						/>
+						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">
 							Rendez-vous / Planning
 						</h1>
-						<p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">
+						<p className="mt-2 text-xl drop-shadow-sm hidden sm:block">
 							Informations et paramètres de votre agenda médical
 						</p>
 					</div>
