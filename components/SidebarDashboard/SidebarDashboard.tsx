@@ -163,8 +163,6 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 				return <MemoizedCabinetContent />;
 			case "appointments":
 				return <MemoizedAppointmentsManager />;
-			case "addPatient":
-				return <AddPatientForm onClose={undefined} />;
 			default:
 				return null;
 		}
