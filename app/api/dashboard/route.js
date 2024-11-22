@@ -9,10 +9,7 @@ export async function GET() {
 		const totalPatientCount = await prisma.patient.count();
 
 		// Récupérer tous les patients sans limitation ni sélection de colonnes
-		const patients = await prisma.patient.findMany(); // Sans `select`
-
-		// Afficher les patients pour débogage
-		console.log(patients);
+		const patients = await prisma.patient.findMany();
 
 		// Nombre d'hommes et de femmes
 		const maleCount = await prisma.patient.count({
