@@ -163,7 +163,7 @@ const AddPatientForm = ({ onClose }) => {
 					</div>
 				</div>
 			</header>
-			<div className="p-8 w-full max-w-6xl border border-blue-300 rounded-lg shadow-md bg-white dark:bg-slate-800 relative mx-auto">
+			<div className="p-5 w-full max-w-7xl border border-blue-300 rounded-lg shadow-md bg-white dark:bg-slate-800 relative mx-auto">
 				<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 					<h2 className="text-2xl font-bold mb-6 text-center">
 						Ajouter un Patient
