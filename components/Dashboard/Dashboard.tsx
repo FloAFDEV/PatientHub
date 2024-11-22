@@ -41,7 +41,7 @@ interface DashboardData {
 	newPatientsThisYear: number;
 	appointmentsToday: number;
 	nextAppointment: string;
-	monthlyGrowth: { month: string; growth: string }[];
+	monthlyGrowth: { month: string; patients: number }[];
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
@@ -96,6 +96,24 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 			fill: "#ed64a6", // Rose pour les femmes
 		},
 	];
+
+	function mapMonthToFrench(month: string): string {
+		const months: { [key: string]: string } = {
+			January: "Janvier",
+			February: "Février",
+			March: "Mars",
+			April: "Avril",
+			May: "Mai",
+			June: "Juin",
+			July: "Juillet",
+			August: "Août",
+			September: "Septembre",
+			October: "Octobre",
+			November: "Novembre",
+			December: "Décembre",
+		};
+		return months[month] || month;
+	}
 
 	return (
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
@@ -333,14 +351,19 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg">
 						<h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 sm:mb-6 text-gray-800 dark:text-white text-center flex items-center justify-center gap-2">
 							<IconChartBar
-								className="text-green-600 dark:text-amber-500"
+								className="text-purple-700"
 								size={20}
 							/>
 							Croissance mensuelle des patients
 						</h3>
 						<ResponsiveContainer width="100%" height={250}>
 							<LineChart
-								data={dashboardData?.monthlyGrowth || []}
+								data={(dashboardData?.monthlyGrowth || []).map(
+									(item) => ({
+										month: mapMonthToFrench(item.month),
+										patients: item.patients,
+									})
+								)}
 							>
 								<CartesianGrid
 									strokeDasharray="3 3"
@@ -352,6 +375,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								/>
 								<YAxis
 									tick={{ fill: "#A0AEC0", fontSize: 12 }}
+									domain={[0, "auto"]}
 								/>
 								<Tooltip
 									contentStyle={{
@@ -361,10 +385,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 										boxShadow:
 											"0 4px 6px rgba(0, 0, 0, 0.1)",
 									}}
+									formatter={(value) => `${value} patients`} // Affiche uniquement le nombre suivi de "patients"
 								/>
 								<Line
 									type="monotone"
-									dataKey="growth"
+									dataKey="patients" // Utiliser "patients" comme clé
 									stroke="rgb(138, 43, 226)"
 									strokeWidth={2}
 								/>
