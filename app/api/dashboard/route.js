@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 export async function GET() {
 	try {
 		const totalPatientCount = await prisma.patient.count();
+
 		const patients = await prisma.patient.findMany();
 
 		const maleCount = await prisma.patient.count({
@@ -62,7 +63,8 @@ export async function GET() {
 		).length;
 
 		const monthlyGrowth = [];
-
+		let cumulativePatients = 0;
+		let prevPatients = 0;
 		for (let i = 11; i >= 0; i--) {
 			const monthDate = new Date(
 				currentDate.getFullYear(),
@@ -79,15 +81,29 @@ export async function GET() {
 				monthDate.getMonth() + 1,
 				0
 			);
-
 			const patientsThisMonth = await prisma.patient.count({
 				where: { createdAt: { gte: startOfMonth, lte: endOfMonth } },
 			});
-
+			let growthText = "";
+			if (prevPatients === 0 && patientsThisMonth > 0) {
+				// Si c'est le premier mois avec des patients
+				growthText = `+${patientsThisMonth} patients`;
+			} else if (prevPatients > 0) {
+				// Si ce n'est pas le premier mois, on calcule le nombre de patients ajoutés par rapport au mois précédent
+				const newPatients = patientsThisMonth - prevPatients;
+				growthText = `+${newPatients} patients`; // Affiche l'ajout par rapport au mois précédent
+			} else {
+				// Cas où il n'y a pas de données pour comparaison
+				growthText = "Pas de comparaison disponible";
+			}
+			// Ajout des informations au tableau monthlyGrowth
 			monthlyGrowth.push({
 				month: monthDate.toLocaleString("default", { month: "long" }),
-				patients: patientsThisMonth,
+				patients: cumulativePatients + patientsThisMonth,
+				growthText: `+${patientsThisMonth} patients`,
 			});
+			cumulativePatients += patientsThisMonth;
+			prevPatients = cumulativePatients;
 		}
 
 		return NextResponse.json({

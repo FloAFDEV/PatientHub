@@ -41,7 +41,12 @@ interface DashboardData {
 	newPatientsThisYear: number;
 	appointmentsToday: number;
 	nextAppointment: string;
-	monthlyGrowth: { month: string; patients: number }[];
+	monthlyGrowth: {
+		month: string;
+		patients: number;
+		prevPatients: number;
+		growthText: string;
+	}[];
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
@@ -362,6 +367,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 									(item) => ({
 										month: mapMonthToFrench(item.month),
 										patients: item.patients,
+										growthText: item.growthText,
 									})
 								)}
 							>
@@ -385,11 +391,23 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 										boxShadow:
 											"0 4px 6px rgba(0, 0, 0, 0.1)",
 									}}
-									formatter={(value) => `${value} patients`} // Affiche uniquement le nombre suivi de "patients"
+									formatter={(_value, _name, props) => {
+										const patients =
+											props.payload?.patients || 0;
+										const growthText =
+											props.payload?.growthText || "";
+										return [
+											`Total de ${patients} 👥`,
+											growthText
+												? growthText
+												: "Pas de comparaison disponible",
+										];
+									}}
 								/>
+
 								<Line
 									type="monotone"
-									dataKey="patients" // Utiliser "patients" comme clé
+									dataKey="patients"
 									stroke="rgb(138, 43, 226)"
 									strokeWidth={2}
 								/>
