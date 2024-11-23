@@ -85,7 +85,6 @@ export async function GET() {
 		// Calculer la croissance mensuelle
 		const monthlyGrowth = [];
 		let cumulativePatients = 0;
-		let prevPatients = 0;
 
 		for (let i = 11; i >= 0; i--) {
 			const monthDate = new Date(
