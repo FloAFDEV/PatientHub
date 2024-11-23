@@ -114,15 +114,21 @@ export default function AppointmentsManager() {
 				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
 					<Image
 						src="/assets/images/Planning.webp"
-						alt="Image agenda"
-						className="w-full h-full object-cover opacity-90 object-center"
+						alt="Modern Planning Desktop"
+						fill
+						style={{
+							objectFit: "cover",
+							objectPosition: "center 30%",
+						}}
+						className="opacity-80"
+						priority
 					/>
 					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
 						<Image
-							src="/assets/images/Planning.webp"
-							alt="Planning sur un bureau"
-							width={800}
-							height={500}
+							src="/assets/icons/logo-full.svg"
+							alt="Logo"
+							width={80}
+							height={80}
 							className="object-contain shadow-xl rounded-xl mb-4"
 							priority
 						/>
