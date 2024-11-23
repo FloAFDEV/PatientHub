@@ -119,10 +119,10 @@ export default function AppointmentsManager() {
 					/>
 					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
 						<Image
-							src="/assets/icons/logo-full.svg"
-							alt="Logo"
-							width={80}
-							height={80}
+							src="/assets/images/Planning.webp"
+							alt="Planning sur un bureau"
+							width={800}
+							height={500}
 							className="object-contain shadow-xl rounded-xl mb-4"
 							priority
 						/>
