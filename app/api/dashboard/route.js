@@ -20,10 +20,6 @@ export async function GET() {
 		const maleCount = patients.filter((p) => p.gender === "Homme").length;
 		const femaleCount = patients.filter((p) => p.gender === "Femme").length;
 
-		console.log("Nombre total de patients:", totalPatients);
-		console.log("Nombre total d'hommes:", maleCount);
-		console.log("Nombre total de femmes:", femaleCount);
-
 		const currentDate = new Date();
 
 		// 3. Calculer l'âge moyen des patients
