@@ -210,6 +210,7 @@ export async function DELETE(request) {
 		const { searchParams } = new URL(request.url);
 		const email = searchParams.get("email");
 
+		// Vérification si l'email est fourni
 		if (!email) {
 			return NextResponse.json(
 				{ error: "Email is required" },
@@ -217,7 +218,8 @@ export async function DELETE(request) {
 			);
 		}
 
-		const patient = await prisma.patient.findUnique({
+		// Récupération du patient avec l'email
+		const patient = await prisma.patient.findFirst({
 			where: { email },
 			include: {
 				osteopath: true,
@@ -228,6 +230,7 @@ export async function DELETE(request) {
 			},
 		});
 
+		// Vérification si le patient existe
 		if (!patient) {
 			return NextResponse.json(
 				{ error: "Patient not found" },
@@ -235,14 +238,38 @@ export async function DELETE(request) {
 			);
 		}
 
-		await prisma.patient.delete({ where: { email } });
+		// Dissocier les relations avant la suppression
+		await Promise.all([
+			prisma.consultation.deleteMany({
+				where: { patientId: patient.id },
+			}),
+			prisma.appointment.deleteMany({ where: { patientId: patient.id } }),
+			prisma.medicalDocument.deleteMany({
+				where: { patientId: patient.id },
+			}),
+		]);
 
+		console.log(
+			"Consultations, rendez-vous et documents médicaux supprimés"
+		);
+
+		// Suppression du patient
+		const deletedPatient = await prisma.patient.delete({
+			where: { id: patient.id },
+		});
+
+		console.log("Patient supprimé :", deletedPatient);
+
+		// Retourner la réponse du patient supprimé
 		return NextResponse.json(
-			{ message: "Patient deleted successfully", patient },
+			{
+				message: "Patient deleted successfully",
+				patient: deletedPatient,
+			},
 			{ status: 200 }
 		);
 	} catch (error) {
-		console.error("Error deleting patient:", error);
+		console.error("Erreur lors de la suppression du patient :", error);
 		return NextResponse.json(
 			{ error: "Could not delete patient", details: error.message },
 			{ status: 500 }

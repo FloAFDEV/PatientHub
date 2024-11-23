@@ -5,7 +5,8 @@ import Image from "next/image";
 import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import { usePatients } from "@/hooks/usePatients";
 import { useDebounce } from "@/hooks/useDebounce";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
 	IconGenderMale,
 	IconGenderFemale,
@@ -45,14 +46,7 @@ const PatientList = ({}) => {
 	const [selectedPatientForAppointment, setSelectedPatientForAppointment] =
 		useState(null);
 	const [isFilterOpen, setIsFilterOpen] = useState(false);
-	const handlePatientDeleted = (patientId) => {
-		const updatedPatients = patients.filter(
-			(patient) => patient.id !== patientId
-		);
-		setPatients(updatedPatients);
-		setSelectedPatientId(null);
-		toast.success("Patient supprimé avec succès !");
-	};
+
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
 	const { patients, totalPages, isLoading, isError, mutate } = usePatients(
@@ -60,6 +54,26 @@ const PatientList = ({}) => {
 		debouncedSearchTerm,
 		searchLetter
 	);
+
+	// Suppression d'un patient dans la liste
+	const handlePatientDeleted = async (patientId) => {
+		try {
+			console.log("Tentative de suppression du patient", patientId);
+
+			// Supprimer le patient de la liste locale
+			const updatedPatients = patients.filter(
+				(patient) => patient.id !== patientId
+			);
+			setPatients(updatedPatients); // Mettre à jour la liste des patients
+
+			// Afficher un toast de succès
+			toast.success("Le patient a été supprimé avec succès !");
+		} catch (error) {
+			// Afficher un toast d'erreur en cas de problème
+			toast.error("Une erreur est survenue lors de la suppression.");
+			console.error("Erreur lors de la suppression :", error);
+		}
+	};
 
 	const handleAddAppointment = (patient) => {
 		setSelectedPatientForAppointment(patient);
@@ -132,6 +146,7 @@ const PatientList = ({}) => {
 
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
+			<ToastContainer />
 			<header className="mb-8">
 				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
 					<Image

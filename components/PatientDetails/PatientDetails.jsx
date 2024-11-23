@@ -10,32 +10,7 @@ import {
 	UserIcon,
 } from "@heroicons/react/24/solid";
 
-// Fonction pour gérer la suppression du patient
-const handleDeletePatient = async () => {
-	if (window.confirm("Êtes-vous sûr de vouloir supprimer ce patient ?")) {
-		try {
-			const response = await fetch(
-				`/api/patients?email=${patient.email}`,
-				{
-					method: "DELETE",
-				}
-			);
-			if (response.ok) {
-				toast.success("Patient supprimé avec succès !");
-				onPatientDeleted();
-				onClose();
-			} else {
-				const result = await response.json();
-				toast.error(`Erreur: ${result.error}`);
-			}
-		} catch (error) {
-			console.error("Erreur lors de la suppression :", error);
-			toast.error("Erreur lors de la suppression du patient.");
-		}
-	}
-};
-
-const PatientDetails = ({ patient, onClose }) => {
+const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 	const [error, setError] = useState(null);
 	const [openSections, setOpenSections] = useState({
@@ -145,6 +120,32 @@ const PatientDetails = ({ patient, onClose }) => {
 			</p>
 		</div>
 	);
+
+	// Gestion de la suppression
+	const handleDeletePatient = async () => {
+		try {
+			const response = await fetch(
+				`/api/patients?email=${patient.email}`,
+				{
+					method: "DELETE",
+				}
+			);
+
+			if (response.ok) {
+				// Appel de la fonction passée en prop pour supprimer depuis la liste
+				onPatientDeleted(patient.id); // Appel de la fonction passée en prop
+				toast.success("Patient supprimé avec succès !");
+				setIsConfirmDeleteOpen(false);
+				onClose(); // Fermer la vue détaillée
+			} else {
+				const result = await response.json();
+				toast.error(`Erreur: ${result.error}`);
+			}
+		} catch (error) {
+			console.error("Erreur lors de la suppression :", error);
+			toast.error("Erreur lors de la suppression du patient.");
+		}
+	};
 
 	return (
 		<div className="p-1 w-full h-screen mx-auto dark:text-gray-300 overflow-y-auto">

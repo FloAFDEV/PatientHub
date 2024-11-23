@@ -55,7 +55,7 @@ model Patient {
   birthDate              DateTime?
   currentTreatment       String?
   digestiveProblems      String?
-  email                  String?
+  email                  String?           @unique
   entDoctorName          String?
   entProblems            String?
   gender                 Gender?

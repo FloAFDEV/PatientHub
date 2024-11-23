@@ -386,11 +386,15 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								/>
 								<Tooltip
 									contentStyle={{
-										backgroundColor: "#f8fafc",
+										backgroundColor: "#bf4cbb",
 										border: "none",
 										borderRadius: "8px",
 										boxShadow:
 											"0 4px 6px rgba(0, 0, 0, 0.1)",
+									}}
+									itemStyle={{
+										color: "#ffffff",
+										fontSize: "14px",
 									}}
 									formatter={(_value, _name, props) => {
 										const patients =
@@ -409,8 +413,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								<Line
 									type="monotone"
 									dataKey="patients"
-									stroke="rgb(138, 43, 226)"
-									strokeWidth={2}
+									stroke="rgb(76, 80, 191)"
+									strokeWidth={3}
 								/>
 							</LineChart>
 						</ResponsiveContainer>
