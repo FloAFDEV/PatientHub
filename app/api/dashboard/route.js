@@ -115,7 +115,6 @@ export async function GET() {
 			});
 
 			cumulativePatients += patientsThisMonth;
-			prevPatients = cumulativePatients;
 		}
 		return NextResponse.json({
 			totalPatients: totalPatientCount,
