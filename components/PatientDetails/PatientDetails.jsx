@@ -1,14 +1,42 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import ConfirmDeletePatientModal from "@/components/DeleteModal/ConfirmDeletePatientModal";
 import Image from "next/image";
+import { toast } from "react-toastify";
 import {
 	ChevronUpIcon,
 	ChevronDownIcon,
 	UserIcon,
 } from "@heroicons/react/24/solid";
 
+// Fonction pour gérer la suppression du patient
+const handleDeletePatient = async () => {
+	if (window.confirm("Êtes-vous sûr de vouloir supprimer ce patient ?")) {
+		try {
+			const response = await fetch(
+				`/api/patients?email=${patient.email}`,
+				{
+					method: "DELETE",
+				}
+			);
+			if (response.ok) {
+				toast.success("Patient supprimé avec succès !");
+				onPatientDeleted();
+				onClose();
+			} else {
+				const result = await response.json();
+				toast.error(`Erreur: ${result.error}`);
+			}
+		} catch (error) {
+			console.error("Erreur lors de la suppression :", error);
+			toast.error("Erreur lors de la suppression du patient.");
+		}
+	}
+};
+
 const PatientDetails = ({ patient, onClose }) => {
+	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 	const [error, setError] = useState(null);
 	const [openSections, setOpenSections] = useState({
 		basicInfo: true,
@@ -149,10 +177,19 @@ const PatientDetails = ({ patient, onClose }) => {
 					>
 						Éditer le patient
 					</button>
-
+					{isConfirmDeleteOpen && (
+						<ConfirmDeletePatientModal
+							onDelete={async () => {
+								await handleDeletePatient();
+								setIsConfirmDeleteOpen(false);
+							}}
+							onCancel={() => setIsConfirmDeleteOpen(false)}
+							patientName={patient.name || "Nom inconnu"}
+						/>
+					)}
 					<button
 						className="mt-4 border border-red-500 hover:bg-red-600 hover:text-white p-1 md:p-1 text-sm md:text-base rounded-lg w-full md:w-auto"
-						onClick={() => alert("Édition du patient")}
+						onClick={() => setIsConfirmDeleteOpen(true)}
 					>
 						Supprimer le patient
 					</button>

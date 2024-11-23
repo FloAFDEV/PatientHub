@@ -5,7 +5,7 @@ import Image from "next/image";
 import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import { usePatients } from "@/hooks/usePatients";
 import { useDebounce } from "@/hooks/useDebounce";
-
+import { toast } from "react-toastify";
 import {
 	IconGenderMale,
 	IconGenderFemale,
@@ -45,7 +45,14 @@ const PatientList = ({}) => {
 	const [selectedPatientForAppointment, setSelectedPatientForAppointment] =
 		useState(null);
 	const [isFilterOpen, setIsFilterOpen] = useState(false);
-
+	const handlePatientDeleted = (patientId) => {
+		const updatedPatients = patients.filter(
+			(patient) => patient.id !== patientId
+		);
+		setPatients(updatedPatients);
+		setSelectedPatientId(null);
+		toast.success("Patient supprimé avec succès !");
+	};
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
 	const { patients, totalPages, isLoading, isError, mutate } = usePatients(
@@ -384,6 +391,7 @@ const PatientList = ({}) => {
 										onClose={() =>
 											setSelectedPatientId(null)
 										}
+										onPatientDeleted={handlePatientDeleted}
 									/>
 								</React.Suspense>
 							)}
