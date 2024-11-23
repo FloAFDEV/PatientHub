@@ -112,7 +112,7 @@ export default function AppointmentsManager() {
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
 			<header className="mb-8">
 				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
-					<img
+					<Image
 						src="/assets/images/Planning.webp"
 						alt="Image agenda"
 						className="w-full h-full object-cover opacity-90 object-center"

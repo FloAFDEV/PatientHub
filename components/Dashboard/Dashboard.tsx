@@ -192,8 +192,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					}
 					title="Nouveaux patients (Ce mois-ci)"
 					value={
-						dashboardData?.newPatientsThisMonth !== undefined
-							? dashboardData.newPatientsThisMonth
+						dashboardData?.newPatientsThisMonth &&
+						Array.isArray(dashboardData.newPatientsThisMonth)
+							? dashboardData.newPatientsThisMonth.length
 							: "Chargement..."
 					}
 				/>

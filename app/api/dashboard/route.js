@@ -17,6 +17,26 @@ export async function GET() {
 		});
 
 		const currentDate = new Date();
+
+		// Calculer le début et la fin du mois en fonction du fuseau horaire local
+		const startOfMonth = new Date(
+			currentDate.getFullYear(),
+			currentDate.getMonth(),
+			1,
+			0,
+			0,
+			0
+		);
+		const endOfMonth = new Date(
+			currentDate.getFullYear(),
+			currentDate.getMonth() + 1,
+			0,
+			23,
+			59,
+			59
+		);
+
+		// Calculer l'âge moyen des patients
 		const ages = patients.map(
 			(p) =>
 				currentDate.getFullYear() - new Date(p.birthDate).getFullYear()
@@ -48,23 +68,25 @@ export async function GET() {
 			? femaleAges.reduce((a, b) => a + b, 0) / femaleAges.length
 			: 0;
 
-		const startOfMonth = new Date(
-			currentDate.getFullYear(),
-			currentDate.getMonth(),
-			1
-		);
-		const newPatientsThisMonth = patients.filter(
-			(p) => new Date(p.createdAt) >= startOfMonth
-		).length;
+		const newPatientsThisMonth = patients.filter((p) => {
+			const patientCreatedAt = new Date(p.createdAt); // Convertir la date de création du patient en objet Date
+			return (
+				patientCreatedAt >= startOfMonth &&
+				patientCreatedAt <= endOfMonth
+			);
+		});
 
+		// Définir startOfYear
 		const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
 		const newPatientsThisYear = patients.filter(
 			(p) => new Date(p.createdAt) >= startOfYear
 		).length;
 
+		// Calculer la croissance mensuelle
 		const monthlyGrowth = [];
 		let cumulativePatients = 0;
 		let prevPatients = 0;
+
 		for (let i = 11; i >= 0; i--) {
 			const monthDate = new Date(
 				currentDate.getFullYear(),
@@ -81,31 +103,20 @@ export async function GET() {
 				monthDate.getMonth() + 1,
 				0
 			);
+
 			const patientsThisMonth = await prisma.patient.count({
 				where: { createdAt: { gte: startOfMonth, lte: endOfMonth } },
 			});
-			let growthText = "";
-			if (prevPatients === 0 && patientsThisMonth > 0) {
-				// Si c'est le premier mois avec des patients
-				growthText = `+${patientsThisMonth} patients`;
-			} else if (prevPatients > 0) {
-				// Si ce n'est pas le premier mois, on calcule le nombre de patients ajoutés par rapport au mois précédent
-				const newPatients = patientsThisMonth - prevPatients;
-				growthText = `+${newPatients} patients`; // Affiche l'ajout par rapport au mois précédent
-			} else {
-				// Cas où il n'y a pas de données pour comparaison
-				growthText = "Pas de comparaison disponible";
-			}
-			// Ajout des informations au tableau monthlyGrowth
+
 			monthlyGrowth.push({
 				month: monthDate.toLocaleString("default", { month: "long" }),
 				patients: cumulativePatients + patientsThisMonth,
 				growthText: `+${patientsThisMonth} patients`,
 			});
+
 			cumulativePatients += patientsThisMonth;
 			prevPatients = cumulativePatients;
 		}
-
 		return NextResponse.json({
 			totalPatients: totalPatientCount,
 			maleCount,
