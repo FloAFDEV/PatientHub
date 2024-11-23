@@ -192,9 +192,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					}
 					title="Nouveaux patients (Ce mois-ci)"
 					value={
-						dashboardData?.newPatientsThisMonth &&
-						Array.isArray(dashboardData.newPatientsThisMonth)
-							? dashboardData.newPatientsThisMonth.length
+						dashboardData?.newPatientsThisMonth !== undefined
+							? dashboardData.newPatientsThisMonth
 							: "Chargement..."
 					}
 				/>
@@ -255,8 +254,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 									interval={0}
 								/>
 								<YAxis
-									domain={["auto", "auto"]}
+									domain={[0, "dataMax + 5"]} // Ajuster l'échelle de l'axe Y pour avoir un petit espace au-dessus du max
 									tick={{ fill: "#A0AEC0", fontSize: 12 }}
+									tickCount={6} // Limite le nombre de ticks affichés
 								/>
 								<Tooltip
 									contentStyle={{
@@ -267,7 +267,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 											"0 4px 6px rgba(0, 0, 0, 0.1)",
 									}}
 								/>
-
 								<Bar dataKey="Age" barSize={70} fill="#4C51BF">
 									<LabelList
 										dataKey="Age"

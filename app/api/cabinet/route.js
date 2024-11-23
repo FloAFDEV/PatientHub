@@ -19,13 +19,9 @@ function formatCabinetData(data) {
 export async function GET(request) {
 	const { searchParams } = new URL(request.url);
 	const id = parseInt(searchParams.get("id") || "");
-	const page = parseInt(searchParams.get("page") || "1"); // Page actuelle (défaut : 1)
-	const patientsPerPage = parseInt(
-		searchParams.get("patientsPerPage") || "15"
-	); // Nombre de patients par page (défaut : 15)
 
 	try {
-		let cabinets;
+		let response;
 		if (id) {
 			const cachedCabinet = cache.get(`cabinet_${id}`);
 			if (cachedCabinet) {
@@ -35,46 +31,29 @@ export async function GET(request) {
 				});
 			}
 
-			// Requête pour un cabinet spécifique avec nombre de patients
+			// Requête pour un cabinet spécifique avec nombre de patients vivants
 			const cabinet = await prisma.cabinet.findUnique({
 				where: { id },
 				include: {
 					osteopath: true,
-					patients: true, // Inclut les patients
+					patients: {
+						where: {
+							isDeceased: false, // Filtrer pour n'inclure que les patients vivants
+						},
+					},
 				},
 			});
 
 			if (cabinet) {
-				// Ajout du nombre de patients au cabinet
+				// Ajouter le nombre de patients vivants
 				const cabinetWithPatientCount = {
 					...cabinet,
 					patientCount: cabinet.patients.length,
 				};
 
-				// Pagination des patients
-				const startIndex = (page - 1) * patientsPerPage;
-				const endIndex = startIndex + patientsPerPage;
-				const patientsOnPage = cabinet.patients.slice(
-					startIndex,
-					endIndex
-				);
-
-				// Mise en cache avec la pagination
-				cache.put(
-					`cabinet_${id}`,
-					{ ...cabinetWithPatientCount, patients: patientsOnPage },
-					60000
-				);
-				return new Response(
-					JSON.stringify({
-						...cabinetWithPatientCount,
-						patients: patientsOnPage,
-					}),
-					{
-						status: 200,
-						headers: jsonHeaders,
-					}
-				);
+				// Mise en cache des résultats
+				cache.put(`cabinet_${id}`, cabinetWithPatientCount, 60000);
+				response = cabinetWithPatientCount;
 			} else {
 				return new Response(
 					JSON.stringify({ error: "Cabinet not found" }),
@@ -83,39 +62,40 @@ export async function GET(request) {
 			}
 		} else {
 			const cachedCabinets = cache.get("all_cabinets");
-			if (cachedCabinets)
+			if (cachedCabinets) {
 				return new Response(JSON.stringify(cachedCabinets), {
 					status: 200,
 					headers: jsonHeaders,
 				});
+			}
 
-			// Requête pour tous les cabinets
-			cabinets = await prisma.cabinet.findMany({
+			// Requête pour tous les cabinets avec le nombre de patients vivants
+			const cabinets = await prisma.cabinet.findMany({
 				include: {
 					osteopath: true,
-					patients: true, // Inclut les patients
+					patients: {
+						where: {
+							isDeceased: false, // Filtrer pour n'inclure que les patients vivants
+						},
+					},
 				},
 			});
 
-			// Ajouter le nombre de patients pour chaque cabinet
-			cabinets = cabinets.map((cabinet) => ({
+			// Ajouter le nombre de patients vivants pour chaque cabinet
+			const cabinetsWithPatientCount = cabinets.map((cabinet) => ({
 				...cabinet,
 				patientCount: cabinet.patients.length,
 			}));
 
-			// Application de la pagination à tous les patients
-			const startIndex = (page - 1) * patientsPerPage;
-			const endIndex = startIndex + patientsPerPage;
-			const paginatedCabinets = cabinets.map((cabinet) => ({
-				...cabinet,
-				patients: cabinet.patients.slice(startIndex, endIndex), // Patients pour la page actuelle
-			}));
-			cache.put("all_cabinets", paginatedCabinets, 60000);
-			return new Response(JSON.stringify(paginatedCabinets), {
-				status: 200,
-				headers: jsonHeaders,
-			});
+			// Mise en cache des résultats
+			cache.put("all_cabinets", cabinetsWithPatientCount, 60000);
+			response = cabinetsWithPatientCount;
 		}
+
+		return new Response(JSON.stringify(response), {
+			status: 200,
+			headers: jsonHeaders,
+		});
 	} catch (error) {
 		console.error("Error retrieving cabinets:", error);
 		return new Response(

@@ -5,64 +5,86 @@ const prisma = new PrismaClient();
 
 export async function GET() {
 	try {
-		// 1. Récupérer tous les patients
+		const currentDate = new Date();
+
+		// Récupérer tous les patients (vivants et décédés)
 		const patients = await prisma.patient.findMany({
-			where: {
-				id: {
-					gte: 1, // Filtrer pour les IDs valides
-				},
+			select: {
+				id: true,
+				gender: true,
+				birthDate: true,
+				createdAt: true,
+				isDeceased: true,
 			},
 		});
 
+		// Calcul du nombre total de patients (vivants et décédés)
 		const totalPatients = patients.length;
 
-		// 2. Compter hommes et femmes dans les résultats
-		const maleCount = patients.filter((p) => p.gender === "Homme").length;
-		const femaleCount = patients.filter((p) => p.gender === "Femme").length;
-
-		const currentDate = new Date();
-
-		// 3. Calculer l'âge moyen des patients
-		const ages = patients.map(
-			(p) =>
-				currentDate.getFullYear() - new Date(p.birthDate).getFullYear()
+		// Filtrer les patients vivants et décédés
+		const livingPatients = patients.filter(
+			(patient) => !patient.isDeceased
+		);
+		const deceasedPatients = patients.filter(
+			(patient) => patient.isDeceased
 		);
 
-		const averageAge = ages.length
-			? ages.reduce((a, b) => a + b, 0) / ages.length
-			: 0;
+		// Calcul des hommes, femmes et non spécifiés (par genre)
+		const maleCount = patients.filter((p) => p.gender === "Homme").length;
+		const femaleCount = patients.filter((p) => p.gender === "Femme").length;
+		const unspecifiedGenderCount = patients.filter((p) => !p.gender).length;
 
-		// 4. Calculer l'âge moyen des hommes et des femmes
+		// Calcul de l'âge moyen (arrondi à 0.5 près)
+		const ages = patients
+			.filter((p) => p.birthDate)
+			.map(
+				(p) =>
+					currentDate.getFullYear() -
+					new Date(p.birthDate).getFullYear()
+			);
+
+		const averageAge =
+			ages.length > 0
+				? roundToNearestHalf(
+						ages.reduce((a, b) => a + b, 0) / ages.length
+				  )
+				: 0;
+
+		// Calcul des âges moyens pour hommes et femmes (arrondi à 0.5 près)
 		const maleAges = patients
-			.filter((p) => p.gender === "Homme")
+			.filter((p) => p.gender === "Homme" && p.birthDate)
 			.map(
 				(p) =>
 					currentDate.getFullYear() -
 					new Date(p.birthDate).getFullYear()
 			);
 		const femaleAges = patients
-			.filter((p) => p.gender === "Femme")
+			.filter((p) => p.gender === "Femme" && p.birthDate)
 			.map(
 				(p) =>
 					currentDate.getFullYear() -
 					new Date(p.birthDate).getFullYear()
 			);
 
-		const averageAgeMale = maleAges.length
-			? maleAges.reduce((a, b) => a + b, 0) / maleAges.length
-			: 0;
-		const averageAgeFemale = femaleAges.length
-			? femaleAges.reduce((a, b) => a + b, 0) / femaleAges.length
-			: 0;
+		const averageAgeMale =
+			maleAges.length > 0
+				? roundToNearestHalf(
+						maleAges.reduce((a, b) => a + b, 0) / maleAges.length
+				  )
+				: 0;
+		const averageAgeFemale =
+			femaleAges.length > 0
+				? roundToNearestHalf(
+						femaleAges.reduce((a, b) => a + b, 0) /
+							femaleAges.length
+				  )
+				: 0;
 
-		// 5. Calculer les patients créés ce mois-ci
+		// Patients créés ce mois-ci
 		const startOfMonth = new Date(
 			currentDate.getFullYear(),
 			currentDate.getMonth(),
-			1,
-			0,
-			0,
-			0
+			1
 		);
 		const endOfMonth = new Date(
 			currentDate.getFullYear(),
@@ -74,23 +96,21 @@ export async function GET() {
 		);
 
 		const newPatientsThisMonth = patients.filter((p) => {
-			const patientCreatedAt = new Date(p.createdAt);
-			return (
-				patientCreatedAt >= startOfMonth &&
-				patientCreatedAt <= endOfMonth
-			);
-		});
+			const createdAt = new Date(p.createdAt);
+			return createdAt >= startOfMonth && createdAt <= endOfMonth;
+		}).length;
 
-		// 6. Nombre de nouveaux patients cette année
+		// Patients créés cette année
 		const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
 		const newPatientsThisYear = patients.filter(
 			(p) => new Date(p.createdAt) >= startOfYear
 		).length;
 
-		// 7. Croissance mensuelle
+		// Croissance mensuelle sur les 12 derniers mois
 		const monthlyGrowth = [];
 		let cumulativePatients = 0;
 
+		// Initialiser les 12 mois précédents et calculer la croissance mensuelle
 		for (let i = 11; i >= 0; i--) {
 			const monthDate = new Date(
 				currentDate.getFullYear(),
@@ -105,7 +125,10 @@ export async function GET() {
 			const endOfMonth = new Date(
 				monthDate.getFullYear(),
 				monthDate.getMonth() + 1,
-				0
+				0,
+				23,
+				59,
+				59
 			);
 
 			const patientsThisMonth = patients.filter((p) => {
@@ -113,31 +136,37 @@ export async function GET() {
 				return createdAt >= startOfMonth && createdAt <= endOfMonth;
 			}).length;
 
+			cumulativePatients += patientsThisMonth;
+
 			monthlyGrowth.push({
 				month: monthDate.toLocaleString("default", { month: "long" }),
-				patients: cumulativePatients + patientsThisMonth,
+				patients: cumulativePatients,
 				growthText: `+${patientsThisMonth} patients`,
 			});
-
-			cumulativePatients += patientsThisMonth;
 		}
 
+		// Retourner les résultats sous forme de JSON
 		return NextResponse.json({
 			totalPatients,
+			livingPatientsCount: livingPatients.length,
+			deceasedPatientsCount: deceasedPatients.length,
 			maleCount,
 			femaleCount,
-			averageAge: Math.round(averageAge * 10) / 10,
-			averageAgeMale: Math.round(averageAgeMale * 10) / 10,
-			averageAgeFemale: Math.round(averageAgeFemale * 10) / 10,
+			unspecifiedGenderCount,
+			averageAge,
+			averageAgeMale,
+			averageAgeFemale,
 			newPatientsThisMonth,
 			newPatientsThisYear,
 			monthlyGrowth,
 		});
 	} catch (error) {
-		console.error(
-			"Erreur lors de la récupération des données du tableau de bord:",
-			error
-		);
+		console.error("Erreur lors de la récupération des données :", error);
 		return NextResponse.json({ error: error.message }, { status: 500 });
 	}
+}
+
+// Fonction pour arrondir à 0.5 près
+function roundToNearestHalf(value) {
+	return Math.round(value * 2) / 2;
 }
