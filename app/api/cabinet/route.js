@@ -22,6 +22,7 @@ export async function GET(request) {
 
 	try {
 		let response;
+
 		if (id) {
 			const cachedCabinet = cache.get(`cabinet_${id}`);
 			if (cachedCabinet) {
@@ -31,21 +32,17 @@ export async function GET(request) {
 				});
 			}
 
-			// Requête pour un cabinet spécifique avec nombre de patients vivants
+			// Requête pour un cabinet spécifique avec tous les patients
 			const cabinet = await prisma.cabinet.findUnique({
 				where: { id },
 				include: {
 					osteopath: true,
-					patients: {
-						where: {
-							isDeceased: false, // Filtrer pour n'inclure que les patients vivants
-						},
-					},
+					patients: true, // Inclure tous les patients
 				},
 			});
 
 			if (cabinet) {
-				// Ajouter le nombre de patients vivants
+				// Ajouter le nombre total de patients
 				const cabinetWithPatientCount = {
 					...cabinet,
 					patientCount: cabinet.patients.length,
@@ -69,19 +66,15 @@ export async function GET(request) {
 				});
 			}
 
-			// Requête pour tous les cabinets avec le nombre de patients vivants
+			// Requête pour tous les cabinets avec tous les patients
 			const cabinets = await prisma.cabinet.findMany({
 				include: {
 					osteopath: true,
-					patients: {
-						where: {
-							isDeceased: false, // Filtrer pour n'inclure que les patients vivants
-						},
-					},
+					patients: true, // Inclure tous les patients
 				},
 			});
 
-			// Ajouter le nombre de patients vivants pour chaque cabinet
+			// Ajouter le nombre total de patients pour chaque cabinet
 			const cabinetsWithPatientCount = cabinets.map((cabinet) => ({
 				...cabinet,
 				patientCount: cabinet.patients.length,

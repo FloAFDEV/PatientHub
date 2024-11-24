@@ -7,7 +7,7 @@ export async function GET() {
 	try {
 		const currentDate = new Date();
 
-		// Récupérer tous les patients (vivants et décédés)
+		// Récupérer tous les patients
 		const patients = await prisma.patient.findMany({
 			select: {
 				id: true,
@@ -16,25 +16,21 @@ export async function GET() {
 				createdAt: true,
 				isDeceased: true,
 			},
+			take: 1000, // ou un nombre supérieur à votre nombre total de patients
 		});
 
-		// Calcul du nombre total de patients (vivants et décédés)
+		// Calcul du nombre total de patients
 		const totalPatients = patients.length;
 
-		// Filtrer les patients vivants et décédés
-		const livingPatients = patients.filter(
-			(patient) => !patient.isDeceased
-		);
-		const deceasedPatients = patients.filter(
-			(patient) => patient.isDeceased
-		);
+		const deceasedPatients = patients.filter((p) => p.isDeceased).length;
+		console.log("Nombre de patients décédés :", deceasedPatients);
 
-		// Calcul des hommes, femmes et non spécifiés (par genre)
+		// Calcul des hommes, femmes et non spécifiés
 		const maleCount = patients.filter((p) => p.gender === "Homme").length;
 		const femaleCount = patients.filter((p) => p.gender === "Femme").length;
 		const unspecifiedGenderCount = patients.filter((p) => !p.gender).length;
 
-		// Calcul de l'âge moyen (arrondi à 0.5 près)
+		// Calcul de l'âge moyen (en excluant les patients sans date de naissance)
 		const ages = patients
 			.filter((p) => p.birthDate)
 			.map(
@@ -42,15 +38,14 @@ export async function GET() {
 					currentDate.getFullYear() -
 					new Date(p.birthDate).getFullYear()
 			);
-
 		const averageAge =
 			ages.length > 0
-				? roundToNearestHalf(
-						ages.reduce((a, b) => a + b, 0) / ages.length
-				  )
+				? Math.round(
+						(ages.reduce((a, b) => a + b, 0) / ages.length) * 10
+				  ) / 10
 				: 0;
 
-		// Calcul des âges moyens pour hommes et femmes (arrondi à 0.5 près)
+		// Calcul des âges moyens pour hommes et femmes
 		const maleAges = patients
 			.filter((p) => p.gender === "Homme" && p.birthDate)
 			.map(
@@ -68,16 +63,19 @@ export async function GET() {
 
 		const averageAgeMale =
 			maleAges.length > 0
-				? roundToNearestHalf(
-						maleAges.reduce((a, b) => a + b, 0) / maleAges.length
-				  )
+				? Math.round(
+						(maleAges.reduce((a, b) => a + b, 0) /
+							maleAges.length) *
+							10
+				  ) / 10
 				: 0;
 		const averageAgeFemale =
 			femaleAges.length > 0
-				? roundToNearestHalf(
-						femaleAges.reduce((a, b) => a + b, 0) /
-							femaleAges.length
-				  )
+				? Math.round(
+						(femaleAges.reduce((a, b) => a + b, 0) /
+							femaleAges.length) *
+							10
+				  ) / 10
 				: 0;
 
 		// Patients créés ce mois-ci
@@ -94,7 +92,6 @@ export async function GET() {
 			59,
 			59
 		);
-
 		const newPatientsThisMonth = patients.filter((p) => {
 			const createdAt = new Date(p.createdAt);
 			return createdAt >= startOfMonth && createdAt <= endOfMonth;
@@ -110,7 +107,6 @@ export async function GET() {
 		const monthlyGrowth = [];
 		let cumulativePatients = 0;
 
-		// Initialiser les 12 mois précédents et calculer la croissance mensuelle
 		for (let i = 11; i >= 0; i--) {
 			const monthDate = new Date(
 				currentDate.getFullYear(),
@@ -139,7 +135,7 @@ export async function GET() {
 			cumulativePatients += patientsThisMonth;
 
 			monthlyGrowth.push({
-				month: monthDate.toLocaleString("default", { month: "long" }),
+				month: monthDate.toLocaleString("fr-FR", { month: "long" }),
 				patients: cumulativePatients,
 				growthText: `+${patientsThisMonth} patients`,
 			});
@@ -147,9 +143,8 @@ export async function GET() {
 
 		// Retourner les résultats sous forme de JSON
 		return NextResponse.json({
+			patients,
 			totalPatients,
-			livingPatientsCount: livingPatients.length,
-			deceasedPatientsCount: deceasedPatients.length,
 			maleCount,
 			femaleCount,
 			unspecifiedGenderCount,
@@ -164,9 +159,4 @@ export async function GET() {
 		console.error("Erreur lors de la récupération des données :", error);
 		return NextResponse.json({ error: error.message }, { status: 500 });
 	}
-}
-
-// Fonction pour arrondir à 0.5 près
-function roundToNearestHalf(value) {
-	return Math.round(value * 2) / 2;
 }

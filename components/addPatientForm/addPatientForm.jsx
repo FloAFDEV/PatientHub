@@ -85,6 +85,7 @@ const AddPatientForm = ({}) => {
 			osteopathId: data.osteopathId,
 			cabinetId: cabinetId,
 		};
+		console.log("Données du patient à envoyer :", finalData);
 		try {
 			const response = await fetch("/api/patients", {
 				method: "POST",

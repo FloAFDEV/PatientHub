@@ -140,7 +140,6 @@ export async function GET(request) {
 
 export async function POST(request) {
 	const patientData = await request.json();
-
 	try {
 		// Formater les données du patient
 		const formattedPatientData = formatPatientData(patientData);
@@ -169,6 +168,11 @@ export async function POST(request) {
 				},
 			};
 		}
+		if (patientData.isDeceased === "true") {
+			formattedPatientData.isDeceased = true;
+		} else if (patientData.isDeceased === "false") {
+			formattedPatientData.isDeceased = false;
+		}
 		// Traitement de `hasChildren` : Conversion en booléen si nécessaire
 		if (patientData.hasChildren === "true") {
 			formattedPatientData.hasChildren = true;
@@ -184,6 +188,10 @@ export async function POST(request) {
 				(age) => parseInt(age, 10)
 			);
 		}
+		console.log(
+			"isDeceased value before creation:",
+			formattedPatientData.isDeceased
+		);
 		// Création d'un nouveau patient dans la base de données avec Prisma
 		const newPatient = await prisma.patient.create({
 			data: formattedPatientData,
