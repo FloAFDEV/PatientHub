@@ -16,14 +16,13 @@ export async function GET() {
 				createdAt: true,
 				isDeceased: true,
 			},
-			take: 1000, // ou un nombre supérieur à votre nombre total de patients
+			take: 5000,
 		});
 
 		// Calcul du nombre total de patients
 		const totalPatients = patients.length;
 
 		const deceasedPatients = patients.filter((p) => p.isDeceased).length;
-		console.log("Nombre de patients décédés :", deceasedPatients);
 
 		// Calcul des hommes, femmes et non spécifiés
 		const maleCount = patients.filter((p) => p.gender === "Homme").length;

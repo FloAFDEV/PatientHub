@@ -158,7 +158,11 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 			case "dashboard":
 				return <MemoizedDashboard user={user} />;
 			case "patients":
-				return <MemoizedPatientList />;
+				return (
+					<MemoizedPatientList
+						onAddPatientClick={() => handleTabChange("addPatient")}
+					/>
+				);
 			case "Cabinet":
 				return <MemoizedCabinetContent />;
 			case "appointments":

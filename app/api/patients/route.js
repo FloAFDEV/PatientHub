@@ -48,7 +48,7 @@ function formatPatientData(data) {
 		entProblems: data.entProblems || null,
 		entDoctorName: data.entDoctorName || null,
 		hdlm: data.hdlm || null,
-		isDeceased: data.isDeceased === "true",
+		isDeceased: data.isDeceased === true || data.isDeceased === "true",
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
@@ -167,11 +167,6 @@ export async function POST(request) {
 					id: patientData.cabinetId,
 				},
 			};
-		}
-		if (patientData.isDeceased === "true") {
-			formattedPatientData.isDeceased = true;
-		} else if (patientData.isDeceased === "false") {
-			formattedPatientData.isDeceased = false;
 		}
 		// Traitement de `hasChildren` : Conversion en booléen si nécessaire
 		if (patientData.hasChildren === "true") {

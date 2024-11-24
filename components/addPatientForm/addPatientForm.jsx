@@ -85,7 +85,6 @@ const AddPatientForm = ({}) => {
 			osteopathId: data.osteopathId,
 			cabinetId: cabinetId,
 		};
-		console.log("Données du patient à envoyer :", finalData);
 		try {
 			const response = await fetch("/api/patients", {
 				method: "POST",
@@ -461,9 +460,6 @@ const AddPatientForm = ({}) => {
 								control={control}
 								label="Activité physique"
 								placeholder="Indiquez votre activité physique"
-								rules={{
-									required: "L'activité physique est requise",
-								}}
 								error={errors.activityLevel?.message}
 							/>
 							<TextAreaField

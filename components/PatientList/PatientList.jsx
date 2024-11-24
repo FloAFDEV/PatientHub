@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import { usePatients } from "@/hooks/usePatients";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ToastContainer, toast } from "react-toastify";
@@ -36,11 +35,10 @@ const PatientDetails = React.lazy(() =>
 	import("@/components/PatientDetails/PatientDetails")
 );
 
-const PatientList = ({}) => {
+const PatientList = ({ onAddPatientClick }) => {
 	const [selectedPatientId, setSelectedPatientId] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
-	const [showAddFormPatient, setShowAddFormPatient] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
 	const [selectedPatientForAppointment, setSelectedPatientForAppointment] =
@@ -144,6 +142,15 @@ const PatientList = ({}) => {
 		);
 	}
 
+	const filteredPatients = (patients || []).filter((patient) =>
+		patient.name.toUpperCase().startsWith(searchLetter.toUpperCase())
+	);
+
+	// Ensuite, trie les patients filtrés par nom
+	const sortedPatients = filteredPatients.sort((a, b) =>
+		a.name.localeCompare(b.name, "fr", { sensitivity: "base" })
+	);
+
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
 			<ToastContainer />
@@ -246,7 +253,7 @@ const PatientList = ({}) => {
 						</Sheet>
 
 						<Button
-							onClick={() => setShowAddFormPatient(true)}
+							onClick={onAddPatientClick}
 							className="flex-1 sm:flex-none h-9 dark:border-gray-400 dark:border-b-2 hover:bg-blue-400"
 						>
 							<IconPlus size={18} className="sm:mr-2 " />
@@ -285,7 +292,7 @@ const PatientList = ({}) => {
 
 			{/* Liste des patients */}
 			<div className="space-y-2 sm:space-y-4">
-				{!patients?.length ? (
+				{!sortedPatients.length ? (
 					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
 						<IconSearch className="mx-auto h-12 w-12 text-gray-400" />
 						<p className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
@@ -297,7 +304,7 @@ const PatientList = ({}) => {
 						</p>
 					</div>
 				) : (
-					patients.map((patient) => (
+					sortedPatients.map((patient) => (
 						<div
 							key={patient.id}
 							className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
@@ -445,15 +452,6 @@ const PatientList = ({}) => {
 				</div>
 			)}
 			{/* Modales */}
-			{showAddFormPatient && (
-				<AddPatientForm
-					onClose={() => setShowAddFormPatient(false)}
-					onAddPatient={() => {
-						mutate();
-						setShowAddFormPatient(false);
-					}}
-				/>
-			)}
 			{showAppointmentDialog && selectedPatientForAppointment && (
 				<AppointmentDialog
 					open={showAppointmentDialog}
