@@ -172,7 +172,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 			default:
 				return null;
 		}
-	}, [activeTab, user]);
+	}, [activeTab, user, handleTabChange]);
 
 	if (!isReady) {
 		return <p className="text-center text-gray-500">Chargement...</p>;

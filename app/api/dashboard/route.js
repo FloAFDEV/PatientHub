@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 export async function GET() {
 	try {
 		const currentDate = new Date();
-
 		// Récupérer tous les patients
 		const patients = await prisma.patient.findMany({
 			select: {
@@ -18,17 +17,12 @@ export async function GET() {
 			},
 			take: 5000,
 		});
-
 		// Calcul du nombre total de patients
 		const totalPatients = patients.length;
-
-		const deceasedPatients = patients.filter((p) => p.isDeceased).length;
-
 		// Calcul des hommes, femmes et non spécifiés
 		const maleCount = patients.filter((p) => p.gender === "Homme").length;
 		const femaleCount = patients.filter((p) => p.gender === "Femme").length;
 		const unspecifiedGenderCount = patients.filter((p) => !p.gender).length;
-
 		// Calcul de l'âge moyen (en excluant les patients sans date de naissance)
 		const ages = patients
 			.filter((p) => p.birthDate)
@@ -43,7 +37,6 @@ export async function GET() {
 						(ages.reduce((a, b) => a + b, 0) / ages.length) * 10
 				  ) / 10
 				: 0;
-
 		// Calcul des âges moyens pour hommes et femmes
 		const maleAges = patients
 			.filter((p) => p.gender === "Homme" && p.birthDate)
@@ -59,7 +52,6 @@ export async function GET() {
 					currentDate.getFullYear() -
 					new Date(p.birthDate).getFullYear()
 			);
-
 		const averageAgeMale =
 			maleAges.length > 0
 				? Math.round(
@@ -76,7 +68,6 @@ export async function GET() {
 							10
 				  ) / 10
 				: 0;
-
 		// Patients créés ce mois-ci
 		const startOfMonth = new Date(
 			currentDate.getFullYear(),
@@ -95,17 +86,14 @@ export async function GET() {
 			const createdAt = new Date(p.createdAt);
 			return createdAt >= startOfMonth && createdAt <= endOfMonth;
 		}).length;
-
 		// Patients créés cette année
 		const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
 		const newPatientsThisYear = patients.filter(
 			(p) => new Date(p.createdAt) >= startOfYear
 		).length;
-
 		// Croissance mensuelle sur les 12 derniers mois
 		const monthlyGrowth = [];
 		let cumulativePatients = 0;
-
 		for (let i = 11; i >= 0; i--) {
 			const monthDate = new Date(
 				currentDate.getFullYear(),
@@ -125,21 +113,17 @@ export async function GET() {
 				59,
 				59
 			);
-
 			const patientsThisMonth = patients.filter((p) => {
 				const createdAt = new Date(p.createdAt);
 				return createdAt >= startOfMonth && createdAt <= endOfMonth;
 			}).length;
-
 			cumulativePatients += patientsThisMonth;
-
 			monthlyGrowth.push({
 				month: monthDate.toLocaleString("fr-FR", { month: "long" }),
 				patients: cumulativePatients,
 				growthText: `+${patientsThisMonth} patients`,
 			});
 		}
-
 		// Retourner les résultats sous forme de JSON
 		return NextResponse.json({
 			patients,
