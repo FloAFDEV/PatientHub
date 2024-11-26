@@ -177,7 +177,7 @@ const AddPatientForm = ({}) => {
 							Ajouter un Patient
 						</h1>
 						<p className="mt-2 text-xl drop-shadow-sm hidden sm:block">
-							Gestion des patients et des rendez-vous
+							Simplifiez la gestion de vos patients
 						</p>
 					</div>
 				</div>

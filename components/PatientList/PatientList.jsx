@@ -179,7 +179,8 @@ const PatientList = ({ onAddPatientClick }) => {
 							Liste de vos patients
 						</h1>
 						<p className="hidden sm:block text-base sm:text-lg md:text-xl drop-shadow-sm max-w-2xl">
-							Gérez vos patients et leurs rendez-vous
+							Consultez et gérez la liste de vos patients en toute
+							simplicité
 						</p>
 					</div>
 				</div>

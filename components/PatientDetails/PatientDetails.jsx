@@ -150,50 +150,56 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 	return (
 		<div className="p-1 w-full h-screen mx-auto dark:text-gray-300 overflow-y-auto">
 			{/* En-tête d'informations du patient */}
-			<div className="flex flex-col md:flex-row items-center md:items-start mb-6 space-y-4 md:space-y-0 md:space-x-6">
+			<div className="flex items-center space-x-4 md:space-x-6 mb-6">
+				{/* Image à gauche */}
 				<Image
 					src={
 						patient.avatarUrl ||
 						"/assets/images/default-avatar.webp"
 					}
 					alt={`Avatar de ${patient.name || "inconnu"}`}
-					// Ajoutez une classe conditionnelle en fonction du genre
 					className={`w-24 h-24 sm:w-32 sm:h-32 rounded-lg border-4 shadow-md ${
 						patient.gender === "Homme"
-							? "border-blue-500" // Bordure bleue pour un homme
+							? "border-blue-500"
 							: patient.gender === "Femme"
-							? "border-pink-500" // Bordure rose pour une femme
-							: "border-gray-300" // Bordure grise par défaut
+							? "border-pink-500"
+							: "border-gray-300"
 					}`}
 					width={128}
 					height={128}
 				/>
-				<div className="flex flex-col items-center md:items-start">
-					<h1 className="text-2xl md:text-3xl font-bold text-center md:text-left">
+				{/* Conteneur texte et boutons */}
+				<div className="flex flex-col">
+					<h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center md:text-left">
 						{patient.name || "Nom inconnu"}
 					</h1>
-					<button
-						className="mt-2 border border-green-500 hover:bg-green-600 hover:text-white p-1 md:p-1 text-sm md:text-base rounded-lg w-full md:w-auto"
-						onClick={() => alert("Édition du patient")}
-					>
-						Éditer le patient
-					</button>
-					{isConfirmDeleteOpen && (
-						<ConfirmDeletePatientModal
-							onDelete={async () => {
-								await handleDeletePatient();
-								setIsConfirmDeleteOpen(false);
-							}}
-							onCancel={() => setIsConfirmDeleteOpen(false)}
-							patientName={patient.name || "Nom inconnu"}
-						/>
-					)}
-					<button
-						className="mt-4 border border-red-500 hover:bg-red-600 hover:text-white p-1 md:p-1 text-sm md:text-base rounded-lg w-full md:w-auto"
-						onClick={() => setIsConfirmDeleteOpen(true)}
-					>
-						Supprimer le patient
-					</button>
+					<div className="mt-2 flex flex-col space-y-2">
+						{/* Bouton Éditer */}
+						<button
+							className="border border-green-500 hover:bg-green-600 hover:text-white p-2 text-sm md:text-base rounded-lg"
+							onClick={() => alert("Édition du patient")}
+						>
+							Éditer le patient
+						</button>
+						{/* Modal de confirmation pour supprimer */}
+						{isConfirmDeleteOpen && (
+							<ConfirmDeletePatientModal
+								onDelete={async () => {
+									await handleDeletePatient();
+									setIsConfirmDeleteOpen(false);
+								}}
+								onCancel={() => setIsConfirmDeleteOpen(false)}
+								patientName={patient.name || "Nom inconnu"}
+							/>
+						)}
+						{/* Bouton Supprimer */}
+						<button
+							className="border border-red-500 hover:bg-red-600 hover:text-white p-2 text-sm md:text-base rounded-lg"
+							onClick={() => setIsConfirmDeleteOpen(true)}
+						>
+							Supprimer le patient
+						</button>
+					</div>
 				</div>
 			</div>
 
