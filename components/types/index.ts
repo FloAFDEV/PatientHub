@@ -26,3 +26,12 @@ export interface LocalUser {
 		last_name?: string; // Nom de l'utilisateur (optionnel)
 	};
 }
+
+export interface Appointment {
+	id: number;
+	patientId?: number;
+	date: string;
+	time: string;
+	reason: string;
+	patientName: string;
+}

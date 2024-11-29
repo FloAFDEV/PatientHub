@@ -173,7 +173,7 @@ const AddPatientForm = ({}) => {
 							className="object-contain shadow-xl rounded-xl mb-4"
 							priority
 						/>
-						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">
+						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm ">
 							Ajouter un Patient
 						</h1>
 						<p className="mt-2 text-xl drop-shadow-sm hidden sm:block">
@@ -189,7 +189,7 @@ const AddPatientForm = ({}) => {
 						Ajouter un Patient
 					</h2>
 					<div className="mb-8">
-						<h3 className="text-xl font-semibold mb-4 text-center">
+						<h3 className="text-xl font-semibold mb-4 text-start">
 							Informations Personnelles
 						</h3>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
@@ -390,7 +390,7 @@ const AddPatientForm = ({}) => {
 						</div>
 					</div>
 					<div className="mb-8">
-						<h3 className="text-xl font-semibold mb-4 text-center">
+						<h3 className="text-xl font-semibold mb-4 text-start">
 							Informations médicales
 						</h3>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
