@@ -77,7 +77,7 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 			</Link>
 
 			{/* Footer */}
-			<div className="w-full mt-auto">
+			<div className="w-screen mt-auto">
 				<Footer />
 			</div>
 		</div>

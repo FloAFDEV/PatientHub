@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -43,62 +44,53 @@ model Cabinet {
 }
 
 model Patient {
-  id                     Int               @id @default(autoincrement())
-  userId                 String?
-  name                   String
-  osteopathId            Int
-  cabinetId              Int?
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @updatedAt
-  address                String?
-  avatarUrl              String?
-  birthDate              DateTime?
-  currentTreatment       String?
-  digestiveProblems      String?
-  email                  String?           @unique
-  entDoctorName          String?
-  entProblems            String?
-  gender                 Gender?
-  generalPractitioner    String?
-  hasVisionCorrection    Boolean           @default(false)
-  hdlm                   String?
-  isDeceased             Boolean           @default(false)
-  isSmoker               Boolean           @default(false)
-  occupation             String?
-  ophtalmologistName     String?
-  phone                  String?
-  rheumatologicalHistory String?
-  surgicalHistory        String?
-  traumaHistory          String?
-  maritalStatus          MaritalStatus?
-  contraception          Contraception?
-  handedness             Handedness?
-  childrenAges           Int[]
-  hasChildren            String?
-  physicalActivity       String?
-  digestiveDoctorName    String?
-  appointments           Appointment[]
-  consultations          Consultation[]
-  medicalDocuments       MedicalDocument[]
-  cabinet                Cabinet?          @relation(fields: [cabinetId], references: [id])
-  osteopath              Osteopath         @relation(fields: [osteopathId], references: [id])
+  id               Int               @id @default(autoincrement())
+  userId           String?
+  firstName        String
+  lastName         String
+  osteopathId      Int
+  cabinetId        Int?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  address          String?
+  avatarUrl        String?
+  birthDate        DateTime?
+  height           Float?
+  weight           Float?
+  email            String?           @unique
+  phone            String?
+  maritalStatus    MaritalStatus?
+  hasChildren      Boolean           @default(false)
+  childrenAges     Int[]
+  physicalActivity String?
+  appointments     Appointment[]
+  consultations    Consultation[]
+  invoices         Invoice[]
+  medicalDocuments MedicalDocument[]
+  cabinet          Cabinet?          @relation(fields: [cabinetId], references: [id])
+  osteopath        Osteopath         @relation(fields: [osteopathId], references: [id])
 }
 
 model Consultation {
-  id        Int      @id @default(autoincrement())
-  date      DateTime
-  notes     String
-  patientId Int
-  patient   Patient  @relation(fields: [patientId], references: [id])
+  id                 Int                @id @default(autoincrement())
+  date               DateTime
+  notes              String
+  patientId          Int
+  patient            Patient            @relation(fields: [patientId], references: [id])
+  invoice            Invoice?
+  treatmentHistory   TreatmentHistory[]
+  isCancelled        Boolean            @default(false)
+  cancellationReason String?
 }
 
 model Appointment {
-  id        Int               @id @default(autoincrement())
-  date      DateTime
-  reason    String
-  patientId Int
-  status    AppointmentStatus
-  patient   Patient           @relation(fields: [patientId], references: [id])
+  id               Int               @id @default(autoincrement())
+  date             DateTime
+  reason           String
+  patientId        Int
+  status           AppointmentStatus
+  patient          Patient           @relation(fields: [patientId], references: [id])
+  notificationSent Boolean           @default(false)
 }
 
 model MedicalDocument {
@@ -109,6 +101,25 @@ model MedicalDocument {
   patient     Patient @relation(fields: [patientId], references: [id])
 }
 
+model Invoice {
+  id             Int           @id @default(autoincrement())
+  date           DateTime      @default(now())
+  amount         Float
+  paymentStatus  PaymentStatus @default(PENDING)
+  consultation   Consultation  @relation(fields: [consultationId], references: [id])
+  consultationId Int           @unique
+  patientId      Int
+  patient        Patient       @relation(fields: [patientId], references: [id])
+}
+
+model TreatmentHistory {
+  id             Int          @id @default(autoincrement())
+  date           DateTime     @default(now())
+  description    String
+  consultationId Int
+  consultation   Consultation @relation(fields: [consultationId], references: [id])
+}
+
 enum Role {
   ADMIN
   OSTEOPATH
@@ -117,6 +128,7 @@ enum Role {
 enum Gender {
   Homme
   Femme
+  Other
 }
 
 enum MaritalStatus {
@@ -125,6 +137,8 @@ enum MaritalStatus {
   DIVORCED
   WIDOWED
   SEPARATED
+  ENGAGED
+  PARTNERED
 }
 
 enum Handedness {
@@ -138,10 +152,25 @@ enum Contraception {
   PILLS
   CONDOM
   IMPLANTS
+  DIAPHRAGM
+  IUD
+  INJECTION
+  PATCH
+  RING
+  NATURAL_METHODS
+  STERILIZATION
 }
 
 enum AppointmentStatus {
   SCHEDULED
   COMPLETED
+  CANCELED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
   CANCELED
 }
