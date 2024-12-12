@@ -94,7 +94,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 	const links = useMemo(
 		() => [
 			{
-				label: "Tableau de bord",
+				label: "Tableau de bord blablabla",
 				href: "#",
 				icon: (
 					<ChartBarIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
