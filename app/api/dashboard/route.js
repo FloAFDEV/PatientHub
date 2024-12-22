@@ -20,6 +20,8 @@ export async function GET() {
 		// Calcul du nombre total de patients
 		const totalPatients = patients.length;
 
+		console.log("Patients", patients);
+
 		// Calcul des hommes, femmes et non spécifiés
 		const maleCount = patients.filter((p) => p.gender === "Homme").length;
 		const femaleCount = patients.filter((p) => p.gender === "Femme").length;

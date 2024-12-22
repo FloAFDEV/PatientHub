@@ -360,7 +360,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								className="text-purple-700"
 								size={20}
 							/>
-							Croissance mensuelle des patients
+							Croissance mensuelle des patients en{" "}
+							{new Date().getFullYear()}
 						</h3>
 						<ResponsiveContainer width="100%" height={250}>
 							<LineChart

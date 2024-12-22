@@ -10,7 +10,8 @@ import Image from "next/image";
 
 interface Patient {
 	id: number;
-	name: string;
+	firstName: string;
+	lastName: string;
 	email?: string;
 	phone?: string;
 }
