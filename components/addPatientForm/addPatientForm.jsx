@@ -66,7 +66,7 @@ const AddPatientForm = ({}) => {
 		No: "Non",
 	};
 
-	const cabinetId = 3;
+	const cabinetId = 1;
 
 	const onSubmit = async (data) => {
 		const validChildrenAges = childrenAges.filter((age) => age >= 0);

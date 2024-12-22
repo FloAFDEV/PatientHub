@@ -15,7 +15,7 @@
 		"@fortawesome/free-solid-svg-icons": "^6.6.0",
 		"@fortawesome/react-fontawesome": "^0.2.2",
 		"@heroicons/react": "^2.1.5",
-		"@prisma/client": "^6.0.1",
+		"@prisma/client": "^6.1.0",
 		"@prisma/extension-pulse": "^1.2.0",
 		"@radix-ui/react-alert-dialog": "^1.1.2",
 		"@radix-ui/react-dialog": "^1.1.2",

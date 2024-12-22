@@ -65,13 +65,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					);
 				}
 				const data = await response.json();
+
 				if (isMounted) {
 					setDashboardData(data);
 				}
 			} catch (error) {
 				console.error(
 					"Erreur lors de la récupération des données:",
-					error
+					error instanceof Error ? error.message : error
 				);
 			}
 		};

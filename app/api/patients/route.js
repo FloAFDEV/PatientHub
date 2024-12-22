@@ -3,8 +3,16 @@ import prisma from "@/lib/connect";
 
 // Fonction pour formater les données du patient
 function formatPatientData(data) {
+	const fullName = data.name || "";
+	const nameParts = fullName.split(" "); // Sépare le nom complet en fonction des espaces
+
+	const firstName =
+		nameParts.length > 1 ? nameParts.slice(0, -1).join(" ") : nameParts[0]; // Prénom
+	const lastName =
+		nameParts.length > 1 ? nameParts[nameParts.length - 1] : ""; // Nom de famille
 	return {
-		name: data.name || "",
+		firstName: firstName || "",
+		lastName: lastName || "",
 		email: data.email || null,
 		phone: data.phone || null,
 		address: data.address || null,
@@ -64,18 +72,45 @@ export async function GET(request) {
 			searchParams.get("search") || searchParams.get("term") || "";
 		const letter = searchParams.get("letter") || "";
 
+		// Normalisation du paramètre `letter` pour s'assurer de sa validité
+		const normalizedLetter = letter
+			.normalize("NFD") // Décompose les accents
+			.replace(/[\u0300-\u036f]/g, "") // Supprime les marques d'accent
+			.toUpperCase(); // Convertit en majuscule pour correspondre aux noms normalisés
+
+		// Condition de recherche
 		const whereCondition = {
 			...(searchTerm && {
 				OR: [
-					{ name: { contains: searchTerm, mode: "insensitive" } },
-					{ email: { contains: searchTerm, mode: "insensitive" } },
-					{ phone: { contains: searchTerm } },
+					{
+						firstName: {
+							contains: searchTerm,
+							mode: "insensitive", // Recherche insensible à la casse
+						},
+					},
+					{
+						lastName: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+					{
+						email: {
+							contains: searchTerm,
+							mode: "insensitive",
+						},
+					},
+					{
+						phone: {
+							contains: searchTerm,
+						},
+					},
 				],
 			}),
-			...(letter && {
-				name: {
-					startsWith: letter,
-					mode: "insensitive",
+			...(normalizedLetter && {
+				lastName: {
+					startsWith: normalizedLetter, // Recherche par lettre de début
+					mode: "insensitive", // Recherche insensible à la casse
 				},
 			}),
 		};
@@ -85,13 +120,15 @@ export async function GET(request) {
 				where: whereCondition,
 				select: {
 					id: true,
-					name: true,
+					firstName: true,
+					lastName: true,
 					email: true,
 					phone: true,
 				},
-				orderBy: {
-					name: "asc",
-				},
+				orderBy: [
+					{ lastName: "asc" }, // Trie par nom de famille
+					{ firstName: "asc" }, // Puis par prénom
+				],
 			});
 			return NextResponse.json(patients);
 		}
@@ -101,9 +138,10 @@ export async function GET(request) {
 				where: whereCondition,
 				skip: (page - 1) * pageSize,
 				take: pageSize,
-				orderBy: {
-					name: "asc",
-				},
+				orderBy: [
+					{ lastName: "asc" }, // Trie par nom de famille
+					{ firstName: "asc" }, // Puis par prénom
+				],
 				include: {
 					osteopath: true,
 					cabinet: true,
@@ -183,10 +221,7 @@ export async function POST(request) {
 				(age) => parseInt(age, 10)
 			);
 		}
-		console.log(
-			"isDeceased value before creation:",
-			formattedPatientData.isDeceased
-		);
+
 		// Création d'un nouveau patient dans la base de données avec Prisma
 		const newPatient = await prisma.patient.create({
 			data: formattedPatientData,
@@ -252,16 +287,10 @@ export async function DELETE(request) {
 			}),
 		]);
 
-		console.log(
-			"Consultations, rendez-vous et documents médicaux supprimés"
-		);
-
 		// Suppression du patient
 		const deletedPatient = await prisma.patient.delete({
 			where: { id: patient.id },
 		});
-
-		console.log("Patient supprimé :", deletedPatient);
 
 		// Retourner la réponse du patient supprimé
 		return NextResponse.json(

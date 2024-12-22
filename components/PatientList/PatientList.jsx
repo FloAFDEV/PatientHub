@@ -53,23 +53,14 @@ const PatientList = ({ onAddPatientClick }) => {
 		searchLetter
 	);
 
-	// Suppression d'un patient dans la liste
 	const handlePatientDeleted = async (patientId) => {
 		try {
-			console.log("Tentative de suppression du patient", patientId);
-
-			// Supprimer le patient de la liste locale
-			const updatedPatients = patients.filter(
-				(patient) => patient.id !== patientId
-			);
-			setPatients(updatedPatients); // Mettre à jour la liste des patients
-
-			// Afficher un toast de succès
+			await deletePatient(patientId);
+			mutate();
 			toast.success("Le patient a été supprimé avec succès !");
 		} catch (error) {
-			// Afficher un toast d'erreur en cas de problème
 			toast.error("Une erreur est survenue lors de la suppression.");
-			console.error("Erreur lors de la suppression :", error);
+			console.error("Erreur de suppression:", error);
 		}
 	};
 
@@ -142,14 +133,36 @@ const PatientList = ({ onAddPatientClick }) => {
 		);
 	}
 
-	const filteredPatients = (patients || []).filter((patient) =>
-		patient.name.toUpperCase().startsWith(searchLetter.toUpperCase())
-	);
+	const filteredPatients = (patients || []).filter((patient) => {
+		const firstName = patient.firstName || "";
+		const lastName = patient.lastName || "";
 
-	// Ensuite, trie les patients filtrés par nom
-	const sortedPatients = filteredPatients.sort((a, b) =>
-		a.name.localeCompare(b.name, "fr", { sensitivity: "base" })
-	);
+		// Vérification de la correspondance par lettre (nom ou prénom commence par la lettre sélectionnée)
+		const isMatchingByLetter = searchLetter
+			? firstName.toUpperCase().startsWith(searchLetter.toUpperCase()) ||
+			  lastName.toUpperCase().startsWith(searchLetter.toUpperCase())
+			: true;
+
+		// Vérification de la correspondance par terme (nom complet contient le terme de recherche)
+		const isMatchingByTerm = searchTerm
+			? `${firstName} ${lastName}`
+					.toUpperCase()
+					.includes(searchTerm.toUpperCase())
+			: true;
+
+		// Le patient est retenu si au moins un des deux critères correspond
+		const isMatching = isMatchingByLetter || isMatchingByTerm;
+
+		return isMatching;
+	});
+
+	// Ensuite, trie les patients filtrés par prénom et nom de famille
+	const sortedPatients = filteredPatients.sort((a, b) => {
+		const nameA = `${a.firstName || ""} ${a.lastName || ""}`;
+		const nameB = `${b.firstName || ""} ${b.lastName || ""}`;
+		// Utilise localeCompare pour gérer les accents et la casse
+		return nameA.localeCompare(nameB, "fr", { sensitivity: "base" });
+	});
 
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
@@ -307,7 +320,9 @@ const PatientList = ({ onAddPatientClick }) => {
 				) : (
 					sortedPatients.map((patient) => (
 						<div
-							key={patient.id}
+							key={`${patient.id || ""}-${patient.firstName}-${
+								patient.lastName
+							}`}
 							className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
 						>
 							<div className="p-3 sm:p-2 ">
@@ -328,7 +343,10 @@ const PatientList = ({ onAddPatientClick }) => {
 										</div>
 										<div className="flex-1 min-w-0">
 											<h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-												{patient.name}
+												{`${
+													patient.firstName ||
+													"Inconnu"
+												} ${patient.lastName || ""}`}
 												{patient.isDeceased && (
 													<span className="inline-flex items-center gap-1 text-sm text-red-500">
 														<IconSkull size={16} />
@@ -338,6 +356,7 @@ const PatientList = ({ onAddPatientClick }) => {
 													</span>
 												)}
 											</h3>
+
 											<div className="mt-1 flex flex-row gap-1 text-sm text-gray-500 dark:text-gray-400 sm:flex-row sm:gap-4">
 												<span>
 													Âge:{" "}
@@ -379,12 +398,12 @@ const PatientList = ({ onAddPatientClick }) => {
 														: patient.id
 												)
 											}
-											className="flex-1 sm:flex-none h-9 dark:hover:bg-amber-500  dark:hover:text-gray-900 dark:border-gray-400 dark:border-2 border-2 hover:bg-blue-400 border-gray-100"
 										>
 											{selectedPatientId === patient.id
 												? "Fermer"
 												: "Détails"}
-										</Button>{" "}
+										</Button>
+
 										<Button
 											variant="outline"
 											size="sm"
@@ -426,6 +445,7 @@ const PatientList = ({ onAddPatientClick }) => {
 			{totalPages > 1 && (
 				<div className="flex justify-between items-center mt-6">
 					<Button
+						aria-label="Page précédente"
 						variant="outline"
 						onClick={() =>
 							setCurrentPage((p) => Math.max(1, p - 1))
@@ -440,6 +460,7 @@ const PatientList = ({ onAddPatientClick }) => {
 						{currentPage} / {totalPages}
 					</span>
 					<Button
+						aria-label="Page suivante"
 						variant="outline"
 						onClick={() =>
 							setCurrentPage((p) => Math.min(totalPages, p + 1))

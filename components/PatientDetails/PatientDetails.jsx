@@ -157,7 +157,9 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 						patient.avatarUrl ||
 						"/assets/images/default-avatar.webp"
 					}
-					alt={`Avatar de ${patient.name || "inconnu"}`}
+					alt={`Avatar de ${patient.firstName} ${
+						patient.lastName || "inconnu"
+					}`}
 					className={`w-24 h-24 sm:w-32 sm:h-32 rounded-lg border-4 shadow-md ${
 						patient.gender === "Homme"
 							? "border-blue-500"
@@ -171,8 +173,11 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 				{/* Conteneur texte et boutons */}
 				<div className="flex flex-col">
 					<h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center md:text-left">
-						{patient.name || "Nom inconnu"}
+						{patient.firstName && patient.lastName
+							? `${patient.firstName} ${patient.lastName}`
+							: "Nom inconnu"}
 					</h1>
+
 					<div className="mt-2 flex flex-col space-y-2">
 						{/* Bouton Éditer */}
 						<button
@@ -189,7 +194,11 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 									setIsConfirmDeleteOpen(false);
 								}}
 								onCancel={() => setIsConfirmDeleteOpen(false)}
-								patientName={patient.name || "Nom inconnu"}
+								patientName={
+									patient.firstName && patient.lastName
+										? `${patient.firstName} ${patient.lastName}`
+										: "Nom inconnu"
+								}
 							/>
 						)}
 						{/* Bouton Supprimer */}

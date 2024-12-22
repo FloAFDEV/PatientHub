@@ -18,6 +18,8 @@ model User {
   updated_at  DateTime   @updatedAt
   osteopathId Int?
   osteopath   Osteopath?
+
+  @@map("User")
 }
 
 model Osteopath {
@@ -29,6 +31,8 @@ model Osteopath {
   cabinets  Cabinet[]
   user      User      @relation(fields: [userId], references: [id])
   patients  Patient[]
+
+  @@map("Osteopath")
 }
 
 model Cabinet {
@@ -41,34 +45,54 @@ model Cabinet {
   updatedAt   DateTime  @updatedAt
   osteopath   Osteopath @relation(fields: [osteopathId], references: [id])
   patients    Patient[]
+
+  @@map("Cabinet")
 }
 
 model Patient {
-  id               Int               @id @default(autoincrement())
-  userId           String?
-  firstName        String
-  lastName         String
-  osteopathId      Int
-  cabinetId        Int?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  address          String?
-  avatarUrl        String?
-  birthDate        DateTime?
-  height           Float?
-  weight           Float?
-  email            String?           @unique
-  phone            String?
-  maritalStatus    MaritalStatus?
-  hasChildren      Boolean           @default(false)
-  childrenAges     Int[]
-  physicalActivity String?
-  appointments     Appointment[]
-  consultations    Consultation[]
-  invoices         Invoice[]
-  medicalDocuments MedicalDocument[]
-  cabinet          Cabinet?          @relation(fields: [cabinetId], references: [id])
-  osteopath        Osteopath         @relation(fields: [osteopathId], references: [id])
+  id                     Int               @id @default(autoincrement())
+  userId                 String?
+  osteopathId            Int
+  cabinetId              Int?
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  address                String?
+  avatarUrl              String?
+  birthDate              DateTime?
+  email                  String?           @unique
+  phone                  String?
+  maritalStatus          MaritalStatus?
+  childrenAges           Int[]
+  physicalActivity       String?
+  firstName              String
+  lastName               String
+  hasChildren            String?
+  contraception          Contraception?
+  currentTreatment       String?
+  digestiveDoctorName    String?
+  digestiveProblems      String?
+  entDoctorName          String?
+  entProblems            String?
+  gender                 Gender?
+  generalPractitioner    String?
+  handedness             Handedness?
+  hasVisionCorrection    Boolean           @default(false)
+  hdlm                   String?
+  isDeceased             Boolean           @default(false)
+  isSmoker               Boolean           @default(false)
+  occupation             String?
+  ophtalmologistName     String?
+  rheumatologicalHistory String?
+  surgicalHistory        String?
+  traumaHistory          String?
+  appointments           Appointment[]
+  consultations          Consultation[]
+  Invoice                Invoice[]
+  medicalDocuments       MedicalDocument[]
+  cabinet                Cabinet?          @relation(fields: [cabinetId], references: [id])
+  osteopath              Osteopath         @relation(fields: [osteopathId], references: [id])
+
+  @@map("Patient")
 }
 
 model Consultation {
@@ -76,11 +100,13 @@ model Consultation {
   date               DateTime
   notes              String
   patientId          Int
+  cancellationReason String?
+  isCancelled        Boolean            @default(false)
   patient            Patient            @relation(fields: [patientId], references: [id])
   invoice            Invoice?
   treatmentHistory   TreatmentHistory[]
-  isCancelled        Boolean            @default(false)
-  cancellationReason String?
+
+  @@map("Consultation")
 }
 
 model Appointment {
@@ -89,8 +115,10 @@ model Appointment {
   reason           String
   patientId        Int
   status           AppointmentStatus
-  patient          Patient           @relation(fields: [patientId], references: [id])
   notificationSent Boolean           @default(false)
+  patient          Patient           @relation(fields: [patientId], references: [id])
+
+  @@map("Appointment")
 }
 
 model MedicalDocument {
@@ -99,6 +127,8 @@ model MedicalDocument {
   description String
   patientId   Int
   patient     Patient @relation(fields: [patientId], references: [id])
+
+  @@map("MedicalDocument")
 }
 
 model Invoice {
@@ -106,10 +136,12 @@ model Invoice {
   date           DateTime      @default(now())
   amount         Float
   paymentStatus  PaymentStatus @default(PENDING)
-  consultation   Consultation  @relation(fields: [consultationId], references: [id])
   consultationId Int           @unique
   patientId      Int
+  consultation   Consultation  @relation(fields: [consultationId], references: [id])
   patient        Patient       @relation(fields: [patientId], references: [id])
+
+  @@map("Invoice")
 }
 
 model TreatmentHistory {
@@ -118,6 +150,8 @@ model TreatmentHistory {
   description    String
   consultationId Int
   consultation   Consultation @relation(fields: [consultationId], references: [id])
+
+  @@map("TreatmentHistory")
 }
 
 enum Role {
@@ -128,7 +162,6 @@ enum Role {
 enum Gender {
   Homme
   Femme
-  Other
 }
 
 enum MaritalStatus {

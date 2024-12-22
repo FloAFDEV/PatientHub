@@ -29,7 +29,8 @@ export async function GET(request: Request) {
 				patient: {
 					select: {
 						id: true,
-						name: true,
+						firstName: true,
+						lastName: true,
 						phone: true,
 						email: true,
 					},
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
 				id: apt.id,
 				date: apt.date.toISOString(),
 				patientId: apt.patientId,
-				patientName: apt.patient.name,
+				patientName: `${apt.patient.firstName} ${apt.patient.lastName}`, // Combinaison de firstName et lastName
 				patientPhone: apt.patient.phone,
 				patientEmail: apt.patient.email,
 				reason: apt.reason,

@@ -19,6 +19,7 @@ export async function GET() {
 		});
 		// Calcul du nombre total de patients
 		const totalPatients = patients.length;
+
 		// Calcul des hommes, femmes et non spécifiés
 		const maleCount = patients.filter((p) => p.gender === "Homme").length;
 		const femaleCount = patients.filter((p) => p.gender === "Femme").length;
@@ -140,6 +141,9 @@ export async function GET() {
 		});
 	} catch (error) {
 		console.error("Erreur lors de la récupération des données :", error);
-		return NextResponse.json({ error: error.message }, { status: 500 });
+		return NextResponse.json(
+			{ error: error.message, stack: error.stack },
+			{ status: 500 }
+		);
 	}
 }

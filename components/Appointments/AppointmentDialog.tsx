@@ -180,7 +180,8 @@ export function AppointmentDialog({
 													value={patient.id.toString()}
 													className="py-3 hover:bg-gray-100 dark:hover:bg-gray-700"
 												>
-													{patient.name}
+													{patient.firstName}{" "}
+													{patient.lastName}
 												</SelectItem>
 											))}
 										</SelectContent>
