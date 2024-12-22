@@ -30,7 +30,8 @@ import { Calendar, Clock, User, FileText } from "lucide-react";
 
 interface Patient {
 	id: number;
-	name: string;
+	firstName: string;
+	lastName: string;
 }
 
 interface Appointment {
