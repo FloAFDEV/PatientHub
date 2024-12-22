@@ -179,8 +179,20 @@ export async function GET(request) {
 export async function POST(request) {
 	const patientData = await request.json();
 	try {
+		// Validation des champs firstname et lastname
+		if (!patientData.firstname || !patientData.lastname) {
+			return new Response("Firstname and lastname are required", {
+				status: 400,
+			});
+		}
+
 		// Formater les données du patient
 		const formattedPatientData = formatPatientData(patientData);
+
+		// Ajouter firstname et lastname à formattedPatientData
+		formattedPatientData.firstname = patientData.firstname;
+		formattedPatientData.lastname = patientData.lastname;
+
 		// Valeur d'ostéopathe, ici elle est en dur pour tester
 		const osteopathId = 1;
 		if (!osteopathId) {

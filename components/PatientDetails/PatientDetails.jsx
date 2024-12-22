@@ -157,8 +157,8 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 						patient.avatarUrl ||
 						"/assets/images/default-avatar.webp"
 					}
-					alt={`Avatar de ${patient.firstName} ${
-						patient.lastName || "inconnu"
+					alt={`Avatar de ${patient.firstName || "Prénom Inconnu"} ${
+						patient.lastName || "Nom Inconnu"
 					}`}
 					className={`w-24 h-24 sm:w-32 sm:h-32 rounded-lg border-4 shadow-md ${
 						patient.gender === "Homme"

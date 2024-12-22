@@ -84,7 +84,11 @@ const AddPatientForm = ({}) => {
 			maritalStatus: data.maritalStatus || "",
 			osteopathId: data.osteopathId,
 			cabinetId: cabinetId,
+			firstName: data.firstName,
+			lastName: data.lastName,
 		};
+		console.log("First Name:", data.firstName, "Last Name:", data.lastName);
+		console.log("Final Data:", finalData);
 		try {
 			const response = await fetch("/api/patients", {
 				method: "POST",
@@ -96,7 +100,11 @@ const AddPatientForm = ({}) => {
 			await response.json();
 			toast.success(
 				<div>
-					🎉 Patient <b>{data.name}</b> ajouté avec succès !
+					🎉 Patient{" "}
+					<b>
+						{data.firstName} {data.lastName}
+					</b>{" "}
+					ajouté avec succès !
 				</div>,
 				{
 					position: "top-center",
@@ -104,9 +112,11 @@ const AddPatientForm = ({}) => {
 					icon: "🎉",
 				}
 			);
+			console.log("Final Data:", finalData);
 
 			reset({
-				name: "",
+				firstName: "",
+				lastName: "",
 				email: "",
 				phone: "",
 				address: "",
@@ -194,14 +204,25 @@ const AddPatientForm = ({}) => {
 						</h3>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
 							<FormField
-								name="name"
+								name="firstName"
+								control={control}
+								label="Prénom"
+								placeholder="Entrez le prénom"
+								required
+								rules={{ required: "Le prénom est requis" }}
+								error={errors.firstName?.message}
+							/>
+
+							<FormField
+								name="lastName"
 								control={control}
 								label="Nom"
-								placeholder="Entrez le nom"
+								placeholder="Entrez le nom de famille"
 								required
 								rules={{ required: "Le nom est requis" }}
-								error={errors.name?.message}
+								error={errors.lastName?.message}
 							/>
+
 							<FormField
 								name="email"
 								control={control}
