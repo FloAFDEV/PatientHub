@@ -178,9 +178,14 @@ export async function GET(request) {
 
 export async function POST(request) {
 	const patientData = await request.json();
+
+	// Log des données reçues pour vérifier leur structure
+	console.log("Received patient data:", patientData);
+
 	try {
-		// Validation des champs firstname et lastname
-		if (!patientData.firstname || !patientData.lastname) {
+		// Validation des champs firstName et lastName
+		if (!patientData.firstName || !patientData.lastName) {
+			console.log("Error: firstName or lastName missing");
 			return new Response("Firstname and lastname are required", {
 				status: 400,
 			});
@@ -189,9 +194,9 @@ export async function POST(request) {
 		// Formater les données du patient
 		const formattedPatientData = formatPatientData(patientData);
 
-		// Ajouter firstname et lastname à formattedPatientData
-		formattedPatientData.firstname = patientData.firstname;
-		formattedPatientData.lastname = patientData.lastname;
+		// Ajouter firstName et lastName à formattedPatientData
+		formattedPatientData.firstName = patientData.firstName;
+		formattedPatientData.lastName = patientData.lastName;
 
 		// Valeur d'ostéopathe, ici elle est en dur pour tester
 		const osteopathId = 1;
@@ -223,15 +228,6 @@ export async function POST(request) {
 			formattedPatientData.hasChildren = true;
 		} else if (patientData.hasChildren === "false") {
 			formattedPatientData.hasChildren = false;
-		}
-		// Vérification des âges des enfants si `hasChildren` est vrai
-		if (
-			patientData.hasChildren === "true" &&
-			Array.isArray(patientData.childrenAges)
-		) {
-			formattedPatientData.childrenAges = patientData.childrenAges.map(
-				(age) => parseInt(age, 10)
-			);
 		}
 
 		// Création d'un nouveau patient dans la base de données avec Prisma
