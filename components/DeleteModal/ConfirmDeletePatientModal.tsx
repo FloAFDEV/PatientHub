@@ -47,16 +47,16 @@ const ConfirmDeletePatientModal: React.FC<ConfirmDeletePatientModalProps> = ({
 						exemple :
 						<ul className="list-disc pl-6 mt-2">
 							<li>
-								Selon l'**Article L1142-28 du Code de la Santé
-								Publique** en France, les dossiers médicaux
-								doivent être conservés pendant **20 ans** après
-								le dernier contact avec le patient.
+								Selon l&apos;**Article L1142-28 du Code de la
+								Santé Publique** en France, les dossiers
+								médicaux doivent être conservés pendant **20
+								ans** après le dernier contact avec le patient.
 							</li>
 							<li>
 								Le **Règlement Général sur la Protection des
 								Données (RGPD)** permet la conservation des
 								données médicales pour des raisons de santé
-								publique, de suivi médical, ou d'archivage
+								publique, de suivi médical, ou d&apos;archivage
 								scientifique, même en cas de demande de
 								suppression.
 							</li>
