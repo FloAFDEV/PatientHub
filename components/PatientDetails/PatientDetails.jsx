@@ -172,17 +172,32 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 				/>
 				{/* Conteneur texte et boutons */}
 				<div className="flex flex-col">
-					<h1 className="text-lg sm:text-xl md:text-2xl font-bold text-center md:text-left">
-						{patient.firstName && patient.lastName
-							? `${patient.firstName} ${patient.lastName}`
-							: "Nom inconnu"}
-					</h1>
+					<div className="text-lg sm:text-xl md:text-2xl font-bold text-center md:text-left">
+						<div className="flex items-center">
+							<span className="font-semibold text-sm text-gray-600 dark:text-gray-300">
+								Prénom:
+							</span>
+
+							<span className="ml-2">
+								{patient.firstName || "Prénom inconnu"}
+							</span>
+						</div>
+						<div className="flex items-center mt-2">
+							<span className="font-semibold text-sm text-gray-600 dark:text-gray-300">
+								Nom:
+							</span>
+							<span className="ml-2">
+								{patient.lastName || "Nom inconnu"}
+							</span>
+						</div>
+					</div>
 
 					<div className="mt-2 flex flex-col space-y-2">
 						{/* Bouton Éditer */}
 						<button
 							className="border border-green-500 hover:bg-green-600 hover:text-white p-2 text-sm md:text-base rounded-lg"
 							onClick={() => alert("Édition du patient")}
+							aria-label="Éditer les informations du patient"
 						>
 							Éditer le patient
 						</button>
@@ -211,12 +226,13 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 					</div>
 				</div>
 			</div>
-
 			{/* Informations de base */}
 			<SectionToggle
 				title="Informations de base"
 				isOpen={openSections.basicInfo}
 				onToggle={() => toggleSection("basicInfo")}
+				aria-expanded={openSections.basicInfo}
+				aria-controls="basicInfo-content"
 			>
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
 					<DetailItem
@@ -278,7 +294,6 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 				isOpen={openSections.medicalHistory}
 				onToggle={() => toggleSection("medicalHistory")}
 			>
-				{" "}
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
 					<DetailItem
 						label="Antécédents chirurgicaux"
@@ -338,7 +353,6 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 				isOpen={openSections.familyInfo}
 				onToggle={() => toggleSection("familyInfo")}
 			>
-				{" "}
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
 					<DetailItem
 						label="Fumeur ?"
@@ -367,10 +381,14 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 								patient.childrenAges.map((age, index) => (
 									<DetailItem
 										key={index}
-										label=<div className="flex items-center space-x-2">
-											<UserIcon className="h-4 w-4 text-blue-500" />{" "}
-											<span>{`Enfant ${index + 1}`}</span>
-										</div>
+										label={
+											<div className="flex items-center space-x-2">
+												<UserIcon className="h-4 w-4 text-blue-500" />{" "}
+												<span>{`Enfant ${
+													index + 1
+												}`}</span>
+											</div>
+										}
 										value={`${age} ans`}
 									/>
 								))
