@@ -55,11 +55,13 @@ const PatientList = ({ onAddPatientClick }) => {
 
 	const handlePatientDeleted = async (patientId) => {
 		try {
-			await deletePatient(patientId);
-			mutate();
+			const response = await deletePatient(patientId);
+
+			// Affichage du message de succès si la suppression réussit
 			toast.success("Le patient a été supprimé avec succès !");
+			mutate(); // Rafraîchir les données, si nécessaire
 		} catch (error) {
-			toast.error("Une erreur est survenue lors de la suppression.");
+			// Affichage du message d'erreur si une exception est levée
 			console.error("Erreur de suppression:", error);
 		}
 	};

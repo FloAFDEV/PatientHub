@@ -254,19 +254,19 @@ export async function POST(request) {
 export async function DELETE(request) {
 	try {
 		const { searchParams } = new URL(request.url);
-		const email = searchParams.get("email");
+		const patientId = searchParams.get("id");
 
-		// Vérification si l'email est fourni
-		if (!email) {
+		// Vérification si l'ID est fourni
+		if (!patientId) {
 			return NextResponse.json(
-				{ error: "Email is required" },
+				{ error: "ID is required" },
 				{ status: 400 }
 			);
 		}
 
-		// Récupération du patient avec l'email
-		const patient = await prisma.patient.findFirst({
-			where: { email },
+		// Récupération du patient avec l'ID
+		const patient = await prisma.patient.findUnique({
+			where: { id: parseInt(patientId) },
 			include: {
 				osteopath: true,
 				cabinet: true,

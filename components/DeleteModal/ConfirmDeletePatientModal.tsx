@@ -39,31 +39,32 @@ const ConfirmDeletePatientModal: React.FC<ConfirmDeletePatientModalProps> = ({
 							de manière définitive ?
 						</span>
 					</p>
-					<p className="text-sm text-gray-500 dark:text-gray-400">
+					<div className="text-sm text-gray-500 dark:text-gray-400">
 						<span className="font-semibold">Remarque : </span> en
 						fonction des régulations locales (comme le RGPD ou le
 						Code de la Santé Publique), certaines données doivent
 						être conservées pendant une période déterminée, par
 						exemple :
-						<ul className="list-disc pl-6 mt-2">
-							<li>
-								Selon l&apos;**Article L1142-28 du Code de la
-								Santé Publique** en France, les dossiers
-								médicaux doivent être conservés pendant **20
-								ans** après le dernier contact avec le patient.
-							</li>
-							<li>
-								Le **Règlement Général sur la Protection des
-								Données (RGPD)** permet la conservation des
-								données médicales pour des raisons de santé
-								publique, de suivi médical, ou d&apos;archivage
-								scientifique, même en cas de demande de
-								suppression.
-							</li>
-						</ul>
+					</div>
+					<ul className="list-disc pl-6 mt-2">
+						<li>
+							Selon l&apos;**Article L1142-28 du Code de la Santé
+							Publique** en France, les dossiers médicaux doivent
+							être conservés pendant **20 ans** après le dernier
+							contact avec le patient.
+						</li>
+						<li>
+							Le **Règlement Général sur la Protection des Données
+							(RGPD)** permet la conservation des données
+							médicales pour des raisons de santé publique, de
+							suivi médical, ou d&apos;archivage scientifique,
+							même en cas de demande de suppression.
+						</li>
+					</ul>
+					<div className="text-sm text-gray-500 dark:text-gray-400 mt-4">
 						Assurez-vous que cette suppression est conforme aux
 						exigences légales et aux besoins de suivi médical.
-					</p>
+					</div>
 				</div>
 				<div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 rounded-b-lg flex justify-end space-x-3">
 					<button

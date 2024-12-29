@@ -124,12 +124,9 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 	// Gestion de la suppression
 	const handleDeletePatient = async () => {
 		try {
-			const response = await fetch(
-				`/api/patients?email=${patient.email}`,
-				{
-					method: "DELETE",
-				}
-			);
+			const response = await fetch(`/api/patients?id=${patient.id}`, {
+				method: "DELETE",
+			});
 
 			if (response.ok) {
 				// Appel de la fonction passée en prop pour supprimer depuis la liste
