@@ -451,7 +451,7 @@ const StatCard: React.FC<StatCardProps> = ({
 				</h3>
 			</div>
 		</div>
-		<p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+		<p className="text-2xl sm:text-xl font-bold text-gray-900 dark:text-white mb-2">
 			{value}
 		</p>
 		<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2">
