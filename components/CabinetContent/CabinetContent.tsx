@@ -163,7 +163,26 @@ const CabinetContent: React.FC = () => {
 
 	useEffect(() => {
 		fetchCabinetInfo();
-	}, [fetchCabinetInfo]);
+	}, [fetchCabinetInfo]); // Cela est correct
+
+	// Autres hooks peuvent être ici, mais assurez-vous qu'ils ne sont pas dans des blocs conditionnels
+	useEffect(() => {
+		let modalTitle: HTMLElement | null = null;
+
+		if (isEditMode) {
+			modalTitle = document.getElementById("edit-modal-title");
+		}
+		if (isAddMode) {
+			modalTitle = document.getElementById("add-modal-title");
+		}
+		if (isConfirmDeleteOpen) {
+			modalTitle = document.getElementById("delete-modal-title");
+		}
+
+		if (modalTitle) {
+			modalTitle.focus();
+		}
+	}, [isEditMode, isAddMode, isConfirmDeleteOpen]);
 
 	return (
 		<div className="flex-1 p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto min-h-screen">
