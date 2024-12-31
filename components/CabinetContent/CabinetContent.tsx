@@ -165,14 +165,18 @@ const CabinetContent: React.FC = () => {
 	useEffect(() => {
 		let modalTitle: HTMLElement | null = null;
 
+		// Affecter le bon titre en fonction de l'état des modales
 		if (isEditMode) {
 			modalTitle = document.getElementById("edit-modal-title");
-		} else if (isAddMode) {
+		}
+		if (isAddMode) {
 			modalTitle = document.getElementById("add-modal-title");
-		} else if (isConfirmDeleteOpen) {
+		}
+		if (isConfirmDeleteOpen) {
 			modalTitle = document.getElementById("delete-modal-title");
 		}
 
+		// Focus sur le titre si trouvé
 		if (modalTitle) {
 			modalTitle.focus();
 		}
