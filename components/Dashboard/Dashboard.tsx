@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import {
@@ -68,13 +68,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				}
 				const data = await response.json();
 
-				console.log("Données du tableau de bord:", data);
-				if (data.patients30DaysAgo !== undefined) {
-					console.log("patients30DaysAgo:", data.patients30DaysAgo);
-				} else {
-					console.log("patients30DaysAgo non disponible");
-				}
-
 				if (isMounted) {
 					setDashboardData(data);
 				}
@@ -93,24 +86,30 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	}, []);
 
 	// Données pour la répartition des Hommes/Femmes
-	const genderData = [
-		{ name: "Hommes", value: dashboardData?.maleCount || 0 },
-		{ name: "Femmes", value: dashboardData?.femaleCount || 0 },
-	];
+	const genderData = useMemo(
+		() => [
+			{ name: "Hommes", value: dashboardData?.maleCount || 0 },
+			{ name: "Femmes", value: dashboardData?.femaleCount || 0 },
+		],
+		[dashboardData?.maleCount, dashboardData?.femaleCount]
+	);
 
 	// Données pour les âges moyens des hommes et des femmes
-	const ageData = [
-		{
-			name: "Hommes",
-			Age: dashboardData?.averageAgeMale || 0,
-			fill: "#4c50bf", // Bleu pour les hommes
-		},
-		{
-			name: "Femmes",
-			Age: dashboardData?.averageAgeFemale || 0,
-			fill: "#ed64a6", // Rose pour les femmes
-		},
-	];
+	const ageData = useMemo(
+		() => [
+			{
+				name: "Hommes",
+				Age: dashboardData?.averageAgeMale || 0,
+				fill: "#4c50bf",
+			},
+			{
+				name: "Femmes",
+				Age: dashboardData?.averageAgeFemale || 0,
+				fill: "#ed64a6",
+			},
+		],
+		[dashboardData?.averageAgeMale, dashboardData?.averageAgeFemale]
+	);
 
 	function mapMonthToFrench(month: string): string {
 		const months: { [key: string]: string } = {
@@ -137,23 +136,26 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
 					<Image
 						src="/assets/images/ModernCabinet.webp"
-						alt="Modern Osteopathy Clinic"
+						alt="Image d'une clinique moderne d'ostéopathie"
 						fill
 						style={{
 							objectFit: "cover",
 							objectPosition: "center 60%",
+							aspectRatio: "16/9",
 						}}
 						className="opacity-80"
 						priority
+						placeholder="blur"
+						blurDataURL="/assets/images/ModernCabinet-small.webp"
 					/>
 					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
 						<Image
 							src="/assets/icons/logo-full.svg"
-							alt="Logo"
+							alt="Logo de PatientHub"
 							width={80}
 							height={80}
 							className="object-contain shadow-xl rounded-xl mb-4"
-							priority
+							loading="lazy"
 						/>
 						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">
 							Bienvenue,{" "}
@@ -173,7 +175,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-8 h-8">
-							<IconUsers className="w-full h-full text-blue-500" />
+							<IconUsers
+								className="w-full h-full text-blue-500"
+								aria-hidden="true"
+							/>
 						</div>
 					}
 					title="Patients actifs"
@@ -206,7 +211,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-8 h-8">
-							<IconClock className="w-full h-full text-green-500" />
+							<IconClock
+								className="w-full h-full text-green-500"
+								aria-hidden="true"
+							/>
 						</div>
 					}
 					title="Rendez-vous aujourd'hui"
@@ -216,7 +224,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-10 h-10">
-							<IconNewUser className="w-full h-full text-purple-500" />
+							<IconNewUser
+								className="w-full h-full text-purple-500"
+								aria-hidden="true"
+							/>
 						</div>
 					}
 					title="Nouveaux patients (Ce mois-ci)"
@@ -229,7 +240,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-10 h-10">
-							<IconNewUser className="w-full h-full text-purple-500" />
+							<IconNewUser
+								className="w-full h-full text-purple-500"
+								aria-hidden="true"
+							/>
 						</div>
 					}
 					title="Nouveaux patients (Cette année)"
@@ -269,7 +283,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-10 h-10">
-							<IconChartBar className="w-full h-full text-yellow-500" />
+							<IconChartBar
+								className="w-full h-full text-yellow-500"
+								aria-hidden="true"
+							/>
 						</div>
 					}
 					title="Âge moyen des patients"
@@ -298,7 +315,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							Âge moyen des patients
 						</h3>
 						<ResponsiveContainer width="100%" height={250}>
-							<BarChart data={ageData}>
+							<BarChart
+								aria-label="Répartition des âges des patients"
+								data={ageData}
+							>
 								<CartesianGrid
 									strokeDasharray="3 3"
 									stroke="#ccc"
@@ -306,21 +326,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								<XAxis
 									dataKey="name"
 									tick={{ fill: "#A0AEC0", fontSize: 14 }}
-									tickLine={false}
-									interval={0}
 								/>
 								<YAxis
-									domain={[0, "dataMax + 5"]} // Ajuster l'échelle de l'axe Y pour avoir un petit espace au-dessus du max
+									domain={[0, "dataMax + 5"]}
 									tick={{ fill: "#A0AEC0", fontSize: 12 }}
-									tickCount={6} // Limite le nombre de ticks affichés
 								/>
 								<Tooltip
 									contentStyle={{
 										backgroundColor: "#f8fafc",
-										border: "none",
-										borderRadius: "8px",
-										boxShadow:
-											"0 4px 6px rgba(0, 0, 0, 0.1)",
 									}}
 								/>
 								<Bar dataKey="Age" barSize={70} fill="#4C51BF">
@@ -332,7 +345,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 										}
 										fontSize={12}
 										fill="#fff"
-										fontWeight="thin"
 									/>
 								</Bar>
 							</BarChart>
@@ -343,6 +355,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						<h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-4 text-gray-800 dark:text-white text-center flex items-center justify-center gap-2">
 							<IconUsers
 								className="text-pink-500 dark:text-pink-300"
+								aria-hidden="true"
 								size={20}
 							/>
 							Répartition Hommes/Femmes
@@ -413,6 +426,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						<h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 sm:mb-6 text-gray-800 dark:text-white text-center flex items-center justify-center gap-2">
 							<IconChartBar
 								className="text-purple-700"
+								aria-hidden="true"
 								size={20}
 							/>
 							Croissance mensuelle des patients en{" "}
@@ -420,6 +434,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						</h3>
 						<ResponsiveContainer width="100%" height={250}>
 							<LineChart
+								aria-label="Évolution des rendez-vous au fil des mois"
 								data={(dashboardData?.monthlyGrowth || []).map(
 									(item) => ({
 										month: mapMonthToFrench(item.month),
