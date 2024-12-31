@@ -86,7 +86,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 		return () => {
 			isMounted = false;
 		};
-	}, []);
+	}, [dashboardData]);
 
 	// Données pour la répartition des Hommes/Femmes
 	const genderData = useMemo(

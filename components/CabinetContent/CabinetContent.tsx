@@ -162,17 +162,19 @@ const CabinetContent: React.FC = () => {
 	}
 
 	// Focus sur la modale ouverte, déplace le focus vers son titre
-
 	useEffect(() => {
+		let modalTitle: HTMLElement | null = null;
+
 		if (isEditMode) {
-			const modalTitle = document.getElementById("edit-modal-title");
-			modalTitle?.focus();
+			modalTitle = document.getElementById("edit-modal-title");
 		} else if (isAddMode) {
-			const modalTitle = document.getElementById("add-modal-title");
-			modalTitle?.focus();
+			modalTitle = document.getElementById("add-modal-title");
 		} else if (isConfirmDeleteOpen) {
-			const modalTitle = document.getElementById("delete-modal-title");
-			modalTitle?.focus();
+			modalTitle = document.getElementById("delete-modal-title");
+		}
+
+		if (modalTitle) {
+			modalTitle.focus();
 		}
 	}, [isEditMode, isAddMode, isConfirmDeleteOpen]);
 

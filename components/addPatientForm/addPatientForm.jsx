@@ -382,7 +382,8 @@ const AddPatientForm = ({}) => {
 												className="flex items-center mb-2"
 											>
 												<label className="mr-2 font-medium text-sm text-gray-700 dark:text-gray-300">
-													Âge de l'enfant {index + 1}
+													Âge de l&apos;enfant{" "}
+													{index + 1}
 												</label>
 												<input
 													type="number"
