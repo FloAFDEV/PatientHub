@@ -400,6 +400,7 @@ const PatientList = ({ onAddPatientClick }) => {
 														: patient.id
 												)
 											}
+											className="hover:text-blue-500 dark:hover:text-amber-500"
 										>
 											{selectedPatientId === patient.id
 												? "Fermer"

@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 export async function GET() {
 	try {
 		const currentDate = new Date();
+
 		// Récupérer tous les patients
 		const patients = await prisma.patient.findMany({
 			select: {
@@ -17,6 +18,7 @@ export async function GET() {
 			},
 			take: 5000,
 		});
+
 		// Calcul du nombre total de patients
 		const totalPatients = patients.length;
 
@@ -24,6 +26,7 @@ export async function GET() {
 		const maleCount = patients.filter((p) => p.gender === "Homme").length;
 		const femaleCount = patients.filter((p) => p.gender === "Femme").length;
 		const unspecifiedGenderCount = patients.filter((p) => !p.gender).length;
+
 		// Calcul de l'âge moyen (en excluant les patients sans date de naissance)
 		const ages = patients
 			.filter((p) => p.birthDate)
@@ -38,6 +41,7 @@ export async function GET() {
 						(ages.reduce((a, b) => a + b, 0) / ages.length) * 10
 				  ) / 10
 				: 0;
+
 		// Calcul des âges moyens pour hommes et femmes
 		const maleAges = patients
 			.filter((p) => p.gender === "Homme" && p.birthDate)
@@ -69,6 +73,15 @@ export async function GET() {
 							10
 				  ) / 10
 				: 0;
+
+		// Patients créés il y a 30 jours
+		const thirtyDaysAgo = new Date(currentDate);
+		thirtyDaysAgo.setDate(currentDate.getDate() - 30);
+		const patients30DaysAgo = patients.filter((p) => {
+			const createdAt = new Date(p.createdAt);
+			return createdAt <= thirtyDaysAgo;
+		}).length;
+
 		// Patients créés ce mois-ci
 		const startOfMonth = new Date(
 			currentDate.getFullYear(),
@@ -87,11 +100,41 @@ export async function GET() {
 			const createdAt = new Date(p.createdAt);
 			return createdAt >= startOfMonth && createdAt <= endOfMonth;
 		}).length;
+
 		// Patients créés cette année
 		const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
 		const newPatientsThisYear = patients.filter(
 			(p) => new Date(p.createdAt) >= startOfYear
 		).length;
+
+		// Récupérer les nouveaux patients de l'année précédente
+		const startOfLastYear = new Date(currentDate.getFullYear() - 1, 0, 1);
+		const endOfLastYear = new Date(
+			currentDate.getFullYear() - 1,
+			11,
+			31,
+			23,
+			59,
+			59
+		);
+		const newPatientsLastYear = patients.filter((p) => {
+			const createdAt = new Date(p.createdAt);
+			return createdAt >= startOfLastYear && createdAt <= endOfLastYear;
+		}).length;
+
+		// Calcul du pourcentage de croissance par rapport à l'année précédente
+		let growthPercentage = 0;
+		if (newPatientsLastYear > 0) {
+			growthPercentage =
+				((newPatientsThisYear - newPatientsLastYear) /
+					newPatientsLastYear) *
+				100;
+		}
+		const formattedGrowthPercentage =
+			growthPercentage > 0
+				? `+${growthPercentage.toFixed(2)}%`
+				: "Pas de comparaison";
+
 		// Croissance mensuelle sur les 12 derniers mois
 		const monthlyGrowth = [];
 		let cumulativePatients = 0;
@@ -125,6 +168,7 @@ export async function GET() {
 				growthText: `+${patientsThisMonth} patients`,
 			});
 		}
+
 		// Retourner les résultats sous forme de JSON
 		return NextResponse.json({
 			patients,
@@ -132,11 +176,15 @@ export async function GET() {
 			maleCount,
 			femaleCount,
 			unspecifiedGenderCount,
+			patients30DaysAgo,
 			averageAge,
 			averageAgeMale,
 			averageAgeFemale,
 			newPatientsThisMonth,
 			newPatientsThisYear,
+			newPatientsLastYear,
+			growthPercentage: growthPercentage.toFixed(2),
+			formattedGrowthPercentage,
 			monthlyGrowth,
 		});
 	} catch (error) {

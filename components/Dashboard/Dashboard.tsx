@@ -34,11 +34,13 @@ interface DashboardData {
 	totalPatients: number;
 	maleCount: number;
 	femaleCount: number;
+	patients30DaysAgo: number;
 	averageAge: number;
 	averageAgeMale: number;
 	averageAgeFemale: number;
 	newPatientsThisMonth: number;
 	newPatientsThisYear: number;
+	newPatientsLastYear: number;
 	appointmentsToday: number;
 	nextAppointment: string;
 	monthlyGrowth: {
@@ -65,6 +67,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					);
 				}
 				const data = await response.json();
+
+				console.log("Données du tableau de bord:", data);
+				if (data.patients30DaysAgo !== undefined) {
+					console.log("patients30DaysAgo:", data.patients30DaysAgo);
+				} else {
+					console.log("patients30DaysAgo non disponible");
+				}
 
 				if (isMounted) {
 					setDashboardData(data);
@@ -173,8 +182,27 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							? dashboardData.totalPatients
 							: "Chargement..."
 					}
-					change="+12%"
+					change={(() => {
+						const currentPatients = dashboardData?.totalPatients;
+						const patients30DaysAgo =
+							dashboardData?.patients30DaysAgo;
+
+						if (
+							currentPatients !== undefined &&
+							patients30DaysAgo !== undefined
+						) {
+							// Calcul du pourcentage d'augmentation
+							const increase =
+								((currentPatients - patients30DaysAgo) /
+									patients30DaysAgo) *
+								100;
+							return `+ ${increase.toFixed(0)}% sur 30 jours`;
+						}
+
+						return "Chargement...";
+					})()}
 				/>
+
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-8 h-8">
@@ -207,10 +235,37 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					title="Nouveaux patients (Cette année)"
 					value={
 						dashboardData?.newPatientsThisYear !== undefined
-							? dashboardData.newPatientsThisYear
+							? dashboardData.newPatientsThisYear.toString()
 							: "Chargement..."
 					}
+					change={
+						dashboardData?.newPatientsLastYear !== undefined &&
+						dashboardData.newPatientsLastYear !== 0
+							? (() => {
+									const currentYearPatients =
+										dashboardData.newPatientsThisYear;
+									const lastYearPatients =
+										dashboardData.newPatientsLastYear;
+
+									if (
+										lastYearPatients !== 0 &&
+										currentYearPatients !== undefined
+									) {
+										const growth =
+											((currentYearPatients -
+												lastYearPatients) /
+												lastYearPatients) *
+											100;
+										return `+ ${growth.toFixed(
+											0
+										)}% sur l'année en cours`;
+									}
+									return "Pas de comparaison";
+							  })()
+							: undefined
+					}
 				/>
+
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-10 h-10">

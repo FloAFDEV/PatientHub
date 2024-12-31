@@ -171,19 +171,19 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 				<div className="flex flex-col">
 					<div className="text-lg sm:text-xl md:text-2xl font-bold text-center md:text-left">
 						<div className="flex items-center">
-							<span className="font-semibold text-sm text-gray-600 dark:text-gray-300">
+							<span className="font-semibold text-xs text-gray-600 dark:text-gray-300">
 								Prénom:
 							</span>
 
-							<span className="ml-2">
+							<span className="ml-2 text-lg">
 								{patient.firstName || "Prénom inconnu"}
 							</span>
 						</div>
 						<div className="flex items-center mt-2">
-							<span className="font-semibold text-sm text-gray-600 dark:text-gray-300">
+							<span className="font-semibold text-xs text-gray-600 dark:text-gray-300">
 								Nom:
 							</span>
-							<span className="ml-2">
+							<span className="ml-2 text-lg">
 								{patient.lastName || "Nom inconnu"}
 							</span>
 						</div>
