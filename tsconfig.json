@@ -28,20 +28,14 @@
 		".next/types/**/*.ts",
 		"utils/supabase/server.ts",
 		"utils/supabase/middleware.ts",
+		"utils/supabase/client.ts",
 		"app/layout.js",
 		"middleware.js",
-		"utils/supabase/client.ts",
-		"app/logout/actions.js",
-		"node_modules/@prisma/client/index.d.ts",
 		"components/lib/prisma.js",
 		"components/PatientList/PatientList.jsx",
 		"components/SidebarDashboard/SidebarDashboard.jsx",
 		"app/patients/page.jsx",
 		"app/AddPatient/page.jsx"
 	],
-	"exclude": ["node_modules"],
-	"scripts": {
-		"prisma:generate": "prisma generate --no-engine",
-		"vercel-build": "npm run prisma:generate && next build"
-	}
+	"exclude": ["node_modules"]
 }
