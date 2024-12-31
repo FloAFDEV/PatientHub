@@ -161,6 +161,21 @@ const CabinetContent: React.FC = () => {
 		);
 	}
 
+	// Focus sur la modale ouverte, déplace le focus vers son titre
+
+	useEffect(() => {
+		if (isEditMode) {
+			const modalTitle = document.getElementById("edit-modal-title");
+			modalTitle?.focus();
+		} else if (isAddMode) {
+			const modalTitle = document.getElementById("add-modal-title");
+			modalTitle?.focus();
+		} else if (isConfirmDeleteOpen) {
+			const modalTitle = document.getElementById("delete-modal-title");
+			modalTitle?.focus();
+		}
+	}, [isEditMode, isAddMode, isConfirmDeleteOpen]);
+
 	return (
 		<div className="flex-1 p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto min-h-screen">
 			<ToastContainer />
@@ -242,18 +257,21 @@ const CabinetContent: React.FC = () => {
 						icon={<PencilSquareIcon className="h-5 w-5" />}
 						text="Modifier les Infos"
 						color="blue"
+						aria-label="Modifier les informations du cabinet"
 					/>
 					<ActionButton
 						onClick={() => setIsAddMode(true)}
 						icon={<PlusIcon className="h-5 w-5" />}
 						text="Ajouter un Cabinet"
 						color="green"
+						aria-label="Ajouter un cabinet"
 					/>
 					<ActionButton
 						onClick={handleDeleteCabinet}
 						icon={<TrashIcon className="h-5 w-5" />}
 						text="Supprimer le Cabinet"
 						color="red"
+						aria-label="Supprimer le cabinet"
 					/>
 				</section>
 			</main>
@@ -266,6 +284,8 @@ const CabinetContent: React.FC = () => {
 						setIsEditMode(false);
 					}}
 					onCancel={() => setIsEditMode(false)}
+					aria-labelledby="edit-modal-title"
+					aria-modal="true"
 				/>
 			)}
 			{isAddMode && (
@@ -275,6 +295,8 @@ const CabinetContent: React.FC = () => {
 						setIsAddMode(false);
 					}}
 					onCancel={() => setIsAddMode(false)}
+					aria-labelledby="add-modal-title"
+					aria-modal="true"
 				/>
 			)}
 			{isConfirmDeleteOpen && (
@@ -284,6 +306,8 @@ const CabinetContent: React.FC = () => {
 						setIsConfirmDeleteOpen(false);
 					}}
 					onCancel={() => setIsConfirmDeleteOpen(false)}
+					aria-labelledby="delete-modal-title"
+					aria-modal="true"
 				/>
 			)}
 		</div>

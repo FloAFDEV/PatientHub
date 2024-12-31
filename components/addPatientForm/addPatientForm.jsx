@@ -27,7 +27,13 @@ const AddPatientForm = ({}) => {
 		setChildrenAges(updatedAges);
 	};
 
-	const addChildAgeField = () => setChildrenAges([...childrenAges, 0]);
+	const addChildAgeField = () => {
+		if (childrenAges.length >= 10) {
+			alert("Vous ne pouvez pas ajouter plus de 10 enfants.");
+			return;
+		}
+		setChildrenAges([...childrenAges, ""]);
+	};
 
 	const removeChildAgeField = (index) => {
 		const updatedAges = childrenAges.filter((_, i) => i !== index);
@@ -76,7 +82,7 @@ const AddPatientForm = ({}) => {
 			childrenAges: hasChildren ? validChildrenAges : [],
 			activityLevel: data.activityLevel || "",
 			hasVisionCorrection: data.hasVisionCorrection === "Yes",
-			isDeceased: data.isDeceased === "Yes",
+			isDeceased: data.isDeceased === "Yes" || false,
 			isSmoker: data.isSmoker === "Yes",
 			birthDate: new Date(data.birthDate).toISOString(),
 			hasChildren: hasChildren,
@@ -129,7 +135,7 @@ const AddPatientForm = ({}) => {
 				generalPractitioner: "",
 				isSmoker: "",
 				hasVisionCorrection: "",
-				isDeceased: "",
+				isDeceased: "no",
 				activityLevel: "",
 				entProblems: "",
 				entDoctorName: "",
@@ -202,7 +208,8 @@ const AddPatientForm = ({}) => {
 						<h3 className="text-xl font-semibold mb-4 text-start">
 							Informations Personnelles
 						</h3>
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+							{/* Champ Prénom */}
 							<FormField
 								name="firstName"
 								control={control}
@@ -211,8 +218,13 @@ const AddPatientForm = ({}) => {
 								required
 								rules={{ required: "Le prénom est requis" }}
 								error={errors.firstName?.message}
+								aria-label="Prénom du patient"
+								aria-describedby={
+									errors.firstName ? "firstName-error" : null
+								}
 							/>
 
+							{/* Champ Nom */}
 							<FormField
 								name="lastName"
 								control={control}
@@ -221,8 +233,13 @@ const AddPatientForm = ({}) => {
 								required
 								rules={{ required: "Le nom est requis" }}
 								error={errors.lastName?.message}
+								aria-label="Nom du patient"
+								aria-describedby={
+									errors.lastName ? "lastName-error" : null
+								}
 							/>
 
+							{/* Champ Email */}
 							<FormField
 								name="email"
 								control={control}
@@ -237,9 +254,10 @@ const AddPatientForm = ({}) => {
 								}}
 								error={errors.email?.message}
 							/>
+
+							{/* Champ Téléphone */}
 							<Controller
 								name="phone"
-								label="Téléphone"
 								control={control}
 								defaultValue=""
 								render={({ field }) => (
@@ -253,40 +271,32 @@ const AddPatientForm = ({}) => {
 										<input
 											{...field}
 											type="tel"
+											id="phone"
 											inputMode="numeric"
 											pattern="[0-9]*"
-											id="phone"
-											className={`w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out ${
+											className={`w-full text-sm p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out ${
 												field.value
 													? "bg-blue-100 dark:bg-zinc-900"
 													: ""
 											}`}
 											placeholder="Numéro de téléphone"
 											onKeyDown={(e) => {
-												// Autoriser les touches de contrôle (retour arrière, suppression, flèches, etc.)
 												if (
-													e.ctrlKey ||
-													e.altKey ||
-													e.metaKey ||
-													e.key.length > 1
+													!/^[0-9]$/.test(e.key) &&
+													e.key.length === 1
 												) {
-													return;
-												}
-												// Empêcher la saisie si ce n'est pas un chiffre
-												if (!/^[0-9]$/.test(e.key)) {
 													e.preventDefault();
 												}
 											}}
-											onChange={(e) => {
-												const value =
+											onChange={(e) =>
+												field.onChange(
 													e.target.value.replace(
 														/\D/g,
 														""
-													); // Filtrer pour garder uniquement les chiffres
-												field.onChange(value);
-											}}
+													)
+												)
+											}
 										/>
-										{/* Afficher les erreurs */}
 										{errors.phone && (
 											<p className="text-red-600 text-sm mt-1">
 												{errors.phone.message}
@@ -296,6 +306,7 @@ const AddPatientForm = ({}) => {
 								)}
 							/>
 
+							{/* Autres champs */}
 							<FormField
 								name="address"
 								control={control}
@@ -319,7 +330,6 @@ const AddPatientForm = ({}) => {
 								control={control}
 								label="Genre"
 								options={genderOptions}
-								required
 								rules={{ required: "Le genre est requis" }}
 								error={errors.gender?.message}
 							/>
@@ -328,7 +338,6 @@ const AddPatientForm = ({}) => {
 								control={control}
 								label="Statut Marital"
 								options={maritalStatusOptions}
-								required
 								rules={{
 									required: "Le statut marital est requis",
 								}}
@@ -341,73 +350,81 @@ const AddPatientForm = ({}) => {
 								placeholder="Entrez le métier"
 							/>
 
-							<label className="flex items-center mb-2 ">
+							{/* Checkbox Enfants */}
+							<label className="flex items-center col-span-1 md:col-span-2">
 								<input
 									type="checkbox"
 									checked={hasChildren}
 									onChange={() =>
 										setHasChildren(!hasChildren)
 									}
-									className="mr-2 rounded-md"
+									className="mr-2 rounded-md focus:ring-2 focus:ring-violet-500"
 								/>
-								Le patient a-t-il des enfants ?
+								Le patient a des enfants ?
 							</label>
-							{hasChildren && (
-								<div>
-									<h4 className="text-lg font-semibold mb-2">
-										Âges des enfants
-									</h4>
-									{childrenAges.map((age, index) => (
-										<div
-											key={index}
-											className="flex items-center mb-2"
-										>
-											<label className="mr-2 font-medium text-sm text-gray-700 dark:text-gray-300">
-												Âge de l&apos;enfant {index + 1}
-											</label>
-											<input
-												type="number"
-												placeholder="Âge en années"
-												value={age}
-												onChange={(e) => {
-													const value = parseInt(
-														e.target.value,
-														10
-													);
-													if (
-														!isNaN(value) &&
-														value >= 0
-													) {
+
+							{/* Champs Âges des enfants */}
+							<div
+								className={`transition-all duration-300 ease-in-out col-span-1 md:col-span-2 ${
+									hasChildren
+										? "opacity-100 max-h-screen"
+										: "opacity-0 max-h-0 overflow-hidden"
+								}`}
+							>
+								{hasChildren && (
+									<div>
+										<h4 className="text-lg font-semibold mb-2">
+											Âges des enfants
+										</h4>
+										{childrenAges.map((age, index) => (
+											<div
+												key={index}
+												className="flex items-center mb-2"
+											>
+												<label className="mr-2 font-medium text-sm text-gray-700 dark:text-gray-300">
+													Âge de l'enfant {index + 1}
+												</label>
+												<input
+													type="number"
+													placeholder="Âge en années"
+													value={age}
+													onChange={(e) =>
 														handleChildrenAgesChange(
 															index,
 															e
-														);
-													} else if (isNaN(value)) {
-														return;
+														)
 													}
-												}}
-												className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
-											/>
-											<button
-												type="button"
-												className="ml-2 text-red-500"
-												onClick={() =>
-													removeChildAgeField(index)
-												}
-											>
-												Supprimer
-											</button>
-										</div>
-									))}
-									<button
-										type="button"
-										className="mt-2 text-blue-500"
-										onClick={addChildAgeField}
-									>
-										Ajouter un enfant
-									</button>
-								</div>
-							)}
+													className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all"
+												/>
+												<button
+													type="button"
+													className="ml-2 text-red-500"
+													onClick={() =>
+														removeChildAgeField(
+															index
+														)
+													}
+												>
+													Supprimer
+												</button>
+											</div>
+										))}
+										<button
+											type="button"
+											className="mt-2 text-blue-500"
+											onClick={addChildAgeField}
+										>
+											Ajouter un enfant
+										</button>
+									</div>
+								)}
+								{childrenAges.length >= 10 && (
+									<p className="text-red-600 text-sm mt-1">
+										Vous avez atteint le nombre maximum de
+										10 enfants.
+									</p>
+								)}
+							</div>
 						</div>
 					</div>
 					<div className="mb-8">
@@ -467,15 +484,6 @@ const AddPatientForm = ({}) => {
 								}}
 								error={errors.hasVisionCorrection?.message}
 							/>
-							<SelectField
-								name="isDeceased"
-								control={control}
-								label="Le patient est-il décédé ?"
-								options={yesOptions}
-								required
-								rules={{ required: "Le statut est requis" }}
-								error={errors.isDeceased?.message}
-							/>{" "}
 							<FormField
 								name="activityLevel"
 								control={control}
@@ -581,7 +589,7 @@ const FormField = ({
 					{...field}
 					id={name}
 					placeholder={placeholder}
-					className={`w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out ${
+					className={`w-full text-sm p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out ${
 						field.value ? "bg-blue-100 dark:bg-zinc-900" : ""
 					}`}
 				/>
@@ -607,7 +615,7 @@ const TextAreaField = ({ name, control, label, placeholder }) => (
 					{...field}
 					id={name}
 					placeholder={placeholder}
-					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
+					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out text-sm"
 				/>
 			)}
 		/>
@@ -638,9 +646,11 @@ const SelectField = ({
 				<select
 					{...field}
 					id={name}
-					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
+					className="w-full text-sm p-2 border text-gray-500 border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
 				>
-					<option value="">Sélectionnez une option</option>
+					<option className="text-gray-500" value="">
+						Sélectionnez une option
+					</option>
 					{Object.entries(options).map(([value, label]) => (
 						<option key={value} value={value}>
 							{label}
@@ -671,7 +681,7 @@ const DatePickerField = ({ name, control, label, rules, error }) => (
 					onChange={onChange}
 					onBlur={onBlur}
 					dateFormat="dd/MM/yyyy"
-					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out"
+					className="w-full p-2 border border-blue-500 rounded-md focus:outline-none focus:border-violet-500 dark:bg-gray-900 dark:text-gray-200 transition duration-200 ease-in-out text-sm"
 					placeholderText="Sélectionnez une date"
 				/>
 			)}

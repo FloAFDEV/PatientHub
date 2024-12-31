@@ -55,14 +55,12 @@ const PatientList = ({ onAddPatientClick }) => {
 
 	const handlePatientDeleted = async (patientId) => {
 		try {
-			await deletePatient(patientId); // Ne pas affecter la réponse à une variable
-			// Affichage du message de succès si la suppression réussit
+			await deletePatient(patientId);
 			toast.success("Le patient a été supprimé avec succès !");
-			mutate(); // Rafraîchir les données, si nécessaire
+			mutate();
 		} catch (error) {
-			// Affichage du message d'erreur si une exception est levée
 			console.error("Erreur de suppression:", error);
-			toast.error("Une erreur est survenue lors de la suppression.");
+			toast.error(`Une erreur est survenue: ${error.message}`);
 		}
 	};
 
@@ -72,7 +70,7 @@ const PatientList = ({ onAddPatientClick }) => {
 	};
 
 	const calculateAge = (birthDate) => {
-		if (!birthDate) return "N/A";
+		if (!birthDate || isNaN(new Date(birthDate).getTime())) return "N/A";
 		const today = new Date();
 		const birth = new Date(birthDate);
 		let age = today.getFullYear() - birth.getFullYear();
@@ -269,6 +267,7 @@ const PatientList = ({ onAddPatientClick }) => {
 						</Sheet>
 
 						<Button
+							aria-label="Ajouter un nouveau patient"
 							onClick={onAddPatientClick}
 							className="flex-1 sm:flex-none h-9 dark:border-gray-400 dark:border-b-2 hover:bg-blue-400"
 						>
@@ -284,6 +283,7 @@ const PatientList = ({ onAddPatientClick }) => {
 				<div className="hidden md:flex flex-wrap justify-center gap-1.5">
 					{alphabet.map((letter) => (
 						<Button
+							aria-label={`Filtrer par lettre ${letter}`}
 							key={letter}
 							variant={
 								searchLetter === letter ? "default" : "outline"
@@ -390,6 +390,7 @@ const PatientList = ({ onAddPatientClick }) => {
 									</div>
 									<div className="flex items-center justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-0 mt-2 sm:mt-0">
 										<Button
+											aria-label={`Voir les détails du patient ${patient.firstName} ${patient.lastName}`}
 											variant="ghost"
 											size="sm"
 											onClick={() =>
@@ -408,6 +409,7 @@ const PatientList = ({ onAddPatientClick }) => {
 										</Button>
 
 										<Button
+											aria-label={`Prendre un rendez-vous avec ${patient.firstName} ${patient.lastName}`}
 											variant="outline"
 											size="sm"
 											onClick={() =>
