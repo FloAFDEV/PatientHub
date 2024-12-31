@@ -27,4 +27,6 @@ const StatCard: React.FC<StatCardProps> = React.memo(
 	)
 );
 
+StatCard.displayName = "StatCard";
+
 export default StatCard;

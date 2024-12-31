@@ -70,7 +70,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
 				if (
 					isMounted &&
-					JSON.stringify(dashboardData) !== JSON.stringify(data)
+					JSON.stringify(data) !== JSON.stringify(dashboardData)
 				) {
 					setDashboardData(data);
 				}
