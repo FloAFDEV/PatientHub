@@ -68,7 +68,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				}
 				const data = await response.json();
 
-				if (isMounted) {
+				if (
+					isMounted &&
+					JSON.stringify(dashboardData) !== JSON.stringify(data)
+				) {
 					setDashboardData(data);
 				}
 			} catch (error) {
@@ -111,23 +114,25 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 		[dashboardData?.averageAgeMale, dashboardData?.averageAgeFemale]
 	);
 
-	function mapMonthToFrench(month: string): string {
-		const months: { [key: string]: string } = {
-			January: "Janvier",
-			February: "Février",
-			March: "Mars",
-			April: "Avril",
-			May: "Mai",
-			June: "Juin",
-			July: "Juillet",
-			August: "Août",
-			September: "Septembre",
-			October: "Octobre",
-			November: "Novembre",
-			December: "Décembre",
+	const mapMonthToFrench = useMemo(() => {
+		return (month: string): string => {
+			const months: { [key: string]: string } = {
+				January: "Janvier",
+				February: "Février",
+				March: "Mars",
+				April: "Avril",
+				May: "Mai",
+				June: "Juin",
+				July: "Juillet",
+				August: "Août",
+				September: "Septembre",
+				October: "Octobre",
+				November: "Novembre",
+				December: "Décembre",
+			};
+			return months[month] || month;
 		};
-		return months[month] || month;
-	}
+	}, []);
 
 	return (
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
@@ -538,5 +543,7 @@ const StatCard: React.FC<StatCardProps> = ({
 		</div>
 	</div>
 );
+
+StatCard.displayName = "StatCard";
 
 export default Dashboard;
