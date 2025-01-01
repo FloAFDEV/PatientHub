@@ -5,12 +5,10 @@ import { toast } from "react-toastify";
 import {
 	ChevronUpIcon,
 	ChevronDownIcon,
-	ExclamationCircleIcon,
 	UserIcon,
 } from "@heroicons/react/24/solid";
 
-const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
-	const [isDeceased, setIsDeceased] = useState(patient.isDeceased || false);
+const PatientDetails = ({ patient, onClose }) => {
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 	const [error, setError] = useState(null);
 	const [openSections, setOpenSections] = useState({
@@ -121,35 +119,6 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 		</div>
 	);
 
-	// Fonction pour mettre à jour le patient
-	const handleUpdatePatient = async (updatedPatientData) => {
-		try {
-			const response = await fetch(`/api/patients/${patient.id}`, {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(updatedPatientData),
-			});
-
-			if (response.ok) {
-				toast.success(
-					"Les informations du patient ont été mises à jour."
-				);
-				onPatientUpdated(updatedPatientData);
-				onClose();
-			} else {
-				const result = await response.json();
-				toast.error(`Erreur : ${result.error}`);
-			}
-		} catch (error) {
-			console.error("Erreur lors de la mise à jour du patient :", error);
-			toast.error(
-				"Impossible de mettre à jour les informations du patient."
-			);
-		}
-	};
-
 	// Gestion de la suppression
 	const handleDeletePatient = async () => {
 		try {
@@ -223,7 +192,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 						<button
 							className="border border-green-500 hover:bg-green-600 hover:text-white p-2 text-sm md:text-base rounded-lg"
 							onClick={() =>
-								handleUpdatePatient("Édition du patient")
+								handleUpdatePatient(updatedPatientData)
 							}
 							aria-label="Éditer les informations du patient"
 						>

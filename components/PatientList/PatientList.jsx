@@ -22,7 +22,6 @@ import {
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AppointmentDialog } from "@/components/Appointments/AppointmentDialog";
 import {
 	Sheet,
 	SheetContent,
@@ -40,9 +39,7 @@ const PatientList = ({ onAddPatientClick }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
-	const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
-	const [selectedPatientForAppointment, setSelectedPatientForAppointment] =
-		useState(null);
+	useState(null);
 	const [isFilterOpen, setIsFilterOpen] = useState(false);
 
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
