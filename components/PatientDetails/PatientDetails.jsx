@@ -346,7 +346,7 @@ const PatientDetails = ({ patient, onClose }) => {
 
 			{/* Informations sur la famille */}
 			<SectionToggle
-				title="Informations sur la famille"
+				title="Informations familiales"
 				isOpen={openSections.familyInfo}
 				onToggle={() => toggleSection("familyInfo")}
 			>

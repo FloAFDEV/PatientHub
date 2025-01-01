@@ -169,7 +169,7 @@ const AddPatientForm = ({}) => {
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
 			{/* En-tête de l'ajout de patient */}
 			<header className="mb-8">
-				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
+				<div className="transition-transform duration-300 relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8 ">
 					<Image
 						src="/assets/images/WelcomePatient.webp"
 						alt="Salon design et moderne"
@@ -177,18 +177,10 @@ const AddPatientForm = ({}) => {
 						style={{
 							objectFit: "cover",
 						}}
-						className="opacity-90 object-[center_50%] sm:object-[center_50%] sm:object-cover"
+						className="opacity-90 object-[center_50%] sm:object-[center_50%] sm:object-cover "
 						priority
 					/>
-					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
-						<Image
-							src="/assets/icons/logo-full.svg"
-							alt="Logo"
-							width={80}
-							height={80}
-							className="object-contain shadow-xl rounded-xl mb-4"
-							priority
-						/>
+					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg backdrop-blur-sm">
 						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm ">
 							Ajouter un Patient
 						</h1>
@@ -198,13 +190,13 @@ const AddPatientForm = ({}) => {
 					</div>
 				</div>
 			</header>
-			<div className="p-5 w-full max-w-7xl border border-blue-300 rounded-lg shadow-md bg-white dark:bg-slate-800 relative mx-auto">
+			<div className="p-5 w-full max-w-7xl border border-blue-300 rounded-lg shadow-md bg-white dark:bg-slate-800 relative mx-auto ">
 				<ToastContainer />
-				<form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+				<form onSubmit={handleSubmit(onSubmit)} className="space-y-6 ">
 					<h2 className="text-2xl font-bold mb-6 text-center">
 						Ajouter un Patient
 					</h2>
-					<div className="mb-8">
+					<div className="mb-8 ">
 						<h3 className="text-xl font-semibold mb-4 text-start">
 							Informations Personnelles
 						</h3>

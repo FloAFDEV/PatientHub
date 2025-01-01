@@ -164,7 +164,7 @@ const PatientList = ({ onAddPatientClick }) => {
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
 			<ToastContainer />
-			{/* Header avec effet parallaxe */}
+			{/* Header */}
 			<header className="relative mb-8 group">
 				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-[1.01]">
 					<Image

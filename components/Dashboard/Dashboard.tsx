@@ -176,7 +176,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 			</header>
 
 			{/* Section des statistiques */}
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+			<div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-8 h-8">
@@ -316,7 +316,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
 			{/* Section des graphiques */}
 			<section className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6">
-				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4 text-center">
+				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-8 text-center">
 					Graphiques et visualisations
 				</h2>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
@@ -536,7 +536,7 @@ const StatCard: React.FC<StatCardProps> = ({
 				</h3>
 			</div>
 		</div>
-		<p className="text-2xl sm:text-xl font-bold text-gray-900 dark:text-white mb-2">
+		<p className="text-3xl lg:text-3xl sm:text-2xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
 			{value}
 		</p>
 		<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2">
