@@ -140,14 +140,6 @@ export default function AppointmentsManager() {
 							Informations et paramètres de votre agenda médical
 						</p>
 					</div>
-					<Image
-						src="/assets/icons/logo-full.svg"
-						alt="Logo"
-						width={80}
-						height={80}
-						className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-xl shadow-lg"
-						priority
-					/>
 				</div>
 			</header>
 			<div className="flex flex-col md:flex-row gap-8">

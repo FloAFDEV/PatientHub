@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect, useCallback } from "react";
 import ConfirmDeletePatientModal from "@/components/DeleteModal/ConfirmDeletePatientModal";
 import Image from "next/image";
@@ -7,17 +5,19 @@ import { toast } from "react-toastify";
 import {
 	ChevronUpIcon,
 	ChevronDownIcon,
+	ExclamationCircleIcon,
 	UserIcon,
 } from "@heroicons/react/24/solid";
 
-const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
+const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
+	const [isDeceased, setIsDeceased] = useState(patient.isDeceased || false);
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 	const [error, setError] = useState(null);
 	const [openSections, setOpenSections] = useState({
 		basicInfo: true,
-		medicalHistory: false,
-		familyInfo: false,
-		practitionerInfo: false,
+		medicalHistory: true,
+		familyInfo: true,
+		practitionerInfo: true,
 	});
 
 	const formatPhoneNumber = (phone) => {
@@ -121,6 +121,35 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 		</div>
 	);
 
+	// Fonction pour mettre à jour le patient
+	const handleUpdatePatient = async (updatedPatientData) => {
+		try {
+			const response = await fetch(`/api/patients/${patient.id}`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(updatedPatientData),
+			});
+
+			if (response.ok) {
+				toast.success(
+					"Les informations du patient ont été mises à jour."
+				);
+				onPatientUpdated(updatedPatientData);
+				onClose();
+			} else {
+				const result = await response.json();
+				toast.error(`Erreur : ${result.error}`);
+			}
+		} catch (error) {
+			console.error("Erreur lors de la mise à jour du patient :", error);
+			toast.error(
+				"Impossible de mettre à jour les informations du patient."
+			);
+		}
+	};
+
 	// Gestion de la suppression
 	const handleDeletePatient = async () => {
 		try {
@@ -193,7 +222,9 @@ const PatientDetails = ({ patient, onClose, onPatientDeleted }) => {
 						{/* Bouton Éditer */}
 						<button
 							className="border border-green-500 hover:bg-green-600 hover:text-white p-2 text-sm md:text-base rounded-lg"
-							onClick={() => alert("Édition du patient")}
+							onClick={() =>
+								handleUpdatePatient("Édition du patient")
+							}
 							aria-label="Éditer les informations du patient"
 						>
 							Éditer le patient

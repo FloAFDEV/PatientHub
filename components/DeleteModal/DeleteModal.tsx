@@ -11,7 +11,7 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
 }) => {
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-6 sm:p-10">
-			<div className="bg-white dark:bg-slate-700 rounded-lg shadow-xl w-full max-w-md border-4 border-red-600">
+			<div className="bg-white dark:bg-slate-700 rounded-lg shadow-xl w-full max-w-2xl lg:max-w-6xl xl:max-w-7xl border-4 border-red-600">
 				<div className="p-6 sm:p-8">
 					<h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4">
 						Suppression Définitive du Cabinet

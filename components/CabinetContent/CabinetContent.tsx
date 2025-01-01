@@ -33,7 +33,6 @@ const CabinetContent: React.FC = () => {
 	const [isAddMode, setIsAddMode] = useState(false);
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 
-	// Utilisation de useCallback pour mémoriser la fonction de récupération des infos
 	const fetchCabinetInfo = useCallback(async () => {
 		setLoading(true);
 		setError(null);
@@ -59,7 +58,6 @@ const CabinetContent: React.FC = () => {
 		}
 	}, []);
 
-	// Effect pour appeler fetchCabinetInfo au premier rendu
 	useEffect(() => {
 		fetchCabinetInfo();
 	}, [fetchCabinetInfo]);
@@ -133,7 +131,6 @@ const CabinetContent: React.FC = () => {
 		if (cabinetInfo?.id) setIsConfirmDeleteOpen(true);
 	}, [cabinetInfo]);
 
-	// Si en cours de chargement
 	if (loading) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900">
@@ -145,7 +142,6 @@ const CabinetContent: React.FC = () => {
 		);
 	}
 
-	// Si erreur lors de la récupération des données
 	if (error) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900 p-4">
@@ -164,25 +160,6 @@ const CabinetContent: React.FC = () => {
 			</div>
 		);
 	}
-
-	// Focus sur la modale ouverte, déplace le focus vers son titre
-	useEffect(() => {
-		let modalTitle: HTMLElement | null = null;
-
-		if (isEditMode) {
-			modalTitle = document.getElementById("edit-modal-title");
-		}
-		if (isAddMode) {
-			modalTitle = document.getElementById("add-modal-title");
-		}
-		if (isConfirmDeleteOpen) {
-			modalTitle = document.getElementById("delete-modal-title");
-		}
-
-		if (modalTitle) {
-			modalTitle.focus();
-		}
-	}, [isEditMode, isAddMode, isConfirmDeleteOpen]);
 
 	return (
 		<div className="flex-1 p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto min-h-screen">

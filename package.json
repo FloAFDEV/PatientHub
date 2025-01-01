@@ -2,15 +2,15 @@
 	"name": "patienthub",
 	"version": "0.1.0",
 	"private": true,
-"scripts": {
-    "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
-    "lint": "next lint",
-    "clean": "rm -rf .next out",
-    "postinstall": "prisma generate",
-    "prisma:generate": "prisma generate"
-},
+	"scripts": {
+		"dev": "next dev",
+		"build": "prisma generate && next build",
+		"start": "next start",
+		"lint": "next lint",
+		"clean": "rm -rf .next out",
+		"postinstall": "prisma generate",
+		"prisma:generate": "prisma generate"
+	},
 	"dependencies": {
 		"@fortawesome/free-solid-svg-icons": "^6.6.0",
 		"@fortawesome/react-fontawesome": "^0.2.2",

@@ -201,12 +201,16 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							currentPatients !== undefined &&
 							patients30DaysAgo !== undefined
 						) {
-							// Calcul du pourcentage d'augmentation
+							// Calcul du pourcentage d'augmentation, avec une valeur minimale de 0
 							const increase =
-								((currentPatients - patients30DaysAgo) /
-									patients30DaysAgo) *
-								100;
-							return `+ ${increase.toFixed(0)}% sur 30 jours`;
+								patients30DaysAgo !== 0
+									? ((currentPatients - patients30DaysAgo) /
+											patients30DaysAgo) *
+									  100
+									: 0;
+							return `+ ${Math.max(increase, 0).toFixed(
+								0
+							)}% sur 30 jours`;
 						}
 
 						return "Chargement...";
@@ -270,11 +274,17 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 										lastYearPatients !== 0 &&
 										currentYearPatients !== undefined
 									) {
-										const growth =
+										let growth =
 											((currentYearPatients -
 												lastYearPatients) /
 												lastYearPatients) *
 											100;
+
+										// Si la croissance est négative, afficher 0%
+										if (growth < 0) {
+											growth = 0;
+										}
+
 										return `+ ${growth.toFixed(
 											0
 										)}% sur l'année en cours`;

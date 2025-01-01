@@ -167,34 +167,27 @@ const PatientList = ({ onAddPatientClick }) => {
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
 			<ToastContainer />
-			<header className="mb-8">
-				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
+			{/* Header avec effet parallaxe */}
+			<header className="relative mb-8 group">
+				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-[1.01]">
 					<Image
 						src="/assets/images/PatientRoom.webp"
-						alt="Fauteuil de cabinet designe et moderne"
+						alt="Cabinet médical moderne"
 						fill
-						style={{
-							objectFit: "cover",
-						}}
-						className="opacity-80 object-[center_50%] sm:object-[center_50%] sm:object-cover"
+						style={{ objectFit: "cover" }}
+						className="transform transition-transform duration-500 group-hover:scale-105"
 						priority
 					/>
-					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
-						<Image
-							src="/assets/icons/logo-full.svg"
-							alt="Logo"
-							width={80}
-							height={80}
-							className="object-contain shadow-xl rounded-xl mb-4"
-							priority
-						/>
-						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">
-							Liste de vos patients
-						</h1>
-						<p className="hidden sm:block text-base sm:text-lg md:text-xl drop-shadow-sm max-w-2xl">
-							Consultez et gérez la liste de vos patients en toute
-							simplicité
-						</p>
+					<div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30 backdrop-blur-sm">
+						<div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+							<h1 className="text-3xl font-bold text-white tracking-tight">
+								Liste de vos patients
+							</h1>
+							<p className="mt-2 text-lg text-gray-200 max-w-2xl">
+								Consultez et gérez la liste de vos patients en
+								toute simplicité
+							</p>
+						</div>
 					</div>
 				</div>
 			</header>
@@ -266,16 +259,16 @@ const PatientList = ({ onAddPatientClick }) => {
 							</SheetContent>
 						</Sheet>
 
-						<Button
-							aria-label="Ajouter un nouveau patient"
-							onClick={onAddPatientClick}
-							className="flex-1 sm:flex-none h-9 dark:border-gray-400 dark:border-b-2 hover:bg-blue-400"
-						>
-							<IconPlus size={18} className="sm:mr-2 " />
-							<span className="hidden sm:inline">
-								Ajouter un patient
-							</span>
-						</Button>
+						{/* Actions rapides */}
+						<div className="flex gap-2 mb-6">
+							<Button
+								onClick={onAddPatientClick}
+								className="flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transition-all duration-300 hover:scale-105"
+							>
+								<IconPlus size={18} className="mr-2" />
+								Nouveau patient
+							</Button>
+						</div>
 					</div>
 				</div>
 
@@ -307,11 +300,11 @@ const PatientList = ({ onAddPatientClick }) => {
 			</div>
 
 			{/* Liste des patients */}
-			<div className="space-y-2 sm:space-y-4">
+			<div className="space-y-3">
 				{!sortedPatients.length ? (
-					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-						<IconSearch className="mx-auto h-12 w-12 text-gray-400" />
-						<p className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
+					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm animate-fadeIn">
+						<IconSearch className="mx-auto h-12 w-12 text-gray-400 animate-pulse" />
+						<p className="mt-4 text-lg font-medium">
 							Aucun patient trouvé
 						</p>
 						<p className="mt-2 text-sm text-gray-500">
@@ -320,12 +313,15 @@ const PatientList = ({ onAddPatientClick }) => {
 						</p>
 					</div>
 				) : (
-					sortedPatients.map((patient) => (
+					sortedPatients.map((patient, index) => (
 						<div
-							key={`${patient.id || ""}-${patient.firstName}-${
-								patient.lastName
-							}`}
-							className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+							key={patient.id}
+							className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+							style={{
+								animationDelay: `${index * 50}ms`,
+								opacity: 0,
+								animation: "fadeSlideIn 0.5s ease forwards",
+							}}
 						>
 							<div className="p-3 sm:p-2 ">
 								<div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
@@ -409,7 +405,6 @@ const PatientList = ({ onAddPatientClick }) => {
 										</Button>
 
 										<Button
-											aria-label={`Prendre un rendez-vous avec ${patient.firstName} ${patient.lastName}`}
 											variant="outline"
 											size="sm"
 											onClick={() =>
@@ -448,46 +443,60 @@ const PatientList = ({ onAddPatientClick }) => {
 			</div>
 			{/* Pagination adaptative */}
 			{totalPages > 1 && (
-				<div className="flex justify-between items-center mt-6">
+				<div className="flex justify-center gap-2 mt-6">
 					<Button
-						aria-label="Page précédente"
 						variant="outline"
 						onClick={() =>
 							setCurrentPage((p) => Math.max(1, p - 1))
 						}
 						disabled={currentPage === 1}
-						className="h-9 px-2 sm:px-4"
+						className="transition-transform hover:scale-105"
 					>
-						<IconChevronLeft className="h-4 w-4 sm:mr-2" />
-						<span className="hidden sm:inline">Précédent</span>
+						<IconChevronLeft className="h-4 w-4" />
 					</Button>
-					<span className="text-sm text-gray-600 dark:text-gray-400">
-						{currentPage} / {totalPages}
-					</span>
+					{Array.from({ length: totalPages }, (_, i) => i + 1).map(
+						(page) => (
+							<Button
+								key={page}
+								variant={
+									currentPage === page ? "default" : "outline"
+								}
+								onClick={() => setCurrentPage(page)}
+								className="w-8 h-8 transition-transform hover:scale-110"
+							>
+								{page}
+							</Button>
+						)
+					)}
 					<Button
-						aria-label="Page suivante"
 						variant="outline"
 						onClick={() =>
 							setCurrentPage((p) => Math.min(totalPages, p + 1))
 						}
 						disabled={currentPage === totalPages}
-						className="h-9 px-2 sm:px-4"
+						className="transition-transform hover:scale-105"
 					>
-						<span className="hidden sm:inline">Suivant</span>
-						<IconChevronRight className="h-4 w-4 sm:ml-2" />
+						<IconChevronRight className="h-4 w-4" />
 					</Button>
 				</div>
 			)}
-			{/* Modales */}
-			{showAppointmentDialog && selectedPatientForAppointment && (
-				<AppointmentDialog
-					open={showAppointmentDialog}
-					onOpenChange={setShowAppointmentDialog}
-					patients={[selectedPatientForAppointment]}
-					selectedDate={new Date()}
-					mode="create"
-				/>
-			)}
+
+			<style jsx global>{`
+				@keyframes fadeSlideIn {
+					from {
+						opacity: 0;
+						transform: translateY(10px);
+					}
+					to {
+						opacity: 1;
+						transform: translateY(0);
+					}
+				}
+
+				.animate-fadeIn {
+					animation: fadeIn 0.5s ease-in-out;
+				}
+			`}</style>
 		</div>
 	);
 };
