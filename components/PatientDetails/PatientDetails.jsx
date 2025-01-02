@@ -13,10 +13,12 @@ const PatientDetails = ({ patient, onClose }) => {
 	const [error, setError] = useState(null);
 	const [openSections, setOpenSections] = useState({
 		basicInfo: true,
-		medicalHistory: true,
-		familyInfo: true,
-		practitionerInfo: true,
+		medicalHistory: false,
+		familyInfo: false,
+		practitionerInfo: false,
 	});
+	const [isEditing, setIsEditing] = useState(false);
+	const [editedPatient, setEditedPatient] = useState(patient);
 
 	const formatPhoneNumber = (phone) => {
 		if (!phone) return "";
@@ -108,18 +110,26 @@ const PatientDetails = ({ patient, onClose }) => {
 		);
 	}
 
-	const DetailItem = ({ label, value }) => (
+	const DetailItem = ({ label, value, editable, onChange }) => (
 		<div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-gray-300 dark:border-gray-700">
 			<span className="font-semibold text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 sm:mb-0">
 				{label}
 			</span>
-			<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words w-full sm:text-right">
-				{value}
-			</p>
+			{editable ? (
+				<input
+					type="text"
+					value={value}
+					onChange={(e) => onChange(e.target.value)}
+					className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+				/>
+			) : (
+				<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words w-full sm:text-right">
+					{value}
+				</p>
+			)}
 		</div>
 	);
 
-	// Gestion de la suppression
 	const handleDeletePatient = async () => {
 		try {
 			const response = await fetch(`/api/patients?id=${patient.id}`, {
@@ -127,11 +137,9 @@ const PatientDetails = ({ patient, onClose }) => {
 			});
 
 			if (response.ok) {
-				// Appel de la fonction passée en prop pour supprimer depuis la liste
-				onPatientDeleted(patient.id); // Appel de la fonction passée en prop
 				toast.success("Patient supprimé avec succès !");
 				setIsConfirmDeleteOpen(false);
-				onClose(); // Fermer la vue détaillée
+				onClose();
 			} else {
 				const result = await response.json();
 				toast.error(`Erreur: ${result.error}`);
@@ -142,11 +150,36 @@ const PatientDetails = ({ patient, onClose }) => {
 		}
 	};
 
+	const handleChange = (field, value) => {
+		setEditedPatient((prevState) => ({
+			...prevState,
+			[field]: value,
+		}));
+	};
+
+	const handleUpdatePatient = async () => {
+		try {
+			const response = await fetch(`/api/patients/${patient.id}`, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(editedPatient),
+			});
+
+			if (response.ok) {
+				toast.success("Patient mis à jour avec succès");
+				setIsEditing(false);
+			} else {
+				toast.error("Erreur lors de la mise à jour du patient");
+			}
+		} catch (error) {
+			console.error("Erreur:", error);
+			toast.error("Erreur lors de la mise à jour du patient");
+		}
+	};
+
 	return (
 		<div className="p-1 w-full h-screen mx-auto dark:text-gray-300 overflow-y-auto">
-			{/* En-tête d'informations du patient */}
 			<div className="flex items-center space-x-4 md:space-x-6 mb-6">
-				{/* Image à gauche */}
 				<Image
 					src={
 						patient.avatarUrl ||
@@ -165,14 +198,12 @@ const PatientDetails = ({ patient, onClose }) => {
 					width={128}
 					height={128}
 				/>
-				{/* Conteneur texte et boutons */}
 				<div className="flex flex-col">
 					<div className="text-lg sm:text-xl md:text-2xl font-bold text-center md:text-left">
 						<div className="flex items-center">
 							<span className="font-semibold text-xs text-gray-600 dark:text-gray-300">
 								Prénom:
 							</span>
-
 							<span className="ml-2 text-lg">
 								{patient.firstName || "Prénom inconnu"}
 							</span>
@@ -186,25 +217,17 @@ const PatientDetails = ({ patient, onClose }) => {
 							</span>
 						</div>
 					</div>
-
 					<div className="mt-2 flex flex-col space-y-2">
-						{/* Bouton Éditer */}
 						<button
 							className="border border-green-500 hover:bg-green-600 hover:text-white p-2 text-sm md:text-base rounded-lg"
-							onClick={() =>
-								handleUpdatePatient(updatedPatientData)
-							}
+							onClick={() => setIsEditing(!isEditing)}
 							aria-label="Éditer les informations du patient"
 						>
-							Éditer le patient
+							{isEditing ? "Annuler" : "Éditer le patient"}
 						</button>
-						{/* Modal de confirmation pour supprimer */}
 						{isConfirmDeleteOpen && (
 							<ConfirmDeletePatientModal
-								onDelete={async () => {
-									await handleDeletePatient();
-									setIsConfirmDeleteOpen(false);
-								}}
+								onDelete={handleDeletePatient}
 								onCancel={() => setIsConfirmDeleteOpen(false)}
 								patientName={
 									patient.firstName && patient.lastName
@@ -213,7 +236,6 @@ const PatientDetails = ({ patient, onClose }) => {
 								}
 							/>
 						)}
-						{/* Bouton Supprimer */}
 						<button
 							className="border border-red-500 hover:bg-red-600 hover:text-white p-2 text-sm md:text-base rounded-lg"
 							onClick={() => setIsConfirmDeleteOpen(true)}
@@ -223,127 +245,109 @@ const PatientDetails = ({ patient, onClose }) => {
 					</div>
 				</div>
 			</div>
-			{/* Informations de base */}
 			<SectionToggle
 				title="Informations de base"
 				isOpen={openSections.basicInfo}
 				onToggle={() => toggleSection("basicInfo")}
-				aria-expanded={openSections.basicInfo}
-				aria-controls="basicInfo-content"
 			>
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
 					<DetailItem
 						label="Email"
-						value={patient.email || "Non renseigné"}
+						value={editedPatient.email || "Non renseigné"}
+						editable={isEditing}
+						onChange={(value) => handleChange("email", value)}
 					/>
 					<DetailItem
 						label="Téléphone"
 						value={
-							formatPhoneNumber(patient.phone) || "Non renseigné"
+							formatPhoneNumber(editedPatient.phone) ||
+							"Non renseigné"
 						}
+						editable={isEditing}
+						onChange={(value) => handleChange("phone", value)}
 					/>
 					<DetailItem
 						label="Date de Naissance"
 						value={
-							patient.birthDate
+							editedPatient.birthDate
 								? new Date(
-										patient.birthDate
+										editedPatient.birthDate
 								  ).toLocaleDateString("fr-FR")
 								: "Non renseignée"
 						}
+						editable={isEditing}
+						onChange={(value) => handleChange("birthDate", value)}
 					/>
 					<DetailItem
 						label="Genre"
-						value={patient.gender || "Non renseigné"}
+						value={editedPatient.gender || "Non renseigné"}
+						editable={isEditing}
+						onChange={(value) => handleChange("gender", value)}
 					/>
 					<DetailItem
 						label="Adresse"
-						value={patient.address || "Non renseignée"}
+						value={editedPatient.address || "Non renseignée"}
+						editable={isEditing}
+						onChange={(value) => handleChange("address", value)}
 					/>
 					<DetailItem
 						label="Statut marital"
 						value={
-							maritalStatusTranslations[patient.maritalStatus] ||
-							"Non renseigné"
+							maritalStatusTranslations[
+								editedPatient.maritalStatus
+							] || "Non renseigné"
+						}
+						editable={isEditing}
+						onChange={(value) =>
+							handleChange("maritalStatus", value)
 						}
 					/>
 					<DetailItem
 						label="Métier"
-						value={patient.occupation || "Non renseigné"}
+						value={editedPatient.occupation || "Non renseigné"}
+						editable={isEditing}
+						onChange={(value) => handleChange("occupation", value)}
 					/>
 					<DetailItem
 						label="Latéralité"
 						value={
-							handednessTranslations[patient.handedness] ||
+							handednessTranslations[editedPatient.handedness] ||
 							"Non renseignée"
 						}
+						editable={isEditing}
+						onChange={(value) => handleChange("handedness", value)}
 					/>
 					<DetailItem
 						label="Activité physique"
-						value={patient.physicalActivity || "Non renseignée"}
-					/>
-				</div>
-			</SectionToggle>
-
-			{/* Antécédents médicaux */}
-			<SectionToggle
-				title="Antécédents médicaux"
-				isOpen={openSections.medicalHistory}
-				onToggle={() => toggleSection("medicalHistory")}
-			>
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
-					<DetailItem
-						label="Antécédents chirurgicaux"
-						value={patient.surgicalHistory || "Non renseigné"}
-					/>
-					<DetailItem
-						label="Antécédents traumatiques"
-						value={patient.traumaHistory || "Non renseigné"}
-					/>
-					<DetailItem
-						label="Antécédents rhumatologiques"
 						value={
-							patient.rheumatologicalHistory || "Non renseigné"
+							editedPatient.physicalActivity || "Non renseignée"
+						}
+						editable={isEditing}
+						onChange={(value) =>
+							handleChange("physicalActivity", value)
 						}
 					/>
 					<DetailItem
-						label="Correction visuelle ?"
+						label="Fumeur ?"
 						value={
-							yesNoTranslations[patient.hasVisionCorrection] ||
-							"Non renseignée"
+							yesNoTranslations[editedPatient.isSmoker] ||
+							"Non renseigné"
 						}
+						editable={isEditing}
+						onChange={(value) => handleChange("isSmoker", value)}
 					/>
+					{/* Champ pour la mention du décès */}
 					<DetailItem
-						label="Nom de l'ophtalmologiste"
-						value={patient.ophtalmologistName || "Non renseigné"}
-					/>
-					<DetailItem
-						label="Problèmes ORL"
-						value={patient.entProblems || "Non renseigné"}
-					/>
-					<DetailItem
-						label="Nom du médecin ORL"
-						value={patient.entDoctorName || "Non renseigné"}
-					/>
-					<DetailItem
-						label="Problèmes digestifs"
-						value={patient.digestiveProblems || "Non renseigné"}
-					/>
-					<DetailItem
-						label="Nom du médecin digestif"
-						value={patient.digestiveDoctorName || "Non renseigné"}
-					/>
-					<DetailItem
-						label="Informations HDLM"
-						value={patient.hdlm || "Non renseignées"}
-					/>
-					<DetailItem
-						label="Traitements en cours"
-						value={patient.currentTreatment || "Non renseigné"}
+						label="Décédé ?"
+						value={
+							yesNoTranslations[editedPatient.isDeceased] ||
+							"Non renseigné"
+						}
+						editable={isEditing}
+						onChange={(value) => handleChange("isDeceased", value)}
 					/>
 				</div>
 			</SectionToggle>
-
 			{/* Informations sur la famille */}
 			<SectionToggle
 				title="Informations familiales"
@@ -352,22 +356,17 @@ const PatientDetails = ({ patient, onClose }) => {
 			>
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
 					<DetailItem
-						label="Fumeur ?"
-						value={
-							yesNoTranslations[patient.isSmoker] ||
-							"Non renseigné"
-						}
-					/>
-					<DetailItem
 						label="Contraception"
 						value={
 							contraceptionTranslations[patient.contraception] ||
 							"Non renseignée"
 						}
+						editable={isEditing}
 					/>
 					<DetailItem
 						label="Enfants"
 						value={patient.hasChildren === "true" ? "Oui" : "Non"}
+						editable={isEditing}
 					/>
 					{patient.childrenAges && (
 						<div>
@@ -396,12 +395,12 @@ const PatientDetails = ({ patient, onClose }) => {
 					)}
 				</div>
 			</SectionToggle>
-
 			{/* Informations du praticien et cabinet */}
 			<SectionToggle
 				title="Informations du praticien et cabinet"
 				isOpen={openSections.practitionerInfo}
 				onToggle={() => toggleSection("practitionerInfo")}
+				editable={isEditing}
 			>
 				<DetailItem
 					label="Médecin traitant"
@@ -416,7 +415,6 @@ const PatientDetails = ({ patient, onClose }) => {
 					value={patient.cabinet?.name || "Non renseigné"}
 				/>
 			</SectionToggle>
-
 			{/* Documents médicaux et consultations */}
 			<div className="mb-4 border rounded-lg overflow-hidden">
 				<div className="bg-gray-100 dark:bg-gray-700 p-3 text-gray-800 dark:text-gray-200">
@@ -456,7 +454,13 @@ const PatientDetails = ({ patient, onClose }) => {
 						)}
 					/>
 				</div>
-			</div>
+			</div>{" "}
+			<button
+				onClick={handleUpdatePatient}
+				className="mt-4 p-2 text-white bg-blue-600 rounded-lg"
+			>
+				Mettre à jour les informations
+			</button>
 		</div>
 	);
 };

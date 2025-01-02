@@ -177,17 +177,9 @@ const CabinetContent: React.FC = () => {
 						className="opacity-80"
 						priority
 					/>
-					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
-						<Image
-							src="/assets/icons/logo-full.svg"
-							alt="Logo"
-							width={80}
-							height={80}
-							className="object-contain shadow-xl rounded-xl mb-4"
-							priority
-						/>
+					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg backdrop-blur-sm">
 						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">
-							Fiche de votre cabinet
+							Votre cabinet
 						</h1>
 						<p className="hidden sm:block text-base sm:text-lg md:text-xl drop-shadow-sm max-w-2xl">
 							Informations et paramètres de votre cabinet
