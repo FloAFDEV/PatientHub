@@ -54,6 +54,8 @@ const PatientDetails = ({ patient, onClose }) => {
 		DIVORCED: "Divorcé(e)",
 		WIDOWED: "Veuf/veuve",
 		SEPARATED: "Séparé(e)",
+		ENGAGED: "Fiancé(e)",
+		PARTNERED: "En couple",
 	};
 
 	const contraceptionTranslations = {
@@ -119,18 +121,21 @@ const PatientDetails = ({ patient, onClose }) => {
 
 	const DetailItem = ({ label, value, editable, onChange, field }) => {
 		const inputRef = useRef(null);
-		// Utilisation de useEffect pour mettre le focus lorsque editable change
+
+		// Utilisation de useEffect pour mettre le focus uniquement quand editable change
 		useEffect(() => {
 			if (editable && inputRef.current) {
 				inputRef.current.focus();
 			}
 		}, [editable]); // Le focus est appliqué uniquement lorsque `editable` est `true`
+
 		// Fonction pour formater la date avant de l'envoyer
 		const formatDateToISO = (date) => {
 			if (!date) return "";
 			if (date.includes("T")) return date; // Si c'est déjà un format ISO valide, on ne fait rien
 			return new Date(date).toISOString(); // Sinon, on formate en ISO
 		};
+
 		const handleDateChange = (e) => {
 			let inputValue = e.target.value;
 			if (field === "birthDate") {
@@ -139,6 +144,7 @@ const PatientDetails = ({ patient, onClose }) => {
 			console.log("Valeur avant onChange:", inputValue);
 			onChange(inputValue); // Appeler la fonction onChange pour mettre à jour la valeur dans le parent
 		};
+
 		return (
 			<div className="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-300 dark:border-gray-700 gap-2">
 				<span className="font-semibold text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 sm:mb-0">
@@ -147,6 +153,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				{editable ? (
 					field === "birthDate" ? (
 						<input
+							key={field} // Utilisation d'une clé dynamique pour éviter les re-rendus complets
 							ref={inputRef}
 							type="date"
 							value={
@@ -161,6 +168,7 @@ const PatientDetails = ({ patient, onClose }) => {
 						/>
 					) : (
 						<input
+							key={field} // Utilisation d'une clé dynamique pour éviter les re-rendus complets
 							ref={inputRef}
 							type="text"
 							value={value}
@@ -184,11 +192,11 @@ const PatientDetails = ({ patient, onClose }) => {
 	};
 
 	const handleDeletePatient = async () => {
+		setIsLoading(true);
 		try {
 			const response = await fetch(`/api/patients?id=${patient.id}`, {
 				method: "DELETE",
 			});
-
 			if (response.ok) {
 				toast.success("Patient supprimé avec succès !");
 				setIsConfirmDeleteOpen(false);
@@ -200,6 +208,8 @@ const PatientDetails = ({ patient, onClose }) => {
 		} catch (error) {
 			console.error("Erreur lors de la suppression :", error);
 			toast.error("Erreur lors de la suppression du patient.");
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -396,23 +406,32 @@ const PatientDetails = ({ patient, onClose }) => {
 					<DetailItem
 						label="Statut marital"
 						value={
-							isEditing
-								? editedPatient.maritalStatus
-								: maritalStatusTranslations[
-										editedPatient.maritalStatus
-								  ] || "Non renseigné"
+							isEditing ? (
+								<select
+									value={editedPatient.maritalStatus || ""}
+									onChange={(e) =>
+										handleChange(
+											"maritalStatus",
+											e.target.value
+										)
+									}
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+								>
+									<option value="">Non renseigné</option>
+									<option value="SINGLE">Célibataire</option>
+									<option value="MARRIED">Marié(e)</option>
+									<option value="DIVORCED">Divorcé(e)</option>
+									<option value="WIDOWED">Veuf/veuve</option>
+									<option value="SEPARATED">Séparé(e)</option>
+									<option value="ENGAGED">Fiancé(e)</option>
+									<option value="PARTNERED">En couple</option>
+								</select>
+							) : (
+								maritalStatusTranslations[
+									editedPatient.maritalStatus
+								] || "Non renseigné"
+							)
 						}
-						editable={isEditing}
-						onChange={(value) =>
-							handleChange("maritalStatus", value)
-						}
-						options={[
-							{ value: "SINGLE", label: "Célibataire" },
-							{ value: "MARRIED", label: "Marié(e)" },
-							{ value: "DIVORCED", label: "Divorcé(e)" },
-							{ value: "WIDOWED", label: "Veuf/veuve" },
-							{ value: "SEPARATED", label: "Séparé(e)" },
-						]}
 					/>
 
 					<DetailItem
@@ -522,28 +541,19 @@ const PatientDetails = ({ patient, onClose }) => {
 							isEditing ? (
 								// Mode édition : afficher le select avec les valeurs de l'énumération
 								<select
-									value={
-										editedPatient?.contraception?.type || ""
-									}
+									value={editedPatient?.contraception || ""}
 									onChange={(e) => {
 										const selectedValue = e.target.value;
-										console.log(
-											"Valeur avant onChange:",
-											selectedValue
-										); // Log de la valeur sélectionnée
 
-										const updatedContraception = {
-											type: selectedValue, // La valeur de l'énumération (par exemple "PILLS", "CONDOM", etc.)
-										};
 										console.log(
-											"Contraception object before handleChange:",
-											updatedContraception
+											"Valeur sélectionnée :",
+											selectedValue
 										);
 
 										handleChange(
 											"contraception",
-											updatedContraception
-										); // Mettre à jour la contraception dans l'état
+											selectedValue
+										);
 									}}
 									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 								>
@@ -569,15 +579,10 @@ const PatientDetails = ({ patient, onClose }) => {
 							) : (
 								// Mode lecture : afficher la traduction de la contraception (ou "Non renseigné" si vide)
 								contraceptionTranslations[
-									patient.contraception
+									editedPatient.contraception
 								] || "Non renseigné"
 							)
 						}
-						editable={isEditing}
-						onChange={(value) => {
-							console.log("Contraception changed to:", value);
-							handleChange("contraception", value); // Gérer la mise à jour de contraception
-						}}
 					/>
 
 					{patient.childrenAges && (
