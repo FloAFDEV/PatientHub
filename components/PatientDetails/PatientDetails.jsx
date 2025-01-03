@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import ConfirmDeletePatientModal from "@/components/DeleteModal/ConfirmDeletePatientModal";
 import Image from "next/image";
 import { toast } from "react-toastify";
@@ -61,6 +61,13 @@ const PatientDetails = ({ patient, onClose }) => {
 		PILLS: "Pilule",
 		CONDOM: "Préservatifs",
 		IMPLANTS: "Implants",
+		DIAPHRAGM: "Diaphragme",
+		IUD: "DIU",
+		INJECTION: "Injection",
+		PATCH: "Patch",
+		RING: "Anneau",
+		NATURAL_METHODS: "Méthodes naturelles",
+		STERILIZATION: "Stérilisation",
 	};
 
 	const handednessTranslations = {
@@ -110,25 +117,71 @@ const PatientDetails = ({ patient, onClose }) => {
 		);
 	}
 
-	const DetailItem = ({ label, value, editable, onChange }) => (
-		<div className="flex flex-col sm:flex-row sm:justify-between py-2 border-b border-gray-300 dark:border-gray-700">
-			<span className="font-semibold text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 sm:mb-0">
-				{label}
-			</span>
-			{editable ? (
-				<input
-					type="text"
-					value={value}
-					onChange={(e) => onChange(e.target.value)}
-					className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
-				/>
-			) : (
-				<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words w-full sm:text-right">
-					{value}
-				</p>
-			)}
-		</div>
-	);
+	const DetailItem = ({ label, value, editable, onChange, field }) => {
+		const inputRef = useRef(null);
+		// Utilisation de useEffect pour mettre le focus lorsque editable change
+		useEffect(() => {
+			if (editable && inputRef.current) {
+				inputRef.current.focus();
+			}
+		}, [editable]); // Le focus est appliqué uniquement lorsque `editable` est `true`
+		// Fonction pour formater la date avant de l'envoyer
+		const formatDateToISO = (date) => {
+			if (!date) return "";
+			if (date.includes("T")) return date; // Si c'est déjà un format ISO valide, on ne fait rien
+			return new Date(date).toISOString(); // Sinon, on formate en ISO
+		};
+		const handleDateChange = (e) => {
+			let inputValue = e.target.value;
+			if (field === "birthDate") {
+				inputValue = formatDateToISO(inputValue); // Appliquer le formatage ISO pour birthDate
+			}
+			console.log("Valeur avant onChange:", inputValue);
+			onChange(inputValue); // Appeler la fonction onChange pour mettre à jour la valeur dans le parent
+		};
+		return (
+			<div className="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-300 dark:border-gray-700 gap-2">
+				<span className="font-semibold text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 sm:mb-0">
+					{label}
+				</span>
+				{editable ? (
+					field === "birthDate" ? (
+						<input
+							ref={inputRef}
+							type="date"
+							value={
+								value
+									? new Date(value)
+											.toISOString()
+											.split("T")[0] // Format date en format "YYYY-MM-DD"
+									: ""
+							}
+							onChange={handleDateChange}
+							className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md"
+						/>
+					) : (
+						<input
+							ref={inputRef}
+							type="text"
+							value={value}
+							onChange={handleDateChange}
+							className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md"
+						/>
+					)
+				) : field === "birthDate" ? (
+					<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words w-full sm:text-right">
+						{value
+							? new Date(value).toLocaleDateString("fr-FR")
+							: "Non renseignée"}{" "}
+					</p>
+				) : (
+					<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words w-full sm:text-right">
+						{value}
+					</p>
+				)}
+			</div>
+		);
+	};
 
 	const handleDeletePatient = async () => {
 		try {
@@ -151,25 +204,44 @@ const PatientDetails = ({ patient, onClose }) => {
 	};
 
 	const handleChange = (field, value) => {
-		setEditedPatient((prevState) => ({
-			...prevState,
-			[field]: value,
-		}));
+		if (field === "birthDate" && value) {
+			const formattedDate = new Date(value).toISOString().split("T")[0];
+			setEditedPatient((prevState) => ({
+				...prevState,
+				[field]: formattedDate,
+			}));
+		} else {
+			setEditedPatient((prevState) => ({
+				...prevState,
+				[field]: value,
+			}));
+		}
 	};
+
+	useEffect(() => {
+		if (!isEditing) {
+			setEditedPatient(patient);
+		}
+	}, [patient, isEditing]);
 
 	const handleUpdatePatient = async () => {
 		try {
-			const response = await fetch(`/api/patients/${patient.id}`, {
+			const response = await fetch(`/api/patients`, {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(editedPatient),
+				body: JSON.stringify({ ...editedPatient, id: patient.id }),
 			});
-
 			if (response.ok) {
 				toast.success("Patient mis à jour avec succès");
 				setIsEditing(false);
 			} else {
-				toast.error("Erreur lors de la mise à jour du patient");
+				const errorData = await response.json();
+				console.error("Error data:", errorData);
+				toast.error(
+					`Erreur: ${
+						errorData.error || "Erreur lors de la mise à jour"
+					}`
+				);
 			}
 		} catch (error) {
 			console.error("Erreur:", error);
@@ -252,6 +324,20 @@ const PatientDetails = ({ patient, onClose }) => {
 			>
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
 					<DetailItem
+						label="Prénom"
+						value={editedPatient.firstName || "Non renseigné"}
+						editable={isEditing}
+						onChange={(value) => handleChange("firstName", value)}
+					/>
+
+					{/* Nom */}
+					<DetailItem
+						label="Nom"
+						value={editedPatient.lastName || "Non renseigné"}
+						editable={isEditing}
+						onChange={(value) => handleChange("lastName", value)}
+					/>
+					<DetailItem
 						label="Email"
 						value={editedPatient.email || "Non renseigné"}
 						editable={isEditing}
@@ -270,20 +356,37 @@ const PatientDetails = ({ patient, onClose }) => {
 						label="Date de Naissance"
 						value={
 							editedPatient.birthDate
-								? new Date(
-										editedPatient.birthDate
-								  ).toLocaleDateString("fr-FR")
+								? new Date(editedPatient.birthDate)
+										.toISOString()
+										.split("T")[0]
 								: "Non renseignée"
 						}
 						editable={isEditing}
 						onChange={(value) => handleChange("birthDate", value)}
+						field="birthDate"
 					/>
 					<DetailItem
 						label="Genre"
-						value={editedPatient.gender || "Non renseigné"}
-						editable={isEditing}
-						onChange={(value) => handleChange("gender", value)}
+						value={
+							isEditing ? (
+								<select
+									value={editedPatient.gender || ""}
+									onChange={(e) =>
+										handleChange("gender", e.target.value)
+									}
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+								>
+									<option value="">Non renseigné</option>
+									<option value="Homme">Homme</option>
+									<option value="Femme">Femme</option>
+									<option value="Autre">Autre</option>
+								</select>
+							) : (
+								editedPatient.gender || "Non renseigné"
+							)
+						}
 					/>
+
 					<DetailItem
 						label="Adresse"
 						value={editedPatient.address || "Non renseignée"}
@@ -293,15 +396,25 @@ const PatientDetails = ({ patient, onClose }) => {
 					<DetailItem
 						label="Statut marital"
 						value={
-							maritalStatusTranslations[
-								editedPatient.maritalStatus
-							] || "Non renseigné"
+							isEditing
+								? editedPatient.maritalStatus
+								: maritalStatusTranslations[
+										editedPatient.maritalStatus
+								  ] || "Non renseigné"
 						}
 						editable={isEditing}
 						onChange={(value) =>
 							handleChange("maritalStatus", value)
 						}
+						options={[
+							{ value: "SINGLE", label: "Célibataire" },
+							{ value: "MARRIED", label: "Marié(e)" },
+							{ value: "DIVORCED", label: "Divorcé(e)" },
+							{ value: "WIDOWED", label: "Veuf/veuve" },
+							{ value: "SEPARATED", label: "Séparé(e)" },
+						]}
 					/>
+
 					<DetailItem
 						label="Métier"
 						value={editedPatient.occupation || "Non renseigné"}
@@ -311,12 +424,32 @@ const PatientDetails = ({ patient, onClose }) => {
 					<DetailItem
 						label="Latéralité"
 						value={
-							handednessTranslations[editedPatient.handedness] ||
-							"Non renseignée"
+							isEditing ? (
+								<select
+									value={editedPatient.handedness || ""}
+									onChange={(e) =>
+										handleChange(
+											"handedness",
+											e.target.value
+										)
+									}
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+								>
+									<option value="">Non renseigné</option>
+									<option value="LEFT">Gaucher</option>
+									<option value="RIGHT">Droitier</option>
+									<option value="AMBIDEXTROUS">
+										Ambidextre
+									</option>
+								</select>
+							) : (
+								handednessTranslations[
+									editedPatient.handedness
+								] || "Non renseigné"
+							)
 						}
-						editable={isEditing}
-						onChange={(value) => handleChange("handedness", value)}
 					/>
+
 					<DetailItem
 						label="Activité physique"
 						value={
@@ -330,21 +463,49 @@ const PatientDetails = ({ patient, onClose }) => {
 					<DetailItem
 						label="Fumeur ?"
 						value={
-							yesNoTranslations[editedPatient.isSmoker] ||
-							"Non renseigné"
+							isEditing ? (
+								<select
+									value={editedPatient.isSmoker || ""}
+									onChange={(e) =>
+										handleChange("isSmoker", e.target.value)
+									}
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+								>
+									<option value="">Non renseigné</option>
+									<option value="true">Oui</option>
+									<option value="false">Non</option>
+								</select>
+							) : (
+								yesNoTranslations[editedPatient.isSmoker] ||
+								"Non renseigné"
+							)
 						}
-						editable={isEditing}
-						onChange={(value) => handleChange("isSmoker", value)}
 					/>
+
 					{/* Champ pour la mention du décès */}
 					<DetailItem
 						label="Décédé ?"
 						value={
-							yesNoTranslations[editedPatient.isDeceased] ||
-							"Non renseigné"
+							isEditing ? (
+								<select
+									value={editedPatient.isDeceased || ""}
+									onChange={(e) =>
+										handleChange(
+											"isDeceased",
+											e.target.value
+										)
+									}
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+								>
+									<option value="">Non renseigné</option>
+									<option value="true">Oui</option>
+									<option value="false">Non</option>
+								</select>
+							) : (
+								yesNoTranslations[editedPatient.isDeceased] ||
+								"Non renseigné"
+							)
 						}
-						editable={isEditing}
-						onChange={(value) => handleChange("isDeceased", value)}
 					/>
 				</div>
 			</SectionToggle>
@@ -358,16 +519,67 @@ const PatientDetails = ({ patient, onClose }) => {
 					<DetailItem
 						label="Contraception"
 						value={
-							contraceptionTranslations[patient.contraception] ||
-							"Non renseignée"
+							isEditing ? (
+								// Mode édition : afficher le select avec les valeurs de l'énumération
+								<select
+									value={
+										editedPatient?.contraception?.type || ""
+									}
+									onChange={(e) => {
+										const selectedValue = e.target.value;
+										console.log(
+											"Valeur avant onChange:",
+											selectedValue
+										); // Log de la valeur sélectionnée
+
+										const updatedContraception = {
+											type: selectedValue, // La valeur de l'énumération (par exemple "PILLS", "CONDOM", etc.)
+										};
+										console.log(
+											"Contraception object before handleChange:",
+											updatedContraception
+										);
+
+										handleChange(
+											"contraception",
+											updatedContraception
+										); // Mettre à jour la contraception dans l'état
+									}}
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+								>
+									<option value="">Non renseigné</option>
+									<option value="NONE">Aucune</option>
+									<option value="PILLS">Pilule</option>
+									<option value="CONDOM">Préservatifs</option>
+									<option value="IMPLANTS">Implants</option>
+									<option value="DIAPHRAGM">
+										Diaphragme
+									</option>
+									<option value="IUD">DIU</option>
+									<option value="INJECTION">Injection</option>
+									<option value="PATCH">Patch</option>
+									<option value="RING">Anneau</option>
+									<option value="NATURAL_METHODS">
+										Méthodes naturelles
+									</option>
+									<option value="STERILIZATION">
+										Stérilisation
+									</option>
+								</select>
+							) : (
+								// Mode lecture : afficher la traduction de la contraception (ou "Non renseigné" si vide)
+								contraceptionTranslations[
+									patient.contraception
+								] || "Non renseigné"
+							)
 						}
 						editable={isEditing}
+						onChange={(value) => {
+							console.log("Contraception changed to:", value);
+							handleChange("contraception", value); // Gérer la mise à jour de contraception
+						}}
 					/>
-					<DetailItem
-						label="Enfants"
-						value={patient.hasChildren === "true" ? "Oui" : "Non"}
-						editable={isEditing}
-					/>
+
 					{patient.childrenAges && (
 						<div>
 							<h4 className="text-sm font-normal m-2 mt-4">
@@ -404,8 +616,13 @@ const PatientDetails = ({ patient, onClose }) => {
 			>
 				<DetailItem
 					label="Médecin traitant"
-					value={patient.generalPractitioner || "Non renseigné"}
+					value={editedPatient.generalPractitioner || "Non renseigné"}
+					editable={isEditing}
+					onChange={(value) =>
+						handleChange("generalPractitioner", value)
+					}
 				/>
+
 				<DetailItem
 					label="Ostéopathe"
 					value={patient.osteopath?.name || "Non renseigné"}
