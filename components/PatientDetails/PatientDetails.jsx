@@ -425,12 +425,11 @@ const PatientDetails = ({ patient, onClose }) => {
 							isEditing ? (
 								<select
 									value={editedPatient.isSmoker || ""}
-									onChange={
-										(e) =>
-											handleChange(
-												"isSmoker",
-												e.target.value === "true"
-											) // Convertit "true" en true et "false" en false
+									onChange={(e) =>
+										handleChange(
+											"isSmoker",
+											e.target.value === "true"
+										)
 									}
 									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 								>
@@ -546,13 +545,21 @@ const PatientDetails = ({ patient, onClose }) => {
 													type="number"
 													value={age}
 													placeholder="Âge en années"
-													onChange={(e) =>
+													onChange={(e) => {
+														const newAge = Math.max(
+															0,
+															parseInt(
+																e.target.value,
+																10
+															) || 0
+														);
 														handleChildAgeChange(
 															index,
-															e.target.value
-														)
-													}
-													className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+															newAge
+														);
+													}}
+													min="0"
+													className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 												/>
 												<button
 													type="button"

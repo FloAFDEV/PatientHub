@@ -143,7 +143,7 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 						onClick={validatePasskey}
 						className="shad-primary-btn w-full transition duration-300 ease-in-out transform hover:scale-105 text-xl bg-teal-500 hover:bg-teal-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
 					>
-						Entrer le code d&apos;accès admin
+						Entrer votre code d&apos;accès
 					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
