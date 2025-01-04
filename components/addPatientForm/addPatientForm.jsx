@@ -93,8 +93,6 @@ const AddPatientForm = ({}) => {
 			firstName: data.firstName,
 			lastName: data.lastName,
 		};
-		console.log("First Name:", data.firstName, "Last Name:", data.lastName);
-		console.log("Final Data:", finalData);
 		try {
 			const response = await fetch("/api/patients", {
 				method: "POST",

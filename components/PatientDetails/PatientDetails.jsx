@@ -1,13 +1,11 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ConfirmDeletePatientModal from "@/components/DeleteModal/ConfirmDeletePatientModal";
 import Image from "next/image";
 import { toast } from "react-toastify";
-import {
-	ChevronUpIcon,
-	ChevronDownIcon,
-	UserIcon,
-} from "@heroicons/react/24/solid";
+import SectionToggle from "@/components/SectionToggle";
+import DetailItem from "@/components/DetailItem";
 
+// Utilisation des hooks d'état (useState)
 const PatientDetails = ({ patient, onClose }) => {
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 	const [error, setError] = useState(null);
@@ -20,14 +18,26 @@ const PatientDetails = ({ patient, onClose }) => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedPatient, setEditedPatient] = useState(patient);
 
-	const formatPhoneNumber = (phone) => {
-		if (!phone) return "";
-		return phone
-			.replace(/\D/g, "")
-			.replace(/(\d{2})(?=\d)/g, "$1 ")
-			.trim();
+	// Fonction de gestion des enfants (ajouter, supprimer, modifier)
+	const handleAddChild = () => {
+		const updatedChildren = [...(editedPatient.childrenAges || []), ""];
+		setEditedPatient({ ...editedPatient, childrenAges: updatedChildren });
 	};
 
+	const handleRemoveChild = (index) => {
+		const updatedChildren = editedPatient.childrenAges.filter(
+			(_, i) => i !== index
+		);
+		setEditedPatient({ ...editedPatient, childrenAges: updatedChildren });
+	};
+
+	const handleChildAgeChange = (index, value) => {
+		const updatedChildren = [...editedPatient.childrenAges];
+		updatedChildren[index] = parseInt(value, 10) || 0;
+		setEditedPatient({ ...editedPatient, childrenAges: updatedChildren });
+	};
+
+	// Validation des données du patient
 	const validatePatientData = useCallback(() => {
 		if (!patient) {
 			setError("Aucune donnée patient disponible.");
@@ -37,10 +47,12 @@ const PatientDetails = ({ patient, onClose }) => {
 		return true;
 	}, [patient]);
 
+	// Effet pour valider les données au changement de patient
 	useEffect(() => {
 		validatePatientData();
 	}, [patient, validatePatientData]);
 
+	// Toggle des sections
 	const toggleSection = (section) => {
 		setOpenSections((prev) => ({
 			...prev,
@@ -48,6 +60,110 @@ const PatientDetails = ({ patient, onClose }) => {
 		}));
 	};
 
+	// Formattage des données
+	const formatPhoneNumber = (phone) => {
+		if (!phone) return "";
+		return phone
+			.replace(/\D/g, "")
+			.replace(/(\d{2})(?=\d)/g, "$1 ")
+			.trim();
+	};
+
+	const handleDeletePatient = async () => {
+		setIsLoading(true);
+		try {
+			const response = await fetch(`/api/patients?id=${patient.id}`, {
+				method: "DELETE",
+			});
+			if (response.ok) {
+				toast.success("Patient supprimé avec succès !");
+				setIsConfirmDeleteOpen(false);
+				onClose();
+			} else {
+				const result = await response.json();
+				toast.error(`Erreur: ${result.error}`);
+			}
+		} catch (error) {
+			console.error("Erreur lors de la suppression :", error);
+			toast.error("Erreur lors de la suppression du patient.");
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	// Mise à jour des données du patient
+	const handleChange = (field, value) => {
+		if (field === "birthDate" && value) {
+			const formattedDate = new Date(value).toISOString().split("T")[0];
+			setEditedPatient((prevState) => ({
+				...prevState,
+				[field]: formattedDate,
+			}));
+		} else {
+			setEditedPatient((prevState) => ({
+				...prevState,
+				[field]: value,
+			}));
+		}
+	};
+
+	// Effet pour remettre à jour le patient si l'on n'est pas en mode édition
+	useEffect(() => {
+		if (!isEditing) {
+			setEditedPatient(patient);
+		}
+	}, [patient, isEditing]);
+
+	// Gestion des erreurs d'affichage
+	if (error) {
+		return (
+			<div className="p-4 w-full mx-auto">
+				<button className="mb-4 text-red-500" onClick={onClose}>
+					&times; Fermer
+				</button>
+				<div className="text-red-500">
+					<strong>Erreur:</strong> {error}
+				</div>
+			</div>
+		);
+	}
+
+	// Fonction pour mettre à jour les informations du patient
+	const handleUpdatePatient = async () => {
+		try {
+			const preparedPatient = {
+				...editedPatient,
+				id: patient.id,
+				childrenAges: editedPatient.childrenAges.map((age) =>
+					Number(age)
+				),
+			};
+
+			const response = await fetch(`/api/patients`, {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(preparedPatient),
+			});
+
+			if (response.ok) {
+				toast.success("Patient mis à jour avec succès");
+				setIsEditing(false);
+			} else {
+				const errorData = await response.json();
+				console.error("Error data:", errorData);
+				toast.error(
+					`Erreur: ${
+						errorData.error || "Erreur lors de la mise à jour"
+					}`
+				);
+			}
+		} catch (error) {
+			console.error("Erreur:", error);
+			toast.error("Erreur lors de la mise à jour du patient");
+		}
+	};
+
+	// Traductions des valeurs des énumérations
 	const maritalStatusTranslations = {
 		SINGLE: "Célibataire",
 		MARRIED: "Marié(e)",
@@ -81,182 +197,6 @@ const PatientDetails = ({ patient, onClose }) => {
 	const yesNoTranslations = {
 		true: "Oui",
 		false: "Non",
-	};
-
-	const SectionToggle = ({ title, isOpen, onToggle, children }) => (
-		<div className="mb-4 border rounded-lg overflow-hidden">
-			<button
-				className="flex justify-between items-center w-full bg-gray-200 dark:bg-gray-700 p-2 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
-				onClick={onToggle}
-			>
-				<span className="font-semibold">{title}</span>
-				{isOpen ? (
-					<ChevronUpIcon className="h-5 w-5" />
-				) : (
-					<ChevronDownIcon className="h-5 w-5" />
-				)}
-			</button>
-			<div
-				className={`transition-all duration-300 ease-in-out overflow-hidden ${
-					isOpen ? "max-h-max opacity-100" : "max-h-0 opacity-0"
-				}`}
-			>
-				<div className="p-4 bg-white dark:bg-gray-800">{children}</div>
-			</div>
-		</div>
-	);
-
-	if (error) {
-		return (
-			<div className="p-4 w-full mx-auto">
-				<button className="mb-4 text-red-500" onClick={onClose}>
-					&times; Fermer
-				</button>
-				<div className="text-red-500">
-					<strong>Erreur:</strong> {error}
-				</div>
-			</div>
-		);
-	}
-
-	const DetailItem = ({ label, value, editable, onChange, field }) => {
-		const inputRef = useRef(null);
-
-		// Utilisation de useEffect pour mettre le focus uniquement quand editable change
-		useEffect(() => {
-			if (editable && inputRef.current) {
-				inputRef.current.focus();
-			}
-		}, [editable]); // Le focus est appliqué uniquement lorsque `editable` est `true`
-
-		// Fonction pour formater la date avant de l'envoyer
-		const formatDateToISO = (date) => {
-			if (!date) return "";
-			if (date.includes("T")) return date; // Si c'est déjà un format ISO valide, on ne fait rien
-			return new Date(date).toISOString(); // Sinon, on formate en ISO
-		};
-
-		const handleDateChange = (e) => {
-			let inputValue = e.target.value;
-			if (field === "birthDate") {
-				inputValue = formatDateToISO(inputValue); // Appliquer le formatage ISO pour birthDate
-			}
-			console.log("Valeur avant onChange:", inputValue);
-			onChange(inputValue); // Appeler la fonction onChange pour mettre à jour la valeur dans le parent
-		};
-
-		return (
-			<div className="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-300 dark:border-gray-700 gap-2">
-				<span className="font-semibold text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 sm:mb-0">
-					{label}
-				</span>
-				{editable ? (
-					field === "birthDate" ? (
-						<input
-							key={field} // Utilisation d'une clé dynamique pour éviter les re-rendus complets
-							ref={inputRef}
-							type="date"
-							value={
-								value
-									? new Date(value)
-											.toISOString()
-											.split("T")[0] // Format date en format "YYYY-MM-DD"
-									: ""
-							}
-							onChange={handleDateChange}
-							className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md"
-						/>
-					) : (
-						<input
-							key={field} // Utilisation d'une clé dynamique pour éviter les re-rendus complets
-							ref={inputRef}
-							type="text"
-							value={value}
-							onChange={handleDateChange}
-							className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md"
-						/>
-					)
-				) : field === "birthDate" ? (
-					<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words w-full sm:text-right">
-						{value
-							? new Date(value).toLocaleDateString("fr-FR")
-							: "Non renseignée"}{" "}
-					</p>
-				) : (
-					<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words w-full sm:text-right">
-						{value}
-					</p>
-				)}
-			</div>
-		);
-	};
-
-	const handleDeletePatient = async () => {
-		setIsLoading(true);
-		try {
-			const response = await fetch(`/api/patients?id=${patient.id}`, {
-				method: "DELETE",
-			});
-			if (response.ok) {
-				toast.success("Patient supprimé avec succès !");
-				setIsConfirmDeleteOpen(false);
-				onClose();
-			} else {
-				const result = await response.json();
-				toast.error(`Erreur: ${result.error}`);
-			}
-		} catch (error) {
-			console.error("Erreur lors de la suppression :", error);
-			toast.error("Erreur lors de la suppression du patient.");
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	const handleChange = (field, value) => {
-		if (field === "birthDate" && value) {
-			const formattedDate = new Date(value).toISOString().split("T")[0];
-			setEditedPatient((prevState) => ({
-				...prevState,
-				[field]: formattedDate,
-			}));
-		} else {
-			setEditedPatient((prevState) => ({
-				...prevState,
-				[field]: value,
-			}));
-		}
-	};
-
-	useEffect(() => {
-		if (!isEditing) {
-			setEditedPatient(patient);
-		}
-	}, [patient, isEditing]);
-
-	const handleUpdatePatient = async () => {
-		try {
-			const response = await fetch(`/api/patients`, {
-				method: "PATCH",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ ...editedPatient, id: patient.id }),
-			});
-			if (response.ok) {
-				toast.success("Patient mis à jour avec succès");
-				setIsEditing(false);
-			} else {
-				const errorData = await response.json();
-				console.error("Error data:", errorData);
-				toast.error(
-					`Erreur: ${
-						errorData.error || "Erreur lors de la mise à jour"
-					}`
-				);
-			}
-		} catch (error) {
-			console.error("Erreur:", error);
-			toast.error("Erreur lors de la mise à jour du patient");
-		}
 	};
 
 	return (
@@ -301,7 +241,7 @@ const PatientDetails = ({ patient, onClose }) => {
 					</div>
 					<div className="mt-2 flex flex-col space-y-2">
 						<button
-							className="border border-green-500 hover:bg-green-600 hover:text-white p-2 text-sm md:text-base rounded-lg"
+							className="border border-gray-500 hover:bg-gray-600 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
 							onClick={() => setIsEditing(!isEditing)}
 							aria-label="Éditer les informations du patient"
 						>
@@ -319,7 +259,7 @@ const PatientDetails = ({ patient, onClose }) => {
 							/>
 						)}
 						<button
-							className="border border-red-500 hover:bg-red-600 hover:text-white p-2 text-sm md:text-base rounded-lg"
+							className="border border-gray-500 hover:bg-red-600 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
 							onClick={() => setIsConfirmDeleteOpen(true)}
 						>
 							Supprimer le patient
@@ -585,28 +525,79 @@ const PatientDetails = ({ patient, onClose }) => {
 						}
 					/>
 
-					{patient.childrenAges && (
+					{editedPatient.childrenAges && (
 						<div>
 							<h4 className="text-sm font-normal m-2 mt-4">
 								Âges des enfants
 							</h4>
-							{patient.childrenAges.length > 0 ? (
-								patient.childrenAges.map((age, index) => (
-									<DetailItem
-										key={index}
-										label={
-											<div className="flex items-center space-x-2">
-												<UserIcon className="h-4 w-4 text-blue-500" />{" "}
-												<span>{`Enfant ${
-													index + 1
-												}`}</span>
+							{isEditing ? (
+								<div>
+									{editedPatient.childrenAges.map(
+										(age, index) => (
+											<div
+												key={index}
+												className="flex items-center mb-2 gap-2"
+											>
+												<input
+													type="number"
+													value={age}
+													placeholder="Âge en années"
+													onChange={(e) =>
+														handleChildAgeChange(
+															index,
+															e.target.value
+														)
+													}
+													className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+												/>
+												<button
+													type="button"
+													className="text-red-500"
+													onClick={() =>
+														handleRemoveChild(index)
+													}
+												>
+													Supprimer
+												</button>
 											</div>
-										}
-										value={`${age} ans`}
-									/>
-								))
+										)
+									)}
+									{editedPatient.childrenAges.length < 10 && (
+										<button
+											type="button"
+											className="mt-2 text-blue-500"
+											onClick={handleAddChild}
+										>
+											Ajouter un enfant
+										</button>
+									)}
+									{editedPatient.childrenAges.length >=
+										10 && (
+										<p className="text-red-600 text-sm mt-1">
+											Vous avez atteint le nombre maximum
+											de 10 enfants.
+										</p>
+									)}
+								</div>
 							) : (
-								<p>Pas d&apos;enfants renseignés</p>
+								<div>
+									{editedPatient.childrenAges.length > 0 ? (
+										editedPatient.childrenAges.map(
+											(age, index) => (
+												<div
+													key={index}
+													className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words w-full sm:text-right"
+												>
+													{`Enfant ${
+														index + 1
+													} : ${age} ans`}
+												</div>
+											)
+										)
+									) : (
+										<p>Pas d&apos;enfants renseignés</p>
+									)}
+								</div>
 							)}
 						</div>
 					)}

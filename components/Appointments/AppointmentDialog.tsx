@@ -1,5 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Calendar, Clock, User, FileText } from "lucide-react";
+import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -23,10 +27,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { toast } from "react-toastify";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { Calendar, Clock, User, FileText } from "lucide-react";
 
 interface Patient {
 	id: number;
@@ -49,6 +49,7 @@ interface AppointmentDialogProps {
 	selectedDate: Date;
 	appointment?: Appointment;
 	mode?: "create" | "edit";
+	selectedPatient?: Patient | null;
 }
 
 interface FormValues {
@@ -57,13 +58,11 @@ interface FormValues {
 	reason: string;
 }
 
-// Fonction pour générer les horaires de 8h à 19h par tranche de 45 minutes
 const generateTimes = () => {
 	const times = [];
 	const currentTime = new Date();
-	currentTime.setHours(8, 0, 0, 0); // Début à 8h00
+	currentTime.setHours(8, 0, 0, 0);
 
-	// Boucle pour ajouter des créneaux de 45 minutes de 8h à 19h
 	while (currentTime.getHours() < 19) {
 		const hour = currentTime.getHours().toString().padStart(2, "0");
 		const minutes = currentTime.getMinutes().toString().padStart(2, "0");
@@ -81,14 +80,24 @@ export function AppointmentDialog({
 	selectedDate,
 	appointment,
 	mode = "create",
+	selectedPatient,
 }: AppointmentDialogProps) {
 	const form = useForm<FormValues>({
 		defaultValues: {
-			patientId: appointment?.patientId?.toString() || "",
-			time: appointment?.time || "08:00", // Valeur par défaut
+			patientId:
+				selectedPatient?.id?.toString() ||
+				appointment?.patientId?.toString() ||
+				"",
+			time: appointment?.time || "08:00",
 			reason: appointment?.reason || "",
 		},
 	});
+
+	React.useEffect(() => {
+		if (selectedPatient) {
+			form.setValue("patientId", selectedPatient.id.toString());
+		}
+	}, [selectedPatient, form]);
 
 	const onSubmit = async (data: FormValues) => {
 		try {
@@ -105,7 +114,7 @@ export function AppointmentDialog({
 				},
 				body: JSON.stringify({
 					...data,
-					date: selectedDate,
+					date: format(selectedDate, "yyyy-MM-dd"),
 				}),
 			});
 
@@ -168,6 +177,7 @@ export function AppointmentDialog({
 									<Select
 										onValueChange={field.onChange}
 										defaultValue={field.value}
+										value={field.value}
 									>
 										<FormControl>
 											<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
@@ -204,6 +214,7 @@ export function AppointmentDialog({
 									<Select
 										onValueChange={field.onChange}
 										defaultValue={field.value}
+										value={field.value}
 									>
 										<FormControl>
 											<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">

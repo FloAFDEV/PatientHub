@@ -1,4 +1,6 @@
 import React from "react";
+import { format } from "date-fns";
+import { Edit2, Trash2, XCircle, Calendar } from "lucide-react";
 import useSWR from "swr";
 import {
 	Table,
@@ -9,13 +11,11 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { Edit2, Trash2, XCircle, Calendar } from "lucide-react";
-import { Appointment } from "./AppointmentsManager";
+import { AppointmentType } from "./AppointmentsManager";
 
 interface AppointmentListProps {
 	date: Date;
-	onEdit: (appointment: Appointment) => void;
+	onEdit: (appointment: AppointmentType) => void;
 	onDelete: (appointmentId: number) => Promise<void>;
 	onCancel: (appointmentId: number) => Promise<void>;
 }
@@ -27,7 +27,7 @@ export function AppointmentList({ date, onEdit }: AppointmentListProps) {
 		data: appointments,
 		error,
 		mutate,
-	} = useSWR<Appointment[]>(
+	} = useSWR<AppointmentType[]>(
 		`/api/appointments?date=${format(date, "yyyy-MM-dd")}`,
 		fetcher,
 		{

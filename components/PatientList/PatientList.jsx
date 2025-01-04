@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePatients } from "@/hooks/usePatients";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ToastContainer, toast } from "react-toastify";
+import { AppointmentDialog } from "@/components/Appointments/AppointmentDialog";
 import "react-toastify/dist/ReactToastify.css";
 import {
 	IconGenderMale,
@@ -39,8 +40,10 @@ const PatientList = ({ onAddPatientClick }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
-	useState(null);
 	const [isFilterOpen, setIsFilterOpen] = useState(false);
+	const [selectedPatientForAppointment, setSelectedPatientForAppointment] =
+		useState(null);
+	const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
 
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
@@ -193,7 +196,7 @@ const PatientList = ({ onAddPatientClick }) => {
 				<div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
 					<div className="relative flex-1">
 						<IconSearch
-							className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+							className="absolute left-3 top-1/3 transform -translate-y-1/2 text-gray-400"
 							size={20}
 						/>
 						<Input
@@ -400,7 +403,6 @@ const PatientList = ({ onAddPatientClick }) => {
 												? "Fermer"
 												: "Détails"}
 										</Button>
-
 										<Button
 											variant="outline"
 											size="sm"
@@ -413,7 +415,20 @@ const PatientList = ({ onAddPatientClick }) => {
 											<span className="hidden sm:inline ">
 												Rendez-vous
 											</span>
-										</Button>
+										</Button>{" "}
+										{showAppointmentDialog && (
+											<AppointmentDialog
+												open={showAppointmentDialog}
+												onOpenChange={
+													setShowAppointmentDialog
+												}
+												selectedPatient={
+													selectedPatientForAppointment
+												}
+												selectedDate={new Date()}
+												patients={[]} // We'll get this from your API
+											/>
+										)}
 									</div>
 								</div>
 							</div>
