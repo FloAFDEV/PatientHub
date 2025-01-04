@@ -425,8 +425,12 @@ const PatientDetails = ({ patient, onClose }) => {
 							isEditing ? (
 								<select
 									value={editedPatient.isSmoker || ""}
-									onChange={(e) =>
-										handleChange("isSmoker", e.target.value)
+									onChange={
+										(e) =>
+											handleChange(
+												"isSmoker",
+												e.target.value === "true"
+											) // Convertit "true" en true et "false" en false
 									}
 									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 								>
