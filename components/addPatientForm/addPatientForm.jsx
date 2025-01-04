@@ -164,7 +164,7 @@ const AddPatientForm = ({}) => {
 	};
 
 	return (
-		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
+		<div className="flex-1 p-4  bg-gray-50 dark:bg-gray-900">
 			{/* En-tête de l'ajout de patient */}
 			<header className="mb-8">
 				<div className="transition-transform duration-300 relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8 ">

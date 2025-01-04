@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import ConfirmDeletePatientModal from "@/components/DeleteModal/ConfirmDeletePatientModal";
 import Image from "next/image";
 import { toast } from "react-toastify";
@@ -221,30 +222,13 @@ const PatientDetails = ({ patient, onClose }) => {
 					height={128}
 				/>
 				<div className="flex flex-col">
-					<div className="text-lg sm:text-xl md:text-2xl font-bold text-center md:text-left">
-						<div className="flex items-center">
-							<span className="font-semibold text-xs text-gray-600 dark:text-gray-300">
-								Prénom:
-							</span>
-							<span className="ml-2 text-lg">
-								{patient.firstName || "Prénom inconnu"}
-							</span>
-						</div>
-						<div className="flex items-center mt-2">
-							<span className="font-semibold text-xs text-gray-600 dark:text-gray-300">
-								Nom:
-							</span>
-							<span className="ml-2 text-lg">
-								{patient.lastName || "Nom inconnu"}
-							</span>
-						</div>
-					</div>
 					<div className="mt-2 flex flex-col space-y-2">
 						<button
-							className="border border-gray-500 hover:bg-gray-600 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
+							className="border border-gray-500 hover:bg-blue-500 dark:hover:bg-amber-500 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
 							onClick={() => setIsEditing(!isEditing)}
 							aria-label="Éditer les informations du patient"
 						>
+							<PencilIcon className="h-4 w-4 inline-block mr-2" />
 							{isEditing ? "Annuler" : "Éditer le patient"}
 						</button>
 						{isConfirmDeleteOpen && (
@@ -262,17 +246,18 @@ const PatientDetails = ({ patient, onClose }) => {
 							className="border border-gray-500 hover:bg-red-600 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
 							onClick={() => setIsConfirmDeleteOpen(true)}
 						>
+							<TrashIcon className="h-4 w-4 inline-block mr-2" />
 							Supprimer le patient
 						</button>
 					</div>
 				</div>
 			</div>
 			<SectionToggle
-				title="Informations de base"
+				title="Informations générales"
 				isOpen={openSections.basicInfo}
 				onToggle={() => toggleSection("basicInfo")}
 			>
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6 md:gap-7">
 					<DetailItem
 						label="Prénom"
 						value={editedPatient.firstName || "Non renseigné"}
@@ -613,6 +598,94 @@ const PatientDetails = ({ patient, onClose }) => {
 						</div>
 					)}
 				</div>
+			</SectionToggle>
+			{/* Informations médicales */}
+			<SectionToggle
+				title="Informations médicales"
+				isOpen={openSections.practitionerInfo}
+				onToggle={() => toggleSection("practitionerInfo")}
+				editable={isEditing}
+			>
+				{/* Activité physique */}
+				<DetailItem
+					label="Activité physique"
+					value={editedPatient.activityLevel || "Non renseignée"}
+					editable={isEditing}
+					onChange={(value) => handleChange("activityLevel", value)}
+				/>
+				{/* Problèmes ORL */}
+				<DetailItem
+					label="Problèmes ORL"
+					value={editedPatient.entProblems || "Non renseignés"}
+					editable={isEditing}
+					onChange={(value) => handleChange("entProblems", value)}
+				/>
+				{/* Nom du Médecin ORL */}
+				<DetailItem
+					label="Nom du Médecin ORL"
+					value={editedPatient.entDoctorName || "Non renseigné"}
+					editable={isEditing}
+					onChange={(value) => handleChange("entDoctorName", value)}
+				/>
+				{/* Problèmes Digestifs */}
+				<DetailItem
+					label="Problèmes Digestifs"
+					value={editedPatient.digestiveProblems || "Non renseignés"}
+					editable={isEditing}
+					onChange={(value) =>
+						handleChange("digestiveProblems", value)
+					}
+				/>
+				{/* Nom du Médecin Digestif */}
+				<DetailItem
+					label="Nom du Médecin Digestif"
+					value={editedPatient.digestiveDoctorName || "Non renseigné"}
+					editable={isEditing}
+					onChange={(value) =>
+						handleChange("digestiveDoctorName", value)
+					}
+				/>
+				{/* Traitement Actuel */}
+				<DetailItem
+					label="Traitement Actuel"
+					value={editedPatient.currentTreatment || "Non renseigné"}
+					editable={isEditing}
+					onChange={(value) =>
+						handleChange("currentTreatment", value)
+					}
+				/>
+				{/* Antécédents Chirurgicaux */}
+				<DetailItem
+					label="Antécédents Chirurgicaux"
+					value={editedPatient.surgicalHistory || "Non renseignés"}
+					editable={isEditing}
+					onChange={(value) => handleChange("surgicalHistory", value)}
+				/>
+				{/* Antécédents Traumatiques */}
+				<DetailItem
+					label="Antécédents Traumatiques"
+					value={editedPatient.traumaHistory || "Non renseignés"}
+					editable={isEditing}
+					onChange={(value) => handleChange("traumaHistory", value)}
+				/>
+				{/* Antécédents Rhumatologiques */}
+				<DetailItem
+					label="Antécédents Rhumatologiques"
+					value={
+						editedPatient.rheumatologicalHistory || "Non renseignés"
+					}
+					editable={isEditing}
+					onChange={(value) =>
+						handleChange("rheumatologicalHistory", value)
+					}
+				/>
+				{/* Informations HDLM */}
+				<DetailItem
+					label="Informations HDLM"
+					value={editedPatient.hdlm || "Non renseignées"}
+					editable={isEditing}
+					onChange={(value) => handleChange("hdlm", value)}
+				/>{" "}
 			</SectionToggle>
 			{/* Informations du praticien et cabinet */}
 			<SectionToggle
