@@ -111,8 +111,8 @@ const AddPatientForm = ({}) => {
 					ajouté avec succès !
 				</div>,
 				{
-					position: "top-center",
-					className: "custom-toast",
+					position:
+						"top-center custom-toast bg-inherit text-white dark:bg-gray-500 dark:text-gray-200",
 					icon: "🎉",
 				}
 			);

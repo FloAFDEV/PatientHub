@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
 import ConfirmDeletePatientModal from "@/components/DeleteModal/ConfirmDeletePatientModal";
+import ErrorDisplay from "@/components/ErrorDisplay";
+import {
+	maritalStatusTranslations,
+	contraceptionTranslations,
+	handednessTranslations,
+	yesNoTranslations,
+} from "@/utils/translations";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import SectionToggle from "@/components/SectionToggle";
@@ -117,16 +124,7 @@ const PatientDetails = ({ patient, onClose }) => {
 
 	// Gestion des erreurs d'affichage
 	if (error) {
-		return (
-			<div className="p-4 w-full mx-auto">
-				<button className="mb-4 text-red-500" onClick={onClose}>
-					&times; Fermer
-				</button>
-				<div className="text-red-500">
-					<strong>Erreur:</strong> {error}
-				</div>
-			</div>
-		);
+		return <ErrorDisplay error={error} onClose={onClose} />;
 	}
 
 	// Fonction pour mettre à jour les informations du patient
@@ -147,7 +145,11 @@ const PatientDetails = ({ patient, onClose }) => {
 			});
 
 			if (response.ok) {
-				toast.success("Patient mis à jour avec succès");
+				toast.success("🎉 Le patient a été mis à jour avec succès !", {
+					className:
+						"custom-toast bg-inherit text-white dark:bg-gray-500 dark:text-gray-200",
+					position: "top-center",
+				});
 				setIsEditing(false);
 			} else {
 				const errorData = await response.json();
@@ -162,42 +164,6 @@ const PatientDetails = ({ patient, onClose }) => {
 			console.error("Erreur:", error);
 			toast.error("Erreur lors de la mise à jour du patient");
 		}
-	};
-
-	// Traductions des valeurs des énumérations
-	const maritalStatusTranslations = {
-		SINGLE: "Célibataire",
-		MARRIED: "Marié(e)",
-		DIVORCED: "Divorcé(e)",
-		WIDOWED: "Veuf/veuve",
-		SEPARATED: "Séparé(e)",
-		ENGAGED: "Fiancé(e)",
-		PARTNERED: "En couple",
-	};
-
-	const contraceptionTranslations = {
-		NONE: "Aucun",
-		PILLS: "Pilule",
-		CONDOM: "Préservatifs",
-		IMPLANTS: "Implants",
-		DIAPHRAGM: "Diaphragme",
-		IUD: "DIU",
-		INJECTION: "Injection",
-		PATCH: "Patch",
-		RING: "Anneau",
-		NATURAL_METHODS: "Méthodes naturelles",
-		STERILIZATION: "Stérilisation",
-	};
-
-	const handednessTranslations = {
-		LEFT: "Gaucher",
-		RIGHT: "Droitier",
-		AMBIDEXTROUS: "Ambidextre",
-	};
-
-	const yesNoTranslations = {
-		true: "Oui",
-		false: "Non",
 	};
 
 	return (
@@ -745,12 +711,15 @@ const PatientDetails = ({ patient, onClose }) => {
 					/>
 				</div>
 			</div>{" "}
-			<button
-				onClick={handleUpdatePatient}
-				className="mt-4 p-2 text-white bg-blue-600 rounded-lg"
-			>
-				Mettre à jour les informations
-			</button>
+			{isEditing && (
+				<button
+					onClick={handleUpdatePatient}
+					className="border border-gray-500 hover:bg-green-600 hover:text-white p-2 text-lg rounded-md transition-all duration-200"
+				>
+					<CheckIcon className="h-6 w-6 inline-block mr-2" />
+					Mettre à jour
+				</button>
+			)}
 		</div>
 	);
 };
