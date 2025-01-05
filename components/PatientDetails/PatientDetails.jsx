@@ -606,13 +606,6 @@ const PatientDetails = ({ patient, onClose }) => {
 				onToggle={() => toggleSection("practitionerInfo")}
 				editable={isEditing}
 			>
-				{/* Activité physique */}
-				<DetailItem
-					label="Activité physique"
-					value={editedPatient.activityLevel || "Non renseignée"}
-					editable={isEditing}
-					onChange={(value) => handleChange("activityLevel", value)}
-				/>
 				{/* Problèmes ORL */}
 				<DetailItem
 					label="Problèmes ORL"
