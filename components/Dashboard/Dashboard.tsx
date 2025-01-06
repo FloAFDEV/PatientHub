@@ -55,6 +55,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	const [dashboardData, setDashboardData] = useState<DashboardData | null>(
 		null
 	);
+	const [loading, setLoading] = useState<boolean>(true); // Nouveau state pour gérer le chargement
 
 	useEffect(() => {
 		let isMounted = true;
@@ -73,12 +74,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					JSON.stringify(data) !== JSON.stringify(dashboardData)
 				) {
 					setDashboardData(data);
+					setLoading(false); // Données chargées, mettre loading à false
 				}
 			} catch (error) {
 				console.error(
 					"Erreur lors de la récupération des données:",
 					error instanceof Error ? error.message : error
 				);
+				setLoading(false); // Si erreur, mettre loading à false
 			}
 		};
 		fetchDashboardData();
@@ -133,6 +136,15 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 			return months[month] || month;
 		};
 	}, []);
+
+	// Si les données sont en cours de chargement, afficher un message unique
+	if (loading) {
+		return (
+			<div className="flex justify-center items-center h-screen">
+				<p>Chargement des données...</p>
+			</div>
+		);
+	}
 
 	return (
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
@@ -216,7 +228,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						return "Chargement...";
 					})()}
 				/>
-
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-8 h-8">

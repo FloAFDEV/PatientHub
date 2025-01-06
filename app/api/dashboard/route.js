@@ -79,65 +79,20 @@ export async function GET() {
 		thirtyDaysAgo.setDate(currentDate.getDate() - 30);
 		const patients30DaysAgo = patients.filter((p) => {
 			const createdAt = new Date(p.createdAt);
-			return createdAt <= thirtyDaysAgo;
+			return createdAt >= thirtyDaysAgo;
 		}).length;
-
-		// Patients créés ce mois-ci
-		const startOfMonth = new Date(
-			currentDate.getFullYear(),
-			currentDate.getMonth(),
-			1
-		);
-		const endOfMonth = new Date(
-			currentDate.getFullYear(),
-			currentDate.getMonth() + 1,
-			0,
-			23,
-			59,
-			59
-		);
-		const newPatientsThisMonth = patients.filter((p) => {
-			const createdAt = new Date(p.createdAt);
-			return createdAt >= startOfMonth && createdAt <= endOfMonth;
-		}).length;
-
-		// Patients créés cette année
-		const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
-		const newPatientsThisYear = patients.filter(
-			(p) => new Date(p.createdAt) >= startOfYear
-		).length;
-
-		// Récupérer les nouveaux patients de l'année précédente
-		const startOfLastYear = new Date(currentDate.getFullYear() - 1, 0, 1);
-		const endOfLastYear = new Date(
-			currentDate.getFullYear() - 1,
-			11,
-			31,
-			23,
-			59,
-			59
-		);
-		const newPatientsLastYear = patients.filter((p) => {
-			const createdAt = new Date(p.createdAt);
-			return createdAt >= startOfLastYear && createdAt <= endOfLastYear;
-		}).length;
-
-		// Calcul du pourcentage de croissance par rapport à l'année précédente
-		let growthPercentage = 0;
-		if (newPatientsLastYear > 0) {
-			growthPercentage =
-				((newPatientsThisYear - newPatientsLastYear) /
-					newPatientsLastYear) *
-				100;
-		}
-		const formattedGrowthPercentage =
-			growthPercentage > 0
-				? `+${growthPercentage.toFixed(2)}%`
-				: "Pas de comparaison";
 
 		// Croissance mensuelle sur les 12 derniers mois
 		const monthlyGrowth = [];
 		let cumulativePatients = 0;
+
+		// On commence par obtenir le total des patients existants avant le mois courant
+		const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+		const patientsAtStartOfYear = patients.filter(
+			(p) => new Date(p.createdAt) <= startOfYear
+		).length;
+
+		// Pour chaque mois des 12 derniers mois
 		for (let i = 11; i >= 0; i--) {
 			const monthDate = new Date(
 				currentDate.getFullYear(),
@@ -157,21 +112,48 @@ export async function GET() {
 				59,
 				59
 			);
+
+			// Calcul des patients créés durant ce mois
 			const patientsThisMonth = patients.filter((p) => {
 				const createdAt = new Date(p.createdAt);
 				return createdAt >= startOfMonth && createdAt <= endOfMonth;
 			}).length;
+
+			// Accumuler les patients créés ce mois-ci pour obtenir un total cumulatif
 			cumulativePatients += patientsThisMonth;
+
+			// Ajouter les données du mois courant
 			monthlyGrowth.push({
 				month: monthDate.toLocaleString("fr-FR", { month: "long" }),
-				patients: cumulativePatients,
+				patients: cumulativePatients, // Le nombre de patients total jusqu'à ce mois
 				growthText: `+${patientsThisMonth} patients`,
 			});
 		}
 
-		// Retourner les résultats sous forme de JSON
+		// Ajouter les rendez-vous d'aujourd'hui (si vous avez un modèle Appointment dans votre base de données)
+		const today = new Date();
+		const appointmentsToday = await prisma.appointment.count({
+			where: {
+				date: {
+					gte: new Date(today.setHours(0, 0, 0, 0)),
+					lt: new Date(today.setHours(23, 59, 59, 999)),
+				},
+			},
+		});
+
+		// Récupérer le prochain rendez-vous (si vous avez un modèle Appointment dans votre base de données)
+		const nextAppointment = await prisma.appointment.findFirst({
+			where: {
+				date: {
+					gte: new Date(),
+				},
+			},
+			orderBy: {
+				date: "asc",
+			},
+		});
+
 		return NextResponse.json({
-			patients,
 			totalPatients,
 			maleCount,
 			femaleCount,
@@ -180,12 +162,25 @@ export async function GET() {
 			averageAge,
 			averageAgeMale,
 			averageAgeFemale,
-			newPatientsThisMonth,
-			newPatientsThisYear,
-			newPatientsLastYear,
-			growthPercentage: growthPercentage.toFixed(2),
-			formattedGrowthPercentage,
 			monthlyGrowth,
+			newPatientsThisMonth: patients.filter(
+				(p) =>
+					new Date(p.createdAt).getMonth() === currentDate.getMonth()
+			).length,
+			newPatientsThisYear: patients.filter(
+				(p) =>
+					new Date(p.createdAt).getFullYear() ===
+					currentDate.getFullYear()
+			).length,
+			newPatientsLastYear: patients.filter(
+				(p) =>
+					new Date(p.createdAt).getFullYear() ===
+					currentDate.getFullYear() - 1
+			).length,
+			appointmentsToday,
+			nextAppointment: nextAppointment
+				? nextAppointment.date.toISOString()
+				: null,
 		});
 	} catch (error) {
 		console.error("Erreur lors de la récupération des données :", error);
