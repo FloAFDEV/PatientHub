@@ -86,12 +86,6 @@ export async function GET() {
 		const monthlyGrowth = [];
 		let cumulativePatients = 0;
 
-		// On commence par obtenir le total des patients existants avant le mois courant
-		const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
-		const patientsAtStartOfYear = patients.filter(
-			(p) => new Date(p.createdAt) <= startOfYear
-		).length;
-
 		// Pour chaque mois des 12 derniers mois
 		for (let i = 11; i >= 0; i--) {
 			const monthDate = new Date(
