@@ -163,7 +163,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						className="opacity-80"
 						priority
 						placeholder="blur"
-						blurDataURL="/assets/images/ModernCabinet-small.webp"
+						blurDataURL="/assets/images/ModernCabinet.webp"
 					/>
 					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
 						<Image
