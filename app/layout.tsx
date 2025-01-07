@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "@/components/theme-provider";
 import AppLayout from "@/components/AppLayout";
+import ClientLayout from "./ClientLayout";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,7 +32,9 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<AppLayout>{children}</AppLayout>
+					<ClientLayout>
+						<AppLayout>{children}</AppLayout>
+					</ClientLayout>
 				</ThemeProvider>
 			</body>
 		</html>

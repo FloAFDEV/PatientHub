@@ -16,6 +16,7 @@ export async function GET() {
 				createdAt: true,
 				isDeceased: true,
 			},
+			where: { isDeceased: false },
 			take: 5000,
 		});
 
@@ -74,6 +75,12 @@ export async function GET() {
 				  ) / 10
 				: 0;
 
+		// Patients créés avant février 2024 (le premier mois du graphique)
+		const startOfGraph = new Date("2024-02-01"); // Le mois de départ du graphique
+		const initialPatients = patients.filter(
+			(p) => new Date(p.createdAt) < startOfGraph
+		).length;
+
 		// Patients créés il y a 30 jours
 		const thirtyDaysAgo = new Date(currentDate);
 		thirtyDaysAgo.setDate(currentDate.getDate() - 30);
@@ -84,7 +91,7 @@ export async function GET() {
 
 		// Croissance mensuelle sur les 12 derniers mois
 		const monthlyGrowth = [];
-		let cumulativePatients = 0;
+		let cumulativePatients = initialPatients; // Commence avec les patients existants avant février
 
 		// Pour chaque mois des 12 derniers mois
 		for (let i = 11; i >= 0; i--) {
@@ -110,13 +117,16 @@ export async function GET() {
 			// Calcul des patients créés durant ce mois
 			const patientsThisMonth = patients.filter((p) => {
 				const createdAt = new Date(p.createdAt);
-				return createdAt >= startOfMonth && createdAt <= endOfMonth;
+				return (
+					createdAt >= startOfMonth &&
+					createdAt < new Date(endOfMonth.getTime() + 1)
+				);
 			}).length;
 
-			// Accumuler les patients créés ce mois-ci pour obtenir un total cumulatif
+			// Ajoute les nouveaux patients ce mois-ci à la croissance cumulée
 			cumulativePatients += patientsThisMonth;
 
-			// Ajouter les données du mois courant
+			// Ajoute les données du mois courant
 			monthlyGrowth.push({
 				month: monthDate.toLocaleString("fr-FR", { month: "long" }),
 				patients: cumulativePatients, // Le nombre de patients total jusqu'à ce mois
@@ -124,7 +134,7 @@ export async function GET() {
 			});
 		}
 
-		// Ajouter les rendez-vous d'aujourd'hui (si vous avez un modèle Appointment dans votre base de données)
+		// Les rendez-vous d'aujourd'hui (si vous avez un modèle Appointment dans votre base de données)
 		const today = new Date();
 		const appointmentsToday = await prisma.appointment.count({
 			where: {
@@ -135,7 +145,7 @@ export async function GET() {
 			},
 		});
 
-		// Récupérer le prochain rendez-vous (si vous avez un modèle Appointment dans votre base de données)
+		// Récupère le prochain rendez-vous (si vous avez un modèle Appointment dans votre base de données)
 		const nextAppointment = await prisma.appointment.findFirst({
 			where: {
 				date: {
@@ -150,9 +160,9 @@ export async function GET() {
 		return NextResponse.json({
 			totalPatients,
 			maleCount,
+			patients30DaysAgo,
 			femaleCount,
 			unspecifiedGenderCount,
-			patients30DaysAgo,
 			averageAge,
 			averageAgeMale,
 			averageAgeFemale,

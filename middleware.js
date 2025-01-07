@@ -2,42 +2,44 @@ import { updateSession } from "@/utils/supabase/middleware";
 import { NextResponse } from "next/server";
 import { decryptKey } from "@/components/PassKeyModal";
 
+function isSessionExpired(sessionExpiration) {
+	const expirationTime = parseInt(sessionExpiration, 10);
+	return Date.now() > expirationTime;
+}
+
+function isPasskeyValid(passkey) {
+	const decryptedPasskey = decryptKey(passkey);
+	return decryptedPasskey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY;
+}
+
 export async function middleware(request) {
 	try {
 		// Vérification de l'expiration de la session
 		const sessionExpiration = request.cookies.get("sessionExpiration");
-		if (sessionExpiration) {
-			const expirationTime = parseInt(sessionExpiration.value);
-			if (Date.now() > expirationTime) {
-				return NextResponse.redirect(new URL("/login", request.url));
-			}
+		if (sessionExpiration && isSessionExpired(sessionExpiration.value)) {
+			return NextResponse.redirect(new URL("/login", request.url));
 		}
 
-		// Vérifier la passkey pour les routes protégées
-		const protectedRoutes = ["/admin", "/"]; // Liste des routes protégées
-		const passkey = request.cookies.get("accessKey");
+		// Vérification des routes protégées
+		const protectedRoutes = ["/admin", "/"];
+		const pathname = new URL(request.url).pathname;
 
-		if (protectedRoutes.includes(new URL(request.url).pathname)) {
-			// Si la route est protégée mais pas de passkey valide, rediriger vers la page de passkey
-			if (!passkey) {
-				return NextResponse.redirect(new URL("/login", request.url)); // Redirection vers la page de saisie de passkey
-			}
+		if (protectedRoutes.includes(pathname)) {
+			const passkey = request.cookies.get("accessKey");
 
-			// Vérification de la passkey
-			const decryptedPasskey = decryptKey(passkey.value); // Déchiffrement de la passkey
-			if (decryptedPasskey !== process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
-				return NextResponse.redirect(new URL("/passkey", request.url)); // Redirection vers la page de passkey si incorrecte
+			if (!passkey || !isPasskeyValid(passkey.value)) {
+				return NextResponse.redirect(new URL("/passkey", request.url));
 			}
 		}
 	} catch (error) {
 		console.error(
-			"Erreur lors de la vérification de la session ou de la passkey:",
+			"Erreur lors de la vérification de la session ou de la passkey :",
 			error
 		);
 		return NextResponse.redirect(new URL("/login", request.url));
 	}
 
-	// Continuer avec la mise à jour de la session Supabase
+	// Continuer avec la mise à jour de la session
 	return await updateSession(request);
 }
 

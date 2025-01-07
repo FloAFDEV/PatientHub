@@ -55,7 +55,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	const [dashboardData, setDashboardData] = useState<DashboardData | null>(
 		null
 	);
-	const [loading, setLoading] = useState<boolean>(true); // Nouveau state pour gérer le chargement
+	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -213,21 +213,24 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							currentPatients !== undefined &&
 							patients30DaysAgo !== undefined
 						) {
-							// Calcul du pourcentage d'augmentation, avec une valeur minimale de 0
+							// Calcul du pourcentage de variation par rapport aux 30 derniers jours
 							const increase =
 								patients30DaysAgo !== 0
 									? ((currentPatients - patients30DaysAgo) /
 											patients30DaysAgo) *
 									  100
 									: 0;
-							return `+ ${Math.max(increase, 0).toFixed(
-								0
-							)}% sur 30 jours`;
+
+							// Affichage du pourcentage avec un formatage de nombre
+							return `+ ${
+								increase >= 0 ? increase.toFixed(0) : 0
+							}% sur 30 jours`;
 						}
 
 						return "Chargement...";
 					})()}
 				/>
+
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-8 h-8">
