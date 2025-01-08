@@ -10,21 +10,19 @@ function isSessionExpired(sessionExpiration) {
 
 // Fonction pour vérifier si la passkey est valide
 function isPasskeyValid(passkey) {
-	const decryptedPasskey = decryptKey(passkey); // Déchiffrer la passkey
-	return decryptedPasskey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY; // Vérifier si elle est valide
+	try {
+		const decryptedPasskey = decryptKey(passkey); // Déchiffrer la passkey
+		return decryptedPasskey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY; // Vérifier si elle est valide
+	} catch (error) {
+		console.error("Erreur lors du décryptage de la passkey :", error);
+		return false;
+	}
 }
-
-const expirationTime = Date.now() + 60 * 60 * 1000; // 1 heure
-res.cookie("sessionExpiration", expirationTime, {
-	httpOnly: true,
-	secure: true,
-});
 
 export async function middleware(request) {
 	try {
 		// Vérification de l'expiration de la session
 		const sessionExpiration = request.cookies.get("sessionExpiration");
-		// console.log("sessionExpiration:", sessionExpiration); // Debugging
 
 		// Si la session a expiré, rediriger vers la page de connexion
 		if (sessionExpiration && isSessionExpired(sessionExpiration.value)) {
@@ -44,6 +42,15 @@ export async function middleware(request) {
 				return NextResponse.redirect(new URL("/passkey", request.url));
 			}
 		}
+
+		// Définir un nouveau cookie d'expiration de session si nécessaire
+		const expirationTime = Date.now() + 60 * 60 * 1000; // 1 heure
+		const response = NextResponse.next(); // Continuer la requête
+		response.cookies.set("sessionExpiration", expirationTime.toString(), {
+			httpOnly: true,
+			secure: true,
+		});
+		return response;
 	} catch (error) {
 		// Si une erreur survient, rediriger vers la page de connexion
 		console.error(
@@ -52,9 +59,6 @@ export async function middleware(request) {
 		);
 		return NextResponse.redirect(new URL("/login", request.url));
 	}
-
-	// Continuer avec la mise à jour de la session
-	return await updateSession(request);
 }
 
 // Configuration pour définir les routes à intercepter
