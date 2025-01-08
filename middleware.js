@@ -2,66 +2,73 @@ import { updateSession } from "@/utils/supabase/middleware";
 import { NextResponse } from "next/server";
 import { decryptKey } from "@/components/PassKeyModal";
 
-// Fonction pour vérifier si la session a expiré
-function isSessionExpired(sessionExpiration) {
-	const expirationTime = Number(sessionExpiration); // Convertir le timestamp en nombre
-	return Date.now() > expirationTime; // Comparer avec l'heure actuelle
-}
-
-// Fonction pour vérifier si la passkey est valide
-function isPasskeyValid(passkey) {
-	try {
-		const decryptedPasskey = decryptKey(passkey); // Déchiffrer la passkey
-		return decryptedPasskey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY; // Vérifier si elle est valide
-	} catch (error) {
-		console.error("Erreur lors du décryptage de la passkey :", error);
-		return false;
-	}
-}
-
 export async function middleware(request) {
 	try {
-		// Vérification de l'expiration de la session
-		const sessionExpiration = request.cookies.get("sessionExpiration");
+		const url = new URL(request.url);
+		const pathname = url.pathname;
 
-		// Si la session a expiré, rediriger vers la page de connexion
-		if (sessionExpiration && isSessionExpired(sessionExpiration.value)) {
+		console.log("Middleware activé pour :", pathname);
+
+		// Cookies
+		const sessionExpiration = request.cookies.get("sessionExpiration");
+		const passkey = request.cookies.get("accessKey");
+
+		console.log("Cookies reçus :", {
+			sessionExpiration: sessionExpiration?.value,
+			passkey: passkey?.value,
+		});
+
+		// Routes publiques (pas besoin de vérifications)
+		const publicRoutes = ["/login", "/passkey"];
+		if (publicRoutes.includes(pathname)) {
+			console.log("Route publique, pas de vérification.");
+			return NextResponse.next();
+		}
+
+		// Vérification de l'expiration de la session
+		if (sessionExpiration) {
+			const expirationTime = parseInt(sessionExpiration.value, 10);
+			if (Date.now() > expirationTime) {
+				console.log("Session expirée, redirection vers /login");
+				return NextResponse.redirect(new URL("/login", request.url));
+			}
+		} else {
+			console.log("Pas de sessionExpiration, redirection vers /login");
 			return NextResponse.redirect(new URL("/login", request.url));
 		}
 
-		// Vérification des routes protégées ("/admin" et "/")
+		// Routes protégées
 		const protectedRoutes = ["/admin", "/"];
-		const pathname = new URL(request.url).pathname;
-
-		// Si l'URL demandée est protégée, vérifier la passkey
 		if (protectedRoutes.includes(pathname)) {
-			const passkey = request.cookies.get("accessKey");
+			console.log("Route protégée détectée :", pathname);
 
-			// Si la passkey est absente ou invalide, rediriger vers la page de passkey
-			if (!passkey || !isPasskeyValid(passkey.value)) {
+			// Vérifier la passkey
+			if (!passkey) {
+				console.log(
+					"Aucune passkey trouvée, redirection vers /passkey"
+				);
+				return NextResponse.redirect(new URL("/passkey", request.url));
+			}
+
+			const decryptedPasskey = decryptKey(passkey.value);
+			if (decryptedPasskey !== process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
+				console.log("Passkey invalide, redirection vers /passkey");
 				return NextResponse.redirect(new URL("/passkey", request.url));
 			}
 		}
 
-		// Définir un nouveau cookie d'expiration de session si nécessaire
-		const expirationTime = Date.now() + 60 * 60 * 1000; // 1 heure
-		const response = NextResponse.next(); // Continuer la requête
-		response.cookies.set("sessionExpiration", expirationTime.toString(), {
-			httpOnly: true,
-			secure: true,
-		});
-		return response;
+		// Continuer avec la mise à jour de la session Supabase
+		console.log("Session valide, mise à jour en cours...");
+		return await updateSession(request);
 	} catch (error) {
-		// Si une erreur survient, rediriger vers la page de connexion
 		console.error(
-			"Erreur lors de la vérification de la session ou de la passkey :",
+			"Erreur lors de la vérification de la session ou de la passkey:",
 			error
 		);
 		return NextResponse.redirect(new URL("/login", request.url));
 	}
 }
 
-// Configuration pour définir les routes à intercepter
 export const config = {
 	matcher: [
 		"/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
