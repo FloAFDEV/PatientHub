@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { User } from "@supabase/supabase-js";
+import StatCard from "../StatCard";
 import Image from "next/image";
 import {
 	IconChartBar,
@@ -199,6 +200,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						</div>
 					}
 					title="Patients actifs"
+					explanation="Vos patients au complet 🎉 
+					Les patients archivés ou décédés ne sont pas inclus."
 					value={
 						dashboardData?.totalPatients !== undefined
 							? dashboardData.totalPatients
@@ -243,6 +246,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					title="Rendez-vous aujourd'hui"
 					value="8"
 					subtitle="Prochain RDV à 14h30"
+					explanation="Représente le nombre total de rendez-vous prévus dans votre journée. Les rendez-vous annulés ou manqués ne sont pas inclus."
 				/>
 				<StatCard
 					icon={
@@ -254,6 +258,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						</div>
 					}
 					title="Nouveaux patients (Ce mois-ci)"
+					explanation="Représente le nombre de nouveaux patients enregistrés ce mois-ci."
 					value={
 						dashboardData?.newPatientsThisMonth !== undefined
 							? dashboardData.newPatientsThisMonth
@@ -270,6 +275,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						</div>
 					}
 					title="Nouveaux patients (Cette année)"
+					explanation="Représente le nombre de nouveaux patients enregistrés cette année."
 					value={
 						dashboardData?.newPatientsThisYear !== undefined
 							? dashboardData.newPatientsThisYear.toString()
@@ -319,6 +325,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						</div>
 					}
 					title="Âge moyen des patients"
+					explanation="Âge moyen calculé sur l'ensemble des patients actuellement suivis."
 					value={
 						dashboardData?.averageAge
 							? `${dashboardData.averageAge.toFixed(1)} ans`
@@ -456,7 +463,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							<IconChartBar
 								className="text-purple-700"
 								aria-hidden="true"
-								size={20}
+								size={25}
 							/>
 							Croissance mensuelle des patients en{" "}
 							{new Date().getFullYear()}
@@ -486,7 +493,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								/>
 								<Tooltip
 									contentStyle={{
-										backgroundColor: "#bf4cbb",
+										backgroundColor: "#65a30d",
 										border: "none",
 										borderRadius: "8px",
 										boxShadow:
@@ -524,50 +531,5 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 		</div>
 	);
 };
-
-// Composant pour afficher les cartes de statistiques
-interface StatCardProps {
-	icon: React.ReactNode;
-	title: string;
-	value: string | number;
-	change?: string;
-	subtitle?: string;
-}
-
-const StatCard: React.FC<StatCardProps> = ({
-	icon,
-	title,
-	value,
-	change,
-	subtitle,
-}) => (
-	<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-4 sm:p-6 rounded-lg shadow-lg">
-		<div className="flex items-center justify-between mb-3">
-			<div className="flex items-center">
-				{icon}
-				<h3 className="text-sm sm:text-base font-semibold text-gray-800 dark:text-white ml-2">
-					{title}
-				</h3>
-			</div>
-		</div>
-		<p className="text-3xl lg:text-3xl sm:text-2xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-			{value}
-		</p>
-		<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-2">
-			{change && (
-				<p className="text-sm sm:text-base text-green-600 dark:text-green-400 mb-1 sm:mb-0">
-					{change}
-				</p>
-			)}
-			{subtitle && (
-				<p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-					{subtitle}
-				</p>
-			)}
-		</div>
-	</div>
-);
-
-StatCard.displayName = "StatCard";
 
 export default Dashboard;
