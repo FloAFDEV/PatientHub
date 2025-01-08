@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Durée d'expiration de la session (30 minutes)
-const SESSION_EXPIRATION = 30 * 60 * 1000;
+const SESSION_EXPIRATION = 60 * 60 * 1000;
 
 export async function updateSession(request: NextRequest) {
 	let response = NextResponse.next({

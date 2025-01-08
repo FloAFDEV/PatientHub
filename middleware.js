@@ -4,62 +4,31 @@ import { decryptKey } from "@/components/PassKeyModal";
 
 export async function middleware(request) {
 	try {
-		const url = new URL(request.url);
-		const pathname = url.pathname;
-
-		console.log("Middleware activé pour :", pathname);
-
-		// Cookies
-		const sessionExpiration = request.cookies.get("sessionExpiration");
-		const passkey = request.cookies.get("accessKey");
-
-		console.log("Cookies reçus :", {
-			sessionExpiration: sessionExpiration?.value,
-			passkey: passkey?.value,
-		});
-
-		// Routes publiques (pas besoin de vérifications)
-		const publicRoutes = ["/login", "/passkey"];
-		if (publicRoutes.includes(pathname)) {
-			console.log("Route publique, pas de vérification.");
-			return NextResponse.next();
-		}
-
 		// Vérification de l'expiration de la session
+		const sessionExpiration = request.cookies.get("sessionExpiration");
 		if (sessionExpiration) {
-			const expirationTime = parseInt(sessionExpiration.value, 10);
+			const expirationTime = parseInt(sessionExpiration.value);
 			if (Date.now() > expirationTime) {
-				console.log("Session expirée, redirection vers /login");
 				return NextResponse.redirect(new URL("/login", request.url));
 			}
-		} else {
-			console.log("Pas de sessionExpiration, redirection vers /login");
-			return NextResponse.redirect(new URL("/login", request.url));
 		}
 
-		// Routes protégées
-		const protectedRoutes = ["/admin", "/"];
-		if (protectedRoutes.includes(pathname)) {
-			console.log("Route protégée détectée :", pathname);
+		// Vérifier la passkey pour les routes protégées
+		const protectedRoutes = ["/admin", "/"]; // Liste des routes protégées
+		const passkey = request.cookies.get("accessKey");
 
-			// Vérifier la passkey
+		if (protectedRoutes.includes(new URL(request.url).pathname)) {
+			// Si la route est protégée mais pas de passkey valide, rediriger vers la page de passkey
 			if (!passkey) {
-				console.log(
-					"Aucune passkey trouvée, redirection vers /passkey"
-				);
-				return NextResponse.redirect(new URL("/passkey", request.url));
+				return NextResponse.redirect(new URL("/login", request.url)); // Redirection vers la page de saisie de passkey
 			}
 
-			const decryptedPasskey = decryptKey(passkey.value);
+			// Vérification de la passkey
+			const decryptedPasskey = decryptKey(passkey.value); // Déchiffrement de la passkey
 			if (decryptedPasskey !== process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
-				console.log("Passkey invalide, redirection vers /passkey");
-				return NextResponse.redirect(new URL("/passkey", request.url));
+				return NextResponse.redirect(new URL("/passkey", request.url)); // Redirection vers la page de passkey si incorrecte
 			}
 		}
-
-		// Continuer avec la mise à jour de la session Supabase
-		console.log("Session valide, mise à jour en cours...");
-		return await updateSession(request);
 	} catch (error) {
 		console.error(
 			"Erreur lors de la vérification de la session ou de la passkey:",
@@ -67,6 +36,9 @@ export async function middleware(request) {
 		);
 		return NextResponse.redirect(new URL("/login", request.url));
 	}
+
+	// Continuer avec la mise à jour de la session Supabase
+	return await updateSession(request);
 }
 
 export const config = {
