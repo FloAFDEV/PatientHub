@@ -142,7 +142,17 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	if (loading) {
 		return (
 			<div className="flex justify-center items-center h-screen">
-				<p>Chargement des données...</p>
+				<div className="w-full h-full flex justify-center items-center">
+					<div className="absolute animate-ping h-[16rem] w-[16rem] rounded-full  border-t-4 border-b-4 border-red-500 "></div>
+					<div className="absolute animate-spin h-[14rem] w-[14rem] rounded-full  border-t-4 border-b-4 border-purple-500 "></div>
+					<div className="absolute animate-ping h-[12rem] w-[12rem] rounded-full  border-t-4 border-b-4 border-pink-500 "></div>
+					<div className="absolute animate-spin h-[10rem] w-[10rem] rounded-full border-t-4 border-b-4 border-yellow-500"></div>
+					<div className="absolute animate-ping h-[8rem] w-[8rem] rounded-full border-t-4 border-b-4 border-green-500"></div>
+					<div className="absolute animate-spin h-[6rem] w-[6rem] rounded-full border-t-4 border-b-4 border-blue-500"></div>
+					<div className="rounded-full h-28 w-28 animate-bounce flex items-center justify-center text-gray-500 font-semibold text-3xl dark:text-gray-100">
+						Chargement...
+					</div>
+				</div>
 			</div>
 		);
 	}
@@ -493,7 +503,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								/>
 								<Tooltip
 									contentStyle={{
-										backgroundColor: "#65a30d",
+										backgroundColor: "#0891b2",
 										border: "none",
 										borderRadius: "8px",
 										boxShadow:
