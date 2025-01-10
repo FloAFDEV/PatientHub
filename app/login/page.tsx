@@ -110,10 +110,10 @@ export default function LoginPage() {
 						{/* Texte d'accueil */}
 						<div className="mx-auto max-w-md w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 lg:py-16 mt-20 lg:mt-28">
 							<div className="text-center">
-								<h1 className="text-3xl sm:text-lg md:text-4xl lg:text-3xl font-bold tracking-tight mt-6">
+								<h1 className="text-3xl sm:text-lg md:text-4xl lg:text-4xl font-bold tracking-tight mt-6">
 									Votre espace dédié aux ostéopathes
 								</h1>
-								<p className="mt-4 text-base leading-7 sm:mt-2 sm:text-lg lg:m-2">
+								<p className="mt-4 text-base leading-7 sm:mt-2 sm:text-xl lg:mt-2">
 									Suivez vos patients en toute simplicité.
 									Connectez-vous pour consulter vos dossiers.
 								</p>
@@ -122,7 +122,7 @@ export default function LoginPage() {
 						<h1 className="absolute top-4 left-4 text-4xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
 							PatientHub
 						</h1>
-						<div className="w-full max-w-md text-card-foreground border p-8 shadow-lg rounded-lg mt-6 mb-12 sm:mb-24 lg:mb-4">
+						<div className="w-full max-w-md text-card-foreground border p-8 shadow-lg rounded-lg mt-4 mb-12 sm:mb-24 lg:mb-6">
 							<h2 className="text-lg font-bold text-center mb-2">
 								Connexion
 							</h2>
