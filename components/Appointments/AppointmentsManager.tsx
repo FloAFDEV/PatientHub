@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "react-toastify";
@@ -127,14 +128,17 @@ export default function AppointmentsManager() {
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
 			<header className="mb-8">
 				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
-					<img
+					<Image
 						src="/assets/images/Planning.webp"
 						alt="Modern Planning Desktop"
 						className="w-full h-full object-cover object-center opacity-80"
 						style={{ objectPosition: "center 30%" }}
+						layout="fill"
+						width={1920}
+						height={1080}
 					/>
 					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
-						<img
+						<Image
 							src="/assets/icons/logo-full.svg"
 							alt="Logo"
 							className="w-20 h-20 object-contain shadow-xl rounded-xl mb-4"

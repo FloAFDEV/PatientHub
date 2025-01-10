@@ -1,13 +1,18 @@
 import React from "react";
-import { Controller } from "react-hook-form";
+import {
+	Controller,
+	Control,
+	RegisterOptions,
+	FieldValues,
+} from "react-hook-form";
 
 interface SelectFieldProps {
 	name: string;
-	control: any;
+	control: Control<FieldValues>;
 	label: string;
 	options: Record<string, string>;
 	required?: boolean;
-	rules?: any;
+	rules?: RegisterOptions;
 	error?: string;
 }
 

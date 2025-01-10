@@ -1,9 +1,9 @@
 import React from "react";
-import { Controller } from "react-hook-form";
+import { Controller, Control, FieldValues } from "react-hook-form";
 
 interface TextAreaFieldProps {
 	name: string;
-	control: any;
+	control: Control<FieldValues>;
 	label: string;
 	placeholder?: string;
 }
