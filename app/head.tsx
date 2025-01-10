@@ -41,7 +41,6 @@ export default function Head() {
 				content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 			/>
 			<link rel="icon" href="/favicon.ico" />
-			{/* Ajoute ici d'autres balises si nécessaire */}
 		</>
 	);
 }

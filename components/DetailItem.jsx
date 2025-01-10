@@ -33,26 +33,31 @@ const DetailItem = ({ label, value, editable, onChange, field }) => {
 			{editable ? (
 				field === "birthDate" ? (
 					<input
-						key={field} // Utilisation d'une clé dynamique pour éviter les re-rendus complets
+						key={field}
 						ref={inputRef}
 						type="date"
 						value={
 							value
-								? new Date(value).toISOString().split("T")[0] // Format date en format "YYYY-MM-DD"
+								? new Date(value).toISOString().split("T")[0]
 								: ""
 						}
 						onChange={handleDateChange}
 						className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md"
 					/>
 				) : (
-					<input
-						key={field} // Utilisation d'une clé dynamique pour éviter les re-rendus complets
-						ref={inputRef}
-						type="text"
+					<select
+						key={field}
 						value={value}
 						onChange={handleDateChange}
-						className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md"
-					/>
+						className="text-xs sm:text-sm bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md focus:ring focus:ring-blue-500"
+					>
+						<option value="" disabled>
+							Sélectionnez une option
+						</option>
+						{/* Ajouter vos options dynamiquement ici */}
+						<option value="option1">Option 1</option>
+						<option value="option2">Option 2</option>
+					</select>
 				)
 			) : field === "birthDate" ? (
 				<p className="text-xs sm:text-sm text-gray-800 dark:text-gray-200 break-words w-full sm:text-right">

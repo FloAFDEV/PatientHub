@@ -1,6 +1,6 @@
 import React from "react";
 import { format } from "date-fns";
-import { Edit2, Trash2, XCircle, Calendar } from "lucide-react";
+import { Edit2, Trash2, Calendar } from "lucide-react";
 import useSWR from "swr";
 import {
 	Table,
@@ -183,9 +183,7 @@ export function AppointmentList({ date, onEdit }: AppointmentListProps) {
 												)
 											}
 											className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
-										>
-											<XCircle className="h-4 w-4" />
-										</Button>
+										></Button>
 									)}
 								</div>
 							</TableCell>

@@ -442,7 +442,7 @@ const PatientList = ({ onAddPatientClick }) => {
 													selectedPatientForAppointment
 												}
 												selectedDate={new Date()}
-												patients={[]} // We'll get this from your API
+												patients={[]}
 											/>
 										)}
 									</div>
