@@ -122,6 +122,12 @@ const PatientDetails = ({ patient, onClose }) => {
 		}
 	}, [patient, isEditing]);
 
+	useEffect(() => {
+		if (isEditing) {
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		}
+	}, [isEditing]);
+
 	// Gestion des erreurs d'affichage
 	if (error) {
 		return <ErrorDisplay error={error} onClose={onClose} />;
@@ -223,7 +229,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				isOpen={openSections.basicInfo}
 				onToggle={() => toggleSection("basicInfo")}
 			>
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6 md:gap-7">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 md:gap-6">
 					<DetailItem
 						label="Prénom"
 						value={editedPatient.firstName || "Non renseigné"}
@@ -434,47 +440,68 @@ const PatientDetails = ({ patient, onClose }) => {
 						value={
 							isEditing ? (
 								// Mode édition : afficher le select avec les valeurs de l'énumération
-								<select
-									value={editedPatient?.contraception || ""}
-									onChange={(e) => {
-										const selectedValue = e.target.value;
+								<>
+									<select
+										value={
+											editedPatient?.contraception || ""
+										}
+										onChange={(e) => {
+											const selectedValue =
+												e.target.value;
 
-										console.log(
-											"Valeur sélectionnée :",
-											selectedValue
-										);
+											console.log(
+												"Valeur sélectionnée :",
+												selectedValue
+											);
 
-										handleChange(
-											"contraception",
-											selectedValue
-										);
-									}}
-									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
-								>
-									<option value="">Non renseigné</option>
-									<option value="NONE">Aucune</option>
-									<option value="PILLS">Pilule</option>
-									<option value="CONDOM">Préservatifs</option>
-									<option value="IMPLANTS">Implants</option>
-									<option value="DIAPHRAGM">
-										Diaphragme
-									</option>
-									<option value="IUD">DIU</option>
-									<option value="INJECTION">Injection</option>
-									<option value="PATCH">Patch</option>
-									<option value="RING">Anneau</option>
-									<option value="NATURAL_METHODS">
-										Méthodes naturelles
-									</option>
-									<option value="STERILIZATION">
-										Stérilisation
-									</option>
-								</select>
+											handleChange(
+												"contraception",
+												selectedValue
+											);
+
+											// Si "Autre" est sélectionné, effacez la valeur actuelle
+											if (selectedValue !== "OTHER") {
+												handleChange(
+													"customContraception",
+													""
+												);
+											}
+										}}
+										className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+									>
+										<option value="">Non renseigné</option>
+										<option value="NONE">Aucune</option>
+										<option value="PILLS">Pilule</option>
+										<option value="CONDOM">
+											Préservatifs
+										</option>
+										<option value="IMPLANTS">
+											Implants
+										</option>
+										<option value="DIAPHRAGM">
+											Diaphragme
+										</option>
+										<option value="IUD">DIU</option>
+										<option value="INJECTION">
+											Injection
+										</option>
+										<option value="PATCH">Patch</option>
+										<option value="RING">Anneau</option>
+										<option value="NATURAL_METHODS">
+											Méthodes naturelles
+										</option>
+										<option value="STERILIZATION">
+											Stérilisation
+										</option>
+									</select>
+								</>
 							) : (
-								// Mode lecture : afficher la traduction de la contraception (ou "Non renseigné" si vide)
+								// Mode lecture : afficher la traduction de la contraception ou "Non renseigné" si vide
 								contraceptionTranslations[
 									editedPatient.contraception
-								] || "Non renseigné"
+								] ||
+								editedPatient.customContraception ||
+								"Non renseigné"
 							)
 						}
 					/>

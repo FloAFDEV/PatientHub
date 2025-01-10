@@ -64,10 +64,17 @@ const AddPatientForm = ({}) => {
 	};
 
 	const contraceptionOptions = {
-		NONE: "Aucun",
+		NONE: "Aucune",
 		PILLS: "Pilule",
 		CONDOM: "Préservatifs",
-		IMPLANTS: "Implant",
+		IMPLANTS: "Implants",
+		DIAPHRAGM: "Diaphragme",
+		IUD: "DIU",
+		INJECTION: "Injection",
+		PATCH: "Patch",
+		RING: "Anneau",
+		NATURAL_METHODS: "Méthodes naturelles",
+		STERILIZATION: "Stérilisation",
 	};
 
 	const yesOptions = {
@@ -119,8 +126,6 @@ const AddPatientForm = ({}) => {
 					icon: "🎉",
 				}
 			);
-			console.log("Final Data:", finalData);
-
 			reset({
 				firstName: "",
 				lastName: "",
