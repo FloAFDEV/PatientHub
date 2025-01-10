@@ -1,5 +1,10 @@
 import React from "react";
-import { Controller, Control, FieldValues } from "react-hook-form";
+import {
+	Controller,
+	Control,
+	RegisterOptions,
+	FieldValues,
+} from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -7,7 +12,7 @@ interface DatePickerFieldProps {
 	name: string;
 	control: Control<FieldValues>;
 	label: string;
-	rules?: Record<string, any>;
+	rules?: RegisterOptions;
 	error?: string;
 }
 

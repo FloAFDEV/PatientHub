@@ -94,7 +94,7 @@ export default function LoginPage() {
 			<BackgroundBeamsWithCollision className="flex-grow">
 				<div
 					suppressHydrationWarning
-					className="flex-grow flex flex-col justify-between min-h-screen"
+					className="flex-grow flex flex-col justify-between min-h-screen px-4"
 				>
 					{/* Affichage de la modal si authentifié */}
 					{isModalOpen && (
