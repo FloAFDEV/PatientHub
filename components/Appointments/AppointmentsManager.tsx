@@ -134,7 +134,6 @@ export default function AppointmentsManager() {
 						className="w-full h-full object-cover object-center opacity-80"
 						style={{ objectPosition: "center 30%" }}
 						layout="fill"
-						width={1920}
 						height={1080}
 					/>
 					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">

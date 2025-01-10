@@ -48,7 +48,7 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 			<section className="flex flex-col items-center text-center mt-6 sm:mt-8">
 				<Image
 					src="/assets/gifs/success.gif"
-					width={180} // Ajustement pour les petits écrans
+					width={180}
 					height={180}
 					alt="success"
 					sizes="(max-width: 768px) 80vw, (max-width: 500px) 50vw, 33vw"

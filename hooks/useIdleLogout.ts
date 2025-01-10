@@ -2,57 +2,42 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
 
-// Durée d'expiration de la session (5 minutes)
-const EXPIRATION_TIME = 5 * 60 * 1000;
+const supabase = createClient(
+	process.env.NEXT_PUBLIC_SUPABASE_URL!,
+	process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export const useIdleLogout = () => {
 	const router = useRouter();
 
 	useEffect(() => {
-		let timeoutId: NodeJS.Timeout;
-
-		const checkSessionExpiration = async () => {
-			// Récupération du temps d'expiration de la session à partir des cookies
-			const expirationTime = document.cookie
-				.split("; ")
-				.find((row) => row.startsWith("sessionExpiration="))
-				?.split("=")[1];
-
-			console.log(
-				"Vérification de l'expiration de la session :",
-				expirationTime
-			); // Journalisation du temps d'expiration
-
-			if (expirationTime && Date.now() > parseInt(expirationTime, 10)) {
-				console.log("Session expirée, déconnexion."); // Journalisation de l'expiration de la session
-				// Rediriger l'utilisateur vers la page de connexion avec un message d'erreur
-				router.push("/login?error=Session expirée");
+		// Surveiller les changements d'état d'authentification
+		const { data: authListener } = supabase.auth.onAuthStateChange(
+			(event, session) => {
+				if (event === "SIGNED_OUT" || !session) {
+					console.log("Session expirée ou utilisateur déconnecté.");
+					router.push("/login");
+				}
 			}
-		};
-
-		const handleActivity = () => {
-			clearTimeout(timeoutId);
-			checkSessionExpiration(); // Vérifier l'expiration lors d'une activité
-			timeoutId = setTimeout(checkSessionExpiration, EXPIRATION_TIME);
-		};
-
-		// Ajouter des écouteurs d'événements pour détecter l'activité de l'utilisateur
-		window.addEventListener("mousemove", handleActivity);
-		window.addEventListener("keypress", handleActivity);
-		window.addEventListener("click", handleActivity);
-		window.addEventListener("scroll", handleActivity);
-
-		// Appel initial pour définir le timeout
-		handleActivity();
+		);
 
 		// Nettoyage à la désinstallation du composant
 		return () => {
-			clearTimeout(timeoutId);
-			window.removeEventListener("mousemove", handleActivity);
-			window.removeEventListener("keypress", handleActivity);
-			window.removeEventListener("click", handleActivity);
-			window.removeEventListener("scroll", handleActivity);
+			authListener.subscription.unsubscribe();
 		};
 	}, [router]);
+
+	// Méthode pour rafraîchir manuellement la session (facultatif)
+	const refreshSession = async () => {
+		const { error } = await supabase.auth.refreshSession();
+		if (error) {
+			console.error("Erreur lors du rafraîchissement :", error.message);
+		} else {
+			console.log("Session rafraîchie avec succès.");
+		}
+	};
+
+	return { refreshSession };
 };

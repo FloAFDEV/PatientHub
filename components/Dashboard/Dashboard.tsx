@@ -375,11 +375,20 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								/>
 								<YAxis
 									domain={[0, "dataMax + 5"]}
-									tick={{ fill: "#A0AEC0", fontSize: 12 }}
+									tick={{ fill: "#A0AEC0", fontSize: 14 }}
+									tickFormatter={(tick) => `${tick} ans`}
 								/>
 								<Tooltip
 									contentStyle={{
-										backgroundColor: "#f8fafc",
+										backgroundColor: "#0891b2",
+										border: "none",
+										borderRadius: "8px",
+										boxShadow:
+											"0 4px 6px rgba(0, 0, 0, 0.1)",
+									}}
+									itemStyle={{
+										color: "#ffffff",
+										fontSize: "14px",
 									}}
 								/>
 								<Bar dataKey="Age" barSize={70} fill="#4C51BF">
@@ -441,11 +450,15 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 								</Pie>
 								<Tooltip
 									contentStyle={{
-										backgroundColor: "#f8fafc",
+										backgroundColor: "#0891b2",
 										border: "none",
 										borderRadius: "8px",
 										boxShadow:
 											"0 4px 6px rgba(0, 0, 0, 0.1)",
+									}}
+									itemStyle={{
+										color: "#ffffff",
+										fontSize: "14px",
 									}}
 								/>
 								<Legend
