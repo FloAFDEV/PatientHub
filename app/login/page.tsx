@@ -100,7 +100,7 @@ export default function LoginPage() {
 					{isModalOpen && (
 						<PasskeyModal open={isModalOpen} onClose={closeModal} />
 					)}
-					<div className="flex-1 flex flex-col items-center justify-center p-2">
+					<div className="flex-1 flex flex-col items-center justify-center p-4">
 						{/* Toggle du mode d'affichage si monté */}
 						{isMounted && (
 							<div className="absolute top-4 right-4 z-10">
@@ -110,7 +110,7 @@ export default function LoginPage() {
 						{/* Texte d'accueil */}
 						<div className="mx-auto max-w-md w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 lg:py-16 mt-20 lg:mt-28">
 							<div className="text-center">
-								<h1 className="text-3xl font-bold tracking-tight mt-10 sm:text-3xl md:text-4xl lg:text-5xl">
+								<h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mt-6">
 									Votre espace dédié aux ostéopathes
 								</h1>
 								<p className="mt-4 text-base leading-7 sm:mt-6 sm:text-lg">

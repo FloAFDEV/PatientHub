@@ -2,17 +2,17 @@ import React from "react";
 import {
 	Controller,
 	Control,
-	RegisterOptions,
 	FieldValues,
+	RegisterOptions,
 } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 interface DatePickerFieldProps {
 	name: string;
-	control: Control<FieldValues>;
+	control: Control<FieldValues>; // Typage pour le contrôle provenant de react-hook-form
 	label: string;
-	rules?: RegisterOptions;
+	rules?: RegisterOptions; // Remplacement de Record<string, any> par RegisterOptions
 	error?: string;
 }
 
