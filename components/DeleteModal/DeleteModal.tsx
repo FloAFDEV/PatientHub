@@ -3,28 +3,36 @@ import React from "react";
 interface ConfirmDeleteModalProps {
 	onDelete: () => void;
 	onCancel: () => void;
+	cabinetName: string | undefined;
 }
 
 const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
 	onCancel,
 	onDelete,
+	cabinetName,
 }) => {
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-6 sm:p-10">
-			<div className="bg-white dark:bg-slate-700 rounded-lg shadow-xl w-full max-w-2xl lg:max-w-6xl xl:max-w-7xl border-4 border-red-600">
+			<div className="bg-white dark:bg-slate-700 rounded-lg shadow-xl w-2/5 max-w-2xl lg:max-w-4xl xl:max-w-7xl border-4 border-red-600">
 				<div className="p-6 sm:p-8">
 					<h2 className="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4">
 						Suppression Définitive du Cabinet
 					</h2>
 					<p className="text-gray-600 dark:text-gray-300 mb-6">
-						Attention : cette action est{" "}
-						<span className="font-semibold text-red-600">
+						<span className="font-bold text-xl">Attention:</span>{" "}
+						Cette action est{" "}
+						<span className="font-semibold text-red-600 text-xl">
 							irréversible
 						</span>{" "}
 						et entraînera la{" "}
-						<span className="font-semibold">perte permanente </span>
-						de toutes les données associées à ce cabinet. Êtes-vous
-						sûr de vouloir continuer ?
+						<span className="font-semibold text-xl">
+							perte permanente{" "}
+						</span>
+						de toutes les données associées au cabinet{" "}
+						<p className="font-bold text-2xl text-red-500">
+							{cabinetName}
+						</p>
+						Êtes-vous sûr de vouloir continuer ?
 					</p>
 				</div>
 				<div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 rounded-b-lg flex justify-end space-x-3">

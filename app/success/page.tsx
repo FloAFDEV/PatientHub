@@ -30,7 +30,7 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 			<Link href="/">
 				<Image
 					src="/assets/icons/logo-full.svg"
-					height={120} // Taille réduite pour les petits écrans
+					height={120}
 					width={120}
 					alt="logo"
 					className="mb-2 sm:mb-6 mt-8 sm:mt-16 rounded-3xl shadow-lg dark:shadow-gray-700 transition-all duration-300 transform hover:scale-105"

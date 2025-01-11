@@ -2,6 +2,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import AddModal from "@/components/AddModal/AddModal";
 import EditModal from "@/components/EditModal/EditModal";
 import DeleteModal from "@/components/DeleteModal/DeleteModal";
+import InfoCard from "../InfoCards";
+import ActionButton from "../Buttons";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -235,6 +237,7 @@ const CabinetContent: React.FC = () => {
 								: "Aucune donnée disponible"
 						}
 						image="/assets/images/NombrePatients.webp"
+						explanation="Le nombre total de patients enregistrés dans le cabinet, décédés ou vivants."
 					/>
 				</section>
 
@@ -293,6 +296,7 @@ const CabinetContent: React.FC = () => {
 						setIsConfirmDeleteOpen(false);
 					}}
 					onCancel={() => setIsConfirmDeleteOpen(false)}
+					cabinetName={cabinetInfo?.name}
 					aria-labelledby="delete-modal-title"
 					aria-modal="true"
 				/>
@@ -300,80 +304,5 @@ const CabinetContent: React.FC = () => {
 		</div>
 	);
 };
-
-interface InfoCardProps {
-	icon: React.ReactNode;
-	title: string;
-	image: string;
-	content: string | undefined;
-	link?: string;
-}
-
-const InfoCard: React.FC<InfoCardProps> = React.memo(
-	({ icon, title, content, link, image }) => (
-		<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
-			<div className="aspect-video relative">
-				<Image
-					src={image}
-					alt={title}
-					fill
-					className="object-cover rounded-t-lg"
-					sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-				/>
-			</div>
-			<div className="p-4">
-				<div className="flex items-center gap-2 mb-3">
-					{icon}
-					<h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
-						{title}
-					</h2>
-				</div>
-				<p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 break-words">
-					{link ? (
-						<a
-							href={link}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-blue-400 dark:text-blue-300 hover:underline inline-flex items-center gap-1"
-						>
-							{content}
-						</a>
-					) : (
-						content
-					)}
-				</p>
-			</div>
-		</div>
-	)
-);
-InfoCard.displayName = "InfoCard";
-
-interface ActionButtonProps {
-	onClick: () => void;
-	icon: React.ReactNode;
-	text: string;
-	color: "blue" | "green" | "red";
-}
-
-const ActionButton: React.FC<ActionButtonProps> = React.memo(
-	({ onClick, icon, text, color }) => {
-		const colorClasses = {
-			blue: "bg-white dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-blue-500 dark:hover:text-gray-900 border-2 border-blue-500 hover:bg-blue-500 hover:border-blue-600 text-blue-600 hover:text-white",
-			green: "bg-white dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-green-500 dark:hover:text-gray-900 border-2 border-green-500 hover:bg-green-500 hover:border-green-600 text-green-600 hover:text-white",
-			red: "bg-white dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-red-500 dark:hover:text-gray-900 border-2 border-red-500 hover:bg-red-500 hover:border-red-600 text-red-600 hover:text-white",
-		};
-
-		return (
-			<button
-				onClick={onClick}
-				className={`${colorClasses[color]} px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium flex items-center justify-center transition-all duration-300 text-sm sm:text-base min-w-[120px] sm:min-w-[150px]`}
-			>
-				{icon}
-				<span className="ml-2">{text}</span>
-			</button>
-		);
-	}
-);
-ActionButton.displayName = "ActionButton";
 
 export default CabinetContent;

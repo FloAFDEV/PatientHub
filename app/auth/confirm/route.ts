@@ -10,19 +10,31 @@ export async function GET(request: NextRequest) {
 	const type = searchParams.get("type") as EmailOtpType | null;
 	const next = searchParams.get("next") ?? "/";
 
-	if (token_hash && type) {
-		const supabase = await createSupabaseClient();
+	// Initialisation du client Supabase
+	const supabase = await createSupabaseClient();
 
+	// Vérifie le token OTP et récupérer l'utilisateur connecté
+	if (token_hash && type) {
 		const { error } = await supabase.auth.verifyOtp({
 			type,
 			token_hash,
 		});
 		if (!error) {
-			// redirect user to specified redirect URL or root of app
-			redirect(next);
+			// Vérifie si l'utilisateur est authentifié
+			const {
+				data: { user },
+				error: userError,
+			} = await supabase.auth.getUser();
+			if (userError || !user) {
+				console.error("User not authenticated:", userError);
+				redirect("/error");
+			}
+			const userId = user.id;
+			// Envoi de la réponse avec l'ID récupéré vers le client
+			return new Response(JSON.stringify({ userId }), { status: 200 });
 		}
 	}
 
-	// redirect the user to an error page with some instructions
+	// Si OTP invalide ou erreur d'authentification
 	redirect("/error");
 }

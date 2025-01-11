@@ -1,6 +1,13 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+if (
+	!process.env.NEXT_PUBLIC_SUPABASE_URL ||
+	!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+) {
+	throw new Error("Supabase environment variables are missing.");
+}
+
 export async function createSupabaseClient() {
 	const cookieStore = await cookies();
 
@@ -17,8 +24,8 @@ export async function createSupabaseClient() {
 						cookiesToSet.forEach(({ name, value, options }) =>
 							cookieStore.set(name, value, options)
 						);
-					} catch {
-						// Handle potential errors for Server Components
+					} catch (error) {
+						console.error("Error setting cookies:", error);
 					}
 				},
 			},
