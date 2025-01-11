@@ -103,9 +103,6 @@ export async function GET(request) {
 export async function POST(request) {
 	const patientData = await request.json();
 
-	// Log des données reçues pour vérifier leur structure
-	console.log("Received patient data:", patientData);
-
 	try {
 		// Validation des champs firstName et lastName
 		if (!patientData.firstName || !patientData.lastName) {
@@ -233,7 +230,6 @@ export async function DELETE(request) {
 export async function PATCH(request) {
 	try {
 		const patientData = await request.json();
-		console.log("Received patient data:", patientData);
 
 		if (!patientData.id) {
 			return NextResponse.json(

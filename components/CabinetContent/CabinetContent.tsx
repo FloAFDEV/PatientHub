@@ -136,7 +136,6 @@ const CabinetContent: React.FC = () => {
 	if (loading) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900">
-				<div className="animate-spin h-12 w-12 border-t-4 border-b-4 border-primary rounded-full"></div>
 				<div className="flex justify-center items-center h-screen">
 					<div className="w-full h-full flex justify-center items-center">
 						<div className="absolute animate-ping h-[16rem] w-[16rem] rounded-full  border-t-4 border-b-4 border-red-500 "></div>

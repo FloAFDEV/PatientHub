@@ -149,13 +149,26 @@ const PatientDetails = ({ patient, onClose }) => {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(preparedPatient),
 			});
-
 			if (response.ok) {
-				toast.success("🎉 Le patient a été mis à jour avec succès !", {
-					className:
-						"custom-toast bg-inherit text-white dark:bg-gray-500 dark:text-gray-200",
-					position: "top-center",
-				});
+				toast.success(
+					<div className="relative">
+						🎉 Le patient{" "}
+						<b>
+							{preparedPatient.firstName}{" "}
+							{preparedPatient.lastName}
+						</b>{" "}
+						a été mis à jour avec succès !
+					</div>,
+					{
+						className: `absolute z-50 left-1/2 w-72 p-4 border border-gray-200 dark:border-gray-700 
+				bg-gradient-to-br from-gray-50 to-gray-200 dark:from-slate-700 dark:to-gray-800
+				text-sm rounded-lg shadow-xl transform -translate-x-1/2 
+				opacity-100 pointer-events-auto transition-all duration-300 ease-in-out !important`,
+						position: "top-right",
+						icon: "🎉",
+					}
+				);
+
 				setIsEditing(false);
 			} else {
 				const errorData = await response.json();

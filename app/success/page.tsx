@@ -52,7 +52,7 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 					height={180}
 					alt="success"
 					sizes="(max-width: 768px) 80vw, (max-width: 500px) 50vw, 33vw"
-					className="max-w-full h-auto"
+					className="max-w-44 h-auto"
 					unoptimized
 				/>
 				<h2

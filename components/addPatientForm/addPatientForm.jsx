@@ -121,11 +121,16 @@ const AddPatientForm = ({}) => {
 					ajouté avec succès !
 				</div>,
 				{
-					position:
-						"top-center custom-toast bg-inherit text-white dark:bg-gray-500 dark:text-gray-200",
+					position: "top-center",
+					className: `bg-gradient-to-br from-gray-50/98 to-gray-200/95
+							  dark:from-slate-700/95 dark:to-gray-800/95
+							  text-sm p-4 rounded-lg shadow-xl transform -translate-x-1/2 
+							  border border-1 border-zinc-500-bottom-6
+							  opacity-100 pointer-events-auto`,
 					icon: "🎉",
 				}
 			);
+
 			reset({
 				firstName: "",
 				lastName: "",

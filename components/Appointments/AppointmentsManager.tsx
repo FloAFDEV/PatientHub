@@ -134,14 +134,8 @@ export default function AppointmentsManager() {
 						className="w-full h-full object-cover object-center opacity-80"
 						style={{ objectPosition: "center 30%" }}
 						layout="fill"
-						height={1080}
 					/>
 					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
-						<Image
-							src="/assets/icons/logo-full.svg"
-							alt="Logo"
-							className="w-20 h-20 object-contain shadow-xl rounded-xl mb-4"
-						/>
 						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">
 							Rendez-vous / Planning
 						</h1>
