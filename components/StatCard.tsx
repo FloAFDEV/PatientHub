@@ -60,7 +60,7 @@ const StatCard: React.FC<StatCardProps> = ({
 
 			{/* Tooltip toujours net */}
 			<div
-				className={`absolute z-50 -top-2 left-1/2 w-72 p-4
+				className={`absolute z-50 -top-2 left-1/2 w-72 p-4 border-1 border-zinc-500-bottom-6
 				bg-gradient-to-br from-gray-50/98 to-gray-200/95
 dark:from-slate-700/95 dark:to-gray-800/95
 				text-sm rounded-lg shadow-xl
