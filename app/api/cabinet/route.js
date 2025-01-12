@@ -56,7 +56,6 @@ export async function GET(request) {
 	const id = parseInt(searchParams.get("id") || "");
 	const limit = parseInt(searchParams.get("limit") || "10");
 	const offset = parseInt(searchParams.get("offset") || "0");
-
 	try {
 		if (id) {
 			const cachedCabinet = cache.get(`cabinet_${id}`);
@@ -66,7 +65,6 @@ export async function GET(request) {
 					headers: jsonHeaders,
 				});
 			}
-
 			const cabinet = await prisma.cabinet.findUnique({
 				where: { id },
 				include: { osteopath: true, patients: true },
@@ -77,7 +75,6 @@ export async function GET(request) {
 					{ status: 404, headers: jsonHeaders }
 				);
 			}
-
 			const cabinetWithCount = {
 				...cabinet,
 				patientCount: cabinet.patients.length,
@@ -88,7 +85,6 @@ export async function GET(request) {
 				headers: jsonHeaders,
 			});
 		}
-
 		const cachedCabinets = cache.get("all_cabinets");
 		if (cachedCabinets) {
 			return new Response(JSON.stringify(cachedCabinets), {
@@ -96,13 +92,11 @@ export async function GET(request) {
 				headers: jsonHeaders,
 			});
 		}
-
 		const cabinets = await prisma.cabinet.findMany({
 			take: limit,
 			skip: offset,
 			include: { osteopath: true, patients: true },
 		});
-
 		const cabinetsWithCount = cabinets.map((cabinet) => ({
 			...cabinet,
 			patientCount: cabinet.patients.length,
@@ -124,9 +118,34 @@ export async function GET(request) {
 // POST Method
 export async function POST(request) {
 	try {
-		const cabinetData = await request.json();
+		// Vérification de l'utilisateur authentifié à l'aide du middleware
+		const user = request.user; // L'utilisateur authentifié ajouté par le middleware
+		if (!user) {
+			console.log("Utilisateur non authentifié");
 
-		// Validation manuelle
+			return new Response(
+				JSON.stringify({ error: "Utilisateur non authentifié" }),
+				{ status: 401 }
+			);
+		}
+
+		// Récupération de l'osteopathId depuis l'utilisateur authentifié
+		const osteopathId = user.osteopathId; // Id de l'ostéopathe de l'utilisateur authentifié
+		if (!osteopathId) {
+			return new Response(
+				JSON.stringify({
+					error: "Aucun osteopathId trouvé pour cet utilisateur",
+				}),
+				{ status: 400 }
+			);
+		}
+
+		// Log de l'ID de l'ostéopathe pour débogage
+		console.log("ID de l'ostéopathe récupéré:", osteopathId);
+
+		const cabinetData = await request.json(); // Récupérer les données du cabinet
+
+		// Validation des données du cabinet
 		const validationErrors = validateCabinetData(cabinetData);
 		if (validationErrors.length > 0) {
 			return new Response(JSON.stringify({ errors: validationErrors }), {
@@ -135,22 +154,20 @@ export async function POST(request) {
 			});
 		}
 
-		// Vérifiez l'existence de l'ostéopathe s'il est fourni
-		if (cabinetData.osteopathId) {
-			const osteopath = await prisma.osteopath.findUnique({
-				where: { id: cabinetData.osteopathId },
-			});
-			if (!osteopath) {
-				return new Response(
-					JSON.stringify({ error: "Osteopath not found" }),
-					{ status: 404, headers: jsonHeaders }
-				);
-			}
-		}
+		// Création de la relation entre l'ostéopathe et le cabinet
+		const osteopathConnection = {
+			connect: { id: osteopathId }, // Utilisation de l'osteopathId de l'utilisateur connecté
+		};
 
+		// Créer le cabinet
 		const newCabinet = await prisma.cabinet.create({
-			data: formatCabinetData(cabinetData),
+			data: {
+				...formatCabinetData(cabinetData), // Remplir les autres champs du cabinet
+				osteopath: osteopathConnection, // Lier l'ostéopathe authentifié au cabinet
+			},
 		});
+
+		// Optionnel : Nettoyer le cache si nécessaire
 		cache.del("all_cabinets");
 
 		return new Response(JSON.stringify(newCabinet), {
@@ -158,9 +175,9 @@ export async function POST(request) {
 			headers: jsonHeaders,
 		});
 	} catch (error) {
-		console.error("Error creating cabinet:", error);
+		console.error("Erreur lors de la création du cabinet:", error);
 		return new Response(
-			JSON.stringify({ error: "Failed to create cabinet" }),
+			JSON.stringify({ error: "Échec de la création du cabinet" }),
 			{ status: 500, headers: jsonHeaders }
 		);
 	}
@@ -170,7 +187,6 @@ export async function POST(request) {
 export async function PUT(request) {
 	try {
 		const cabinetData = await request.json();
-
 		// Validation manuelle
 		const validationErrors = validateCabinetData(cabinetData);
 		if (validationErrors.length > 0) {
@@ -179,21 +195,18 @@ export async function PUT(request) {
 				headers: jsonHeaders,
 			});
 		}
-
 		if (!cabinetData.id || isNaN(cabinetData.id)) {
 			return new Response(
 				JSON.stringify({ error: "Valid ID is required" }),
 				{ status: 400, headers: jsonHeaders }
 			);
 		}
-
 		const updatedCabinet = await prisma.cabinet.update({
 			where: { id: cabinetData.id },
 			data: { ...formatCabinetData(cabinetData), updatedAt: new Date() },
 		});
 		cache.del("all_cabinets");
 		cache.del(`cabinet_${cabinetData.id}`);
-
 		return new Response(JSON.stringify(updatedCabinet), {
 			status: 200,
 			headers: jsonHeaders,
@@ -211,19 +224,16 @@ export async function PUT(request) {
 export async function DELETE(request) {
 	const { searchParams } = new URL(request.url);
 	const id = parseInt(searchParams.get("id") || "");
-
 	if (!id || isNaN(id)) {
 		return new Response(JSON.stringify({ error: "Valid ID is required" }), {
 			status: 400,
 			headers: jsonHeaders,
 		});
 	}
-
 	try {
 		await prisma.cabinet.delete({ where: { id } });
 		cache.del("all_cabinets");
 		cache.del(`cabinet_${id}`);
-
 		return new Response(null, { status: 204 });
 	} catch (error) {
 		console.error("Error deleting cabinet:", error);

@@ -66,23 +66,29 @@ const CabinetContent: React.FC = () => {
 
 	const handleAddCabinet = useCallback(async (newCabinet: CabinetInfo) => {
 		try {
+			if (newCabinet.osteopathId && isNaN(newCabinet.osteopathId)) {
+				throw new Error(
+					"L'ID de l'ostéopathe doit être un entier valide."
+				);
+			}
 			const response = await fetch("/api/cabinet", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(newCabinet),
 			});
-			if (!response.ok)
+			if (!response.ok) {
 				throw new Error("Erreur lors de l'ajout du cabinet");
+			}
 			const data = await response.json();
-			setCabinetInfo(data[0]);
-			toast.success("Nouveau cabinet ajouté avec succès !"); // Succès
+			setCabinetInfo(data);
+			toast.success("Nouveau cabinet ajouté avec succès !");
 		} catch (error) {
 			setError(
 				error instanceof Error
 					? error.message
 					: "Une erreur inconnue s'est produite"
 			);
-			toast.error("Échec de l'ajout du cabinet !"); // Erreur
+			toast.error("Échec de l'ajout du cabinet !");
 		}
 	}, []);
 

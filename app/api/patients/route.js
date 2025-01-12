@@ -49,9 +49,26 @@ export async function GET(request) {
 					lastName: true,
 					email: true,
 					phone: true,
+					osteopathId: true, // Inclure l'ID de l'ostéopathe
+					osteopath: {
+						select: {
+							name: true, // Inclure le nom de l'ostéopathe
+						},
+					},
 				},
 				orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
 			});
+
+			// Log des informations liées à l'ostéopathe pour chaque patient
+			patients.forEach((patient) => {
+				console.log(
+					`Patient: ${patient.firstName} ${patient.lastName}`
+				);
+				console.log(`Osteopath ID: ${patient.osteopathId}`);
+				console.log(`Osteopath Name: ${patient.osteopath?.name}`);
+			});
+
+			// Retourner la réponse des patients avec l'ostéopathe
 			return NextResponse.json(patients);
 		}
 
@@ -63,7 +80,12 @@ export async function GET(request) {
 				take: pageSize,
 				orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
 				include: {
-					osteopath: true,
+					osteopath: {
+						select: {
+							id: true,
+							name: true, // Inclure l'ID et le nom de l'ostéopathe
+						},
+					},
 					cabinet: true,
 					medicalDocuments: true,
 					consultations: true,
@@ -72,6 +94,13 @@ export async function GET(request) {
 			}),
 			prisma.patient.count({ where: whereCondition }),
 		]);
+
+		// Log des informations liées à l'ostéopathe pour chaque patient
+		patients.forEach((patient) => {
+			console.log(`Patient: ${patient.firstName} ${patient.lastName}`);
+			console.log(`Osteopath ID: ${patient.osteopath.id}`);
+			console.log(`Osteopath Name: ${patient.osteopath.name}`);
+		});
 
 		// Formatage des dates avant l'envoi
 		const formattedPatients = patients.map((patient) => ({
@@ -83,6 +112,7 @@ export async function GET(request) {
 			updatedAt: patient.updatedAt.toISOString(),
 		}));
 
+		// Retourner les patients avec l'ostéopathe et les autres informations
 		return NextResponse.json({
 			patients: formattedPatients,
 			totalPatients: totalCount,
@@ -119,17 +149,24 @@ export async function POST(request) {
 		formattedPatientData.firstName = patientData.firstName;
 		formattedPatientData.lastName = patientData.lastName;
 
-		// Valeur d'ostéopathe, ici elle est en dur pour tester
-		const osteopathId = 1;
+		// Validation de l'ostéopathe
+		const osteopathId = patientData.osteopathId || 1; // Valeur d'ostéopathe par défaut pour tests
 		if (!osteopathId) {
 			return new Response("Osteopath ID is required", { status: 400 });
 		}
+
 		// Connexion de l'ostéopathe à la donnée du patient
+		const osteopathExists = await prisma.osteopath.findUnique({
+			where: { id: osteopathId },
+		});
+		if (!osteopathExists) {
+			return new Response("Osteopath not found", { status: 404 });
+		}
+
 		formattedPatientData.osteopath = {
-			connect: {
-				id: osteopathId,
-			},
+			connect: { id: osteopathId },
 		};
+
 		// Vérification de l'ID du cabinet si fourni
 		if (patientData.cabinetId) {
 			const cabinetExists = await prisma.cabinet.findUnique({
@@ -139,11 +176,10 @@ export async function POST(request) {
 				return new Response("Cabinet not found", { status: 404 });
 			}
 			formattedPatientData.cabinet = {
-				connect: {
-					id: patientData.cabinetId,
-				},
+				connect: { id: patientData.cabinetId },
 			};
 		}
+
 		// Traitement de `hasChildren` : Conversion en booléen si nécessaire
 		if (patientData.hasChildren === "true") {
 			formattedPatientData.hasChildren = true;
@@ -155,6 +191,14 @@ export async function POST(request) {
 		const newPatient = await prisma.patient.create({
 			data: formattedPatientData,
 		});
+
+		// Log de la création du patient et de l'ostéopathe associé
+		console.log("New Patient created:", newPatient);
+		if (newPatient.osteopath) {
+			console.log("Osteopath ID:", newPatient.osteopath.id);
+			console.log("Osteopath Name:", newPatient.osteopath.name);
+		}
+
 		// Retourner la réponse de création avec les données du patient
 		return new Response(JSON.stringify(newPatient), {
 			status: 201,
@@ -175,20 +219,24 @@ export async function POST(request) {
 // Fonction de gestion des requêtes DELETE
 export async function DELETE(request) {
 	try {
+		// Récupérer l'ID du patient depuis les paramètres de l'URL
 		const { searchParams } = new URL(request.url);
 		const patientId = searchParams.get("id");
 
-		if (!patientId) {
+		// Vérification si l'ID est fourni et s'il est valide
+		if (!patientId || isNaN(patientId)) {
 			return NextResponse.json(
-				{ error: "ID is required" },
+				{ error: "ID is required and must be a valid number" },
 				{ status: 400 }
 			);
 		}
 
+		// Chercher le patient dans la base de données
 		const patient = await prisma.patient.findUnique({
 			where: { id: parseInt(patientId) },
 		});
 
+		// Vérification si le patient existe
 		if (!patient) {
 			return NextResponse.json(
 				{ error: "Patient not found" },
@@ -196,31 +244,54 @@ export async function DELETE(request) {
 			);
 		}
 
+		// Log de l'existence du patient avant la suppression
+		console.log(
+			`Patient found for deletion: ${patient.firstName} ${patient.lastName}, ID: ${patient.id}`
+		);
+
 		// Transaction pour supprimer les relations et le patient
 		const deletedPatient = await prisma.$transaction(async (prisma) => {
-			await prisma.consultation.deleteMany({
+			// Supprimer les consultations associées au patient
+			const consultations = await prisma.consultation.deleteMany({
 				where: { patientId: patient.id },
 			});
-			await prisma.appointment.deleteMany({
+
+			// Supprimer les rendez-vous associés au patient
+			const appointments = await prisma.appointment.deleteMany({
 				where: { patientId: patient.id },
 			});
-			await prisma.medicalDocument.deleteMany({
+
+			// Supprimer les documents médicaux associés au patient
+			const medicalDocuments = await prisma.medicalDocument.deleteMany({
 				where: { patientId: patient.id },
 			});
-			return await prisma.patient.delete({ where: { id: patient.id } });
+
+			// Supprimer le patient
+			return await prisma.patient.delete({
+				where: { id: patient.id },
+			});
 		});
 
+		// Log de la suppression du patient
+		console.log(
+			`Patient successfully deleted: ${deletedPatient.firstName} ${deletedPatient.lastName}, ID: ${deletedPatient.id}`
+		);
+
+		// Retourner une réponse de succès
 		return NextResponse.json(
-			{
-				message: "Patient deleted successfully",
-				patient: deletedPatient,
-			},
+			{ message: "Patient deleted successfully" },
 			{ status: 200 }
 		);
 	} catch (error) {
+		// Log de l'erreur si elle survient
 		console.error("Error deleting patient:", error);
+
+		// Retourner une réponse d'erreur avec des détails sur l'erreur
 		return NextResponse.json(
-			{ error: "Could not delete patient", details: error.message },
+			{
+				error: "Could not delete patient",
+				details: error.message || "An unexpected error occurred.",
+			},
 			{ status: 500 }
 		);
 	}
@@ -241,6 +312,7 @@ export async function PATCH(request) {
 		// Récupérer le patient existant dans la base de données
 		const existingPatient = await prisma.patient.findUnique({
 			where: { id: parseInt(patientData.id) },
+			include: { osteopath: true }, // Inclure l'ostéopathe existant si nécessaire
 		});
 
 		if (!existingPatient) {
@@ -321,6 +393,27 @@ export async function PATCH(request) {
 					? patientData.isDeceased === "true" // Conversion de "true"/"false" en booléen
 					: existingPatient.isDeceased,
 		};
+
+		// Si un nouvel ID d'ostéopathe est fourni, l'ajouter dans les données mises à jour
+		if (patientData.osteopathId) {
+			const osteopathExists = await prisma.osteopath.findUnique({
+				where: { id: parseInt(patientData.osteopathId) },
+			});
+			if (!osteopathExists) {
+				return NextResponse.json(
+					{ error: "Osteopath not found" },
+					{ status: 404 }
+				);
+			}
+			updatedPatientData.osteopath = {
+				connect: { id: patientData.osteopathId },
+			};
+		} else if (existingPatient.osteopath) {
+			// Si aucun ID d'ostéopathe n'est fourni mais qu'il existe déjà, le maintenir
+			updatedPatientData.osteopath = {
+				connect: { id: existingPatient.osteopath.id },
+			};
+		}
 
 		// Mise à jour du patient
 		const updatedPatient = await prisma.patient.update({
