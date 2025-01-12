@@ -25,7 +25,7 @@ const PatientDetails = ({ patient, onClose }) => {
 	});
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedPatient, setEditedPatient] = useState(patient);
-	const [isLoading, setIsLoading] = useState(false);
+	const [setIsLoading] = useState(false);
 
 	// Fonction de gestion des enfants (ajouter, supprimer, modifier)
 	const handleAddChild = () => {

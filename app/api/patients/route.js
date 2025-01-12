@@ -251,21 +251,6 @@ export async function DELETE(request) {
 
 		// Transaction pour supprimer les relations et le patient
 		const deletedPatient = await prisma.$transaction(async (prisma) => {
-			// Supprimer les consultations associées au patient
-			const consultations = await prisma.consultation.deleteMany({
-				where: { patientId: patient.id },
-			});
-
-			// Supprimer les rendez-vous associés au patient
-			const appointments = await prisma.appointment.deleteMany({
-				where: { patientId: patient.id },
-			});
-
-			// Supprimer les documents médicaux associés au patient
-			const medicalDocuments = await prisma.medicalDocument.deleteMany({
-				where: { patientId: patient.id },
-			});
-
 			// Supprimer le patient
 			return await prisma.patient.delete({
 				where: { id: patient.id },
