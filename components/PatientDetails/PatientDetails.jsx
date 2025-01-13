@@ -296,11 +296,13 @@ const PatientDetails = ({ patient, onClose }) => {
 										handleChange("gender", e.target.value)
 									}
 									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+									required // Rend le champ obligatoire
 								>
-									<option value="">Non renseigné</option>
+									<option value="" disabled>
+										Sélectionner...
+									</option>
 									<option value="Homme">Homme</option>
 									<option value="Femme">Femme</option>
-									<option value="Autre">Autre</option>
 								</select>
 							) : (
 								editedPatient.gender || "Non renseigné"
@@ -395,7 +397,11 @@ const PatientDetails = ({ patient, onClose }) => {
 						value={
 							isEditing ? (
 								<select
-									value={editedPatient.isSmoker || ""}
+									value={
+										editedPatient.isSmoker === null
+											? ""
+											: editedPatient.isSmoker
+									}
 									onChange={(e) =>
 										handleChange(
 											"isSmoker",
@@ -409,7 +415,7 @@ const PatientDetails = ({ patient, onClose }) => {
 									<option value="false">Non</option>
 								</select>
 							) : (
-								yesNoTranslations[editedPatient.isSmoker] ||
+								yesNoTranslations[editedPatient.isSmoker] ??
 								"Non renseigné"
 							)
 						}

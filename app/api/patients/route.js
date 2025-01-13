@@ -95,13 +95,6 @@ export async function GET(request) {
 			prisma.patient.count({ where: whereCondition }),
 		]);
 
-		// Log des informations liées à l'ostéopathe pour chaque patient
-		patients.forEach((patient) => {
-			console.log(`Patient: ${patient.firstName} ${patient.lastName}`);
-			console.log(`Osteopath ID: ${patient.osteopath.id}`);
-			console.log(`Osteopath Name: ${patient.osteopath.name}`);
-		});
-
 		// Formatage des dates avant l'envoi
 		const formattedPatients = patients.map((patient) => ({
 			...patient,
@@ -379,11 +372,12 @@ export async function PATCH(request) {
 					: existingPatient.isDeceased,
 		};
 
-		// Si un nouvel ID d'ostéopathe est fourni, l'ajouter dans les données mises à jour
+		// Gestion des relations (ostéopathe)
 		if (patientData.osteopathId) {
 			const osteopathExists = await prisma.osteopath.findUnique({
 				where: { id: parseInt(patientData.osteopathId) },
 			});
+
 			if (!osteopathExists) {
 				return NextResponse.json(
 					{ error: "Osteopath not found" },
@@ -391,23 +385,26 @@ export async function PATCH(request) {
 				);
 			}
 			updatedPatientData.osteopath = {
-				connect: { id: patientData.osteopathId },
+				connect: { id: parseInt(patientData.osteopathId) },
 			};
 		} else if (existingPatient.osteopath) {
-			// Si aucun ID d'ostéopathe n'est fourni mais qu'il existe déjà, le maintenir
+			// Conserver l'ostéopathe existant
 			updatedPatientData.osteopath = {
 				connect: { id: existingPatient.osteopath.id },
 			};
 		}
 
-		// Mise à jour du patient
+		// Mise à jour dans la base de données
 		const updatedPatient = await prisma.patient.update({
 			where: { id: parseInt(patientData.id) },
 			data: updatedPatientData,
+			include: { osteopath: true }, // Inclure les relations pour le retour
 		});
 
+		// Réponse avec les données mises à jour
 		return NextResponse.json(updatedPatient, { status: 200 });
 	} catch (error) {
+		// Gestion des erreurs
 		console.error("Error updating patient:", error);
 		return NextResponse.json(
 			{ error: "Could not update patient", details: error.message },

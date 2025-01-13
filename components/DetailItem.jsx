@@ -42,7 +42,7 @@ const DetailItem = ({ label, value, editable, onChange, field }) => {
 								: ""
 						}
 						onChange={handleDateChange}
-						className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 sm:w-56 w-auto sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md"
+						className="text-xs sm:text-sm bg-inherit text-gray-800 dark:bg-inherit dark:text-gray-200 sm:w-56 w-auto sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md"
 					/>
 				) : (
 					<input
@@ -51,7 +51,7 @@ const DetailItem = ({ label, value, editable, onChange, field }) => {
 						type="text"
 						value={value}
 						onChange={handleDateChange}
-						className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 sm:w-56 w-auto sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md"
+						className="text-xs sm:text-sm bg-inherit text-gray-800 dark:bg-inherit dark:text-gray-200 sm:w-56 w-auto sm:text-right p-2 border border-gray-300 dark:border-gray-700 rounded-md"
 					/>
 				)
 			) : field === "birthDate" ? (
