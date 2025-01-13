@@ -131,6 +131,7 @@ const AddPatientForm = ({}) => {
 				}
 			);
 
+			// Réinitialisation du formulaire
 			reset({
 				firstName: "",
 				lastName: "",
