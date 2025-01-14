@@ -243,7 +243,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				isOpen={openSections.basicInfo}
 				onToggle={() => toggleSection("basicInfo")}
 			>
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 md:gap-6">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-4">
 					<DetailItem
 						label="Prénom"
 						value={editedPatient.firstName || "Non renseigné"}
@@ -454,7 +454,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				isOpen={openSections.familyInfo}
 				onToggle={() => toggleSection("familyInfo")}
 			>
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7 mb-4">
 					<DetailItem
 						label="Contraception"
 						value={
@@ -528,7 +528,7 @@ const PatientDetails = ({ patient, onClose }) => {
 
 					{editedPatient.childrenAges && (
 						<div>
-							<h4 className="text-sm font-normal mt-3">
+							<h4 className="text-sm font-normal mt-3 dark:text-zinc-400">
 								Âges des enfants
 							</h4>
 							{isEditing ? (
@@ -619,145 +619,170 @@ const PatientDetails = ({ patient, onClose }) => {
 				onToggle={() => toggleSection("practitionerInfo")}
 				editable={isEditing}
 			>
-				{/* Problèmes ORL */}
-				<DetailItem
-					label="Problèmes ORL"
-					value={editedPatient.entProblems || "Non renseignés"}
-					editable={isEditing}
-					onChange={(value) => handleChange("entProblems", value)}
-				/>
-				{/* Nom du Médecin ORL */}
-				<DetailItem
-					label="Nom du Médecin ORL"
-					value={editedPatient.entDoctorName || "Non renseigné"}
-					editable={isEditing}
-					onChange={(value) => handleChange("entDoctorName", value)}
-				/>
-				{/* Problèmes Digestifs */}
-				<DetailItem
-					label="Problèmes Digestifs"
-					value={editedPatient.digestiveProblems || "Non renseignés"}
-					editable={isEditing}
-					onChange={(value) =>
-						handleChange("digestiveProblems", value)
-					}
-				/>
-				{/* Nom du Médecin Digestif */}
-				<DetailItem
-					label="Nom du Médecin Digestif"
-					value={editedPatient.digestiveDoctorName || "Non renseigné"}
-					editable={isEditing}
-					onChange={(value) =>
-						handleChange("digestiveDoctorName", value)
-					}
-				/>
-				{/* Traitement Actuel */}
-				<DetailItem
-					label="Traitement Actuel"
-					value={editedPatient.currentTreatment || "Non renseigné"}
-					editable={isEditing}
-					onChange={(value) =>
-						handleChange("currentTreatment", value)
-					}
-				/>
-				{/* Antécédents Chirurgicaux */}
-				<DetailItem
-					label="Antécédents Chirurgicaux"
-					value={editedPatient.surgicalHistory || "Non renseignés"}
-					editable={isEditing}
-					onChange={(value) => handleChange("surgicalHistory", value)}
-				/>
-				{/* Antécédents Traumatiques */}
-				<DetailItem
-					label="Antécédents Traumatiques"
-					value={editedPatient.traumaHistory || "Non renseignés"}
-					editable={isEditing}
-					onChange={(value) => handleChange("traumaHistory", value)}
-				/>
-				{/* Antécédents Rhumatologiques */}
-				<DetailItem
-					label="Antécédents Rhumatologiques"
-					value={
-						editedPatient.rheumatologicalHistory || "Non renseignés"
-					}
-					editable={isEditing}
-					onChange={(value) =>
-						handleChange("rheumatologicalHistory", value)
-					}
-				/>
-				{/* Informations HDLM */}
-				<DetailItem
-					label="Informations HDLM"
-					value={editedPatient.hdlm || "Non renseignées"}
-					editable={isEditing}
-					onChange={(value) => handleChange("hdlm", value)}
-				/>{" "}
-			</SectionToggle>
-			{/* Informations du praticien et cabinet */}
-			<SectionToggle
-				title="Informations du praticien et cabinet"
-				isOpen={openSections.practitionerInfo}
-				onToggle={() => toggleSection("practitionerInfo")}
-				editable={isEditing}
-			>
-				<DetailItem
-					label="Médecin traitant"
-					value={editedPatient.generalPractitioner || "Non renseigné"}
-					editable={isEditing}
-					onChange={(value) =>
-						handleChange("generalPractitioner", value)
-					}
-				/>
-
-				<DetailItem
-					label="Ostéopathe"
-					value={patient.osteopath?.name || "Non renseigné"}
-				/>
-				<DetailItem
-					label="Cabinet"
-					value={patient.cabinet?.name || "Non renseigné"}
-				/>
-			</SectionToggle>
-			{/* Documents médicaux et consultations */}
-			<div className="mb-4 border rounded-lg overflow-hidden">
-				<div className="bg-gray-100 dark:bg-gray-700 p-3 text-gray-800 dark:text-gray-200">
-					<span className="font-semibold">
-						Documents médicaux et consultations
-					</span>
+				{" "}
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7 mb-4">
+					{/* Problèmes ORL */}
+					<DetailItem
+						label="Problèmes ORL"
+						value={editedPatient.entProblems || "Non renseignés"}
+						editable={isEditing}
+						onChange={(value) => handleChange("entProblems", value)}
+					/>
+					{/* Nom du Médecin ORL */}
+					<DetailItem
+						label="Nom du Médecin ORL"
+						value={editedPatient.entDoctorName || "Non renseigné"}
+						editable={isEditing}
+						onChange={(value) =>
+							handleChange("entDoctorName", value)
+						}
+					/>
+					{/* Problèmes Digestifs */}
+					<DetailItem
+						label="Problèmes Digestifs"
+						value={
+							editedPatient.digestiveProblems || "Non renseignés"
+						}
+						editable={isEditing}
+						onChange={(value) =>
+							handleChange("digestiveProblems", value)
+						}
+					/>
+					{/* Nom du Médecin Digestif */}
+					<DetailItem
+						label="Nom du Médecin Digestif"
+						value={
+							editedPatient.digestiveDoctorName || "Non renseigné"
+						}
+						editable={isEditing}
+						onChange={(value) =>
+							handleChange("digestiveDoctorName", value)
+						}
+					/>
+					{/* Traitement Actuel */}
+					<DetailItem
+						label="Traitement Actuel"
+						value={
+							editedPatient.currentTreatment || "Non renseigné"
+						}
+						editable={isEditing}
+						onChange={(value) =>
+							handleChange("currentTreatment", value)
+						}
+					/>
+					{/* Antécédents Chirurgicaux */}
+					<DetailItem
+						label="Antécédents Chirurgicaux"
+						value={
+							editedPatient.surgicalHistory || "Non renseignés"
+						}
+						editable={isEditing}
+						onChange={(value) =>
+							handleChange("surgicalHistory", value)
+						}
+					/>
+					{/* Antécédents Traumatiques */}
+					<DetailItem
+						label="Antécédents Traumatiques"
+						value={editedPatient.traumaHistory || "Non renseignés"}
+						editable={isEditing}
+						onChange={(value) =>
+							handleChange("traumaHistory", value)
+						}
+					/>
+					{/* Antécédents Rhumatologiques */}
+					<DetailItem
+						label="Antécédents Rhumatologiques"
+						value={
+							editedPatient.rheumatologicalHistory ||
+							"Non renseignés"
+						}
+						editable={isEditing}
+						onChange={(value) =>
+							handleChange("rheumatologicalHistory", value)
+						}
+					/>
+					{/* Informations HDLM */}
+					<DetailItem
+						label="Informations HDLM"
+						value={editedPatient.hdlm || "Non renseignées"}
+						editable={isEditing}
+						onChange={(value) => handleChange("hdlm", value)}
+					/>{" "}
 				</div>
-				<div className="p-4 bg-white dark:bg-gray-800">
-					<DetailItem
-						label="Documents médicaux"
-						value={`${
-							patient.medicalDocuments?.length || 0
-						} document(s)`}
-					/>
-					<DetailItem
-						label="Consultations"
-						value={`${
-							patient.consultations?.length || 0
-						} consultation(s)`}
-					/>
-					<DetailItem
-						label="Rendez-vous"
-						value={`${
-							patient.appointments?.length || 0
-						} rendez-vous`}
-					/>
-					<DetailItem
-						label="Créé le"
-						value={new Date(patient.createdAt).toLocaleDateString(
-							"fr-FR"
-						)}
-					/>
-					<DetailItem
-						label="Mis à jour le"
-						value={new Date(patient.updatedAt).toLocaleDateString(
-							"fr-FR"
-						)}
-					/>
+			</SectionToggle>
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+				{/* Informations du praticien et cabinet */}
+				<SectionToggle
+					title="Informations du praticien et cabinet"
+					isOpen={openSections.practitionerInfo}
+					onToggle={() => toggleSection("practitionerInfo")}
+					editable={isEditing}
+				>
+					{" "}
+					<div className="grid grid-cols-1 gap-4 sm:gap-6">
+						<DetailItem
+							label="Médecin traitant"
+							value={
+								editedPatient.generalPractitioner ||
+								"Non renseigné"
+							}
+							editable={isEditing}
+							onChange={(value) =>
+								handleChange("generalPractitioner", value)
+							}
+						/>
+						<DetailItem
+							label="Ostéopathe"
+							value={patient.osteopath?.name || "Non renseigné"}
+						/>
+						<DetailItem
+							label="Cabinet"
+							value={patient.cabinet?.name || "Non renseigné"}
+						/>{" "}
+					</div>
+				</SectionToggle>
+				{/* Documents médicaux et consultations */}
+				<div className="mb-4 border rounded-lg overflow-hidden">
+					<div className="bg-gray-100 dark:bg-gray-700 p-3 text-gray-800 dark:text-gray-200">
+						<span className="font-semibold">
+							Documents médicaux et consultations
+						</span>
+					</div>
+					<div className="p-4 bg-white dark:bg-gray-800">
+						<DetailItem
+							label="Documents médicaux"
+							value={`${
+								patient.medicalDocuments?.length || 0
+							} document(s)`}
+						/>
+						<DetailItem
+							label="Consultations"
+							value={`${
+								patient.consultations?.length || 0
+							} consultation(s)`}
+						/>
+						<DetailItem
+							label="Rendez-vous"
+							value={`${
+								patient.appointments?.length || 0
+							} rendez-vous`}
+						/>
+						<DetailItem
+							label="Créé le"
+							value={new Date(
+								patient.createdAt
+							).toLocaleDateString("fr-FR")}
+						/>
+						<DetailItem
+							label="Mis à jour le"
+							value={new Date(
+								patient.updatedAt
+							).toLocaleDateString("fr-FR")}
+						/>
+					</div>
 				</div>
-			</div>{" "}
+			</div>
 			{isEditing && (
 				<button
 					onClick={handleUpdatePatient}
