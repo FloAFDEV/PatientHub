@@ -197,7 +197,7 @@ const PatientDetails = ({ patient, onClose }) => {
 					alt={`Avatar de ${patient.firstName || "Prénom Inconnu"} ${
 						patient.lastName || "Nom Inconnu"
 					}`}
-					className={`w-24 h-24 sm:w-32 sm:h-32 rounded-lg border-4 shadow-md ${
+					className={`w-32 h-32 sm:w-32 rounded-lg border-4 shadow-md ${
 						patient.gender === "Homme"
 							? "border-blue-500"
 							: patient.gender === "Femme"
@@ -296,7 +296,7 @@ const PatientDetails = ({ patient, onClose }) => {
 										handleChange("gender", e.target.value)
 									}
 									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
-									required // Rend le champ obligatoire
+									required // Champ obligatoire
 								>
 									<option value="" disabled>
 										Sélectionner...
@@ -528,7 +528,7 @@ const PatientDetails = ({ patient, onClose }) => {
 
 					{editedPatient.childrenAges && (
 						<div>
-							<h4 className="text-sm font-normal m-2 mt-4">
+							<h4 className="text-sm font-normal mt-3">
 								Âges des enfants
 							</h4>
 							{isEditing ? (

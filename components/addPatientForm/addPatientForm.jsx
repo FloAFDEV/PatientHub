@@ -163,7 +163,6 @@ const AddPatientForm = ({}) => {
 			// Réinitialisation des états locaux
 			setHasChildren(false);
 			setChildrenAges([0]);
-
 			// Réinitialisation des champs qui ne sont pas directement gérés par react-hook-form
 			setValue("birthDate", null);
 		} catch (error) {

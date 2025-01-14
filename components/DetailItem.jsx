@@ -27,7 +27,7 @@ const DetailItem = ({ label, value, editable, onChange, field }) => {
 
 	return (
 		<div className="flex flex-col sm:flex-row sm:justify-between py-3 border-b border-gray-300 dark:border-gray-700 gap-2">
-			<span className="font-semibold text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1 sm:mb-0">
+			<span className="font-semibold text-xs sm:text-sm text-gray-600 dark:text-gray-200 mb-1 sm:mb-0">
 				{label}
 			</span>
 			{editable ? (
