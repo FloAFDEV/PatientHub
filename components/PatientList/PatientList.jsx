@@ -315,7 +315,7 @@ const PatientList = ({ onAddPatientClick }) => {
 			</div>
 
 			{/* Liste des patients */}
-			<div className="space-y-3 m-4 gap-6 p-4">
+			<div className="space-y-3 m-2 gap-6 p-22">
 				{!sortedPatients.length ? (
 					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-md animate-fadeIn">
 						<IconSearch className="mx-auto h-12 w-12 text-gray-400 animate-pulse" />
@@ -331,7 +331,7 @@ const PatientList = ({ onAddPatientClick }) => {
 					sortedPatients.map((patient, index) => (
 						<div
 							key={patient.id}
-							className="relative bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 px-4 py-4 mb-6"
+							className="relative bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 px-1 py-2"
 							style={{
 								animationDelay: `${index * 50}ms`,
 								opacity: 0,
@@ -355,7 +355,7 @@ const PatientList = ({ onAddPatientClick }) => {
 											)}
 										</div>
 										<div className="flex-1 min-w-0">
-											<h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
+											<h3 className="text-lg sm:text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
 												{`${
 													patient.firstName ||
 													"Inconnu"

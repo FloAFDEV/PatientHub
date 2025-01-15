@@ -793,7 +793,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				{isEditing && (
 					<button
 						onClick={handleUpdatePatient}
-						className="border border-gray-500 bg-green-300 dark:text-zinc-900 hover:bg-green-600 hover:text-white p-1 text-lg rounded-md transition-all duration-200"
+						className="border border-gray-500 bg-green-300 dark:text-zinc-900 hover:bg-green-600 hover:text-white p-1 text-md rounded-md transition-all duration-200"
 					>
 						<CheckIcon className="h-4 w-4 inline-block mr-2" />
 						Mettre à jour
