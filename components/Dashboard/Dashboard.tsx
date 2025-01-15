@@ -315,8 +315,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 											growth = 0;
 										}
 
-										return `+ ${growth.toFixed(
-											0
+										return `${Math.round(
+											growth
 										)}% sur l'année en cours`;
 									}
 									return "Pas de comparaison";
