@@ -315,9 +315,9 @@ const PatientList = ({ onAddPatientClick }) => {
 			</div>
 
 			{/* Liste des patients */}
-			<div className="space-y-3">
+			<div className="space-y-3 m-4 gap-6 p-4">
 				{!sortedPatients.length ? (
-					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm animate-fadeIn">
+					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-md animate-fadeIn">
 						<IconSearch className="mx-auto h-12 w-12 text-gray-400 animate-pulse" />
 						<p className="mt-4 text-lg font-medium">
 							Aucun patient trouvé
@@ -331,7 +331,7 @@ const PatientList = ({ onAddPatientClick }) => {
 					sortedPatients.map((patient, index) => (
 						<div
 							key={patient.id}
-							className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+							className="relative bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 px-4 py-4 mb-6"
 							style={{
 								animationDelay: `${index * 50}ms`,
 								opacity: 0,

@@ -187,7 +187,7 @@ const PatientDetails = ({ patient, onClose }) => {
 	};
 
 	return (
-		<div className="p-1 w-full h-screen mx-auto dark:text-gray-300 overflow-y-auto">
+		<div className="p-1 w-full max-h-screen mx-auto dark:text-gray-300 overflow-y-auto">
 			<div className="flex items-center space-x-4 md:space-x-6 mb-6">
 				<Image
 					src={
@@ -210,7 +210,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				<div className="flex flex-col">
 					<div className="mt-2 flex flex-col space-y-2">
 						<button
-							className="border border-gray-500 hover:bg-blue-500 dark:hover:bg-amber-500 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
+							className="border border-gray-500 bg-blue-300 dark:text-zinc-900 hover:bg-blue-500 dark:hover:bg-blue-500 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
 							onClick={() => setIsEditing(!isEditing)}
 							aria-label="Éditer les informations du patient"
 						>
@@ -229,7 +229,7 @@ const PatientDetails = ({ patient, onClose }) => {
 							/>
 						)}
 						<button
-							className="border border-gray-500 hover:bg-red-600 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
+							className="border border-gray-500 bg-red-300 dark:text-zinc-900 hover:bg-red-600 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
 							onClick={() => setIsConfirmDeleteOpen(true)}
 						>
 							<TrashIcon className="h-4 w-4 inline-block mr-2" />
@@ -243,7 +243,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				isOpen={openSections.basicInfo}
 				onToggle={() => toggleSection("basicInfo")}
 			>
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 md:gap-6 mb-1">
 					<DetailItem
 						label="Prénom"
 						value={editedPatient.firstName || "Non renseigné"}
@@ -454,7 +454,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				isOpen={openSections.familyInfo}
 				onToggle={() => toggleSection("familyInfo")}
 			>
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7 mb-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7 mb-1">
 					<DetailItem
 						label="Contraception"
 						value={
@@ -615,12 +615,11 @@ const PatientDetails = ({ patient, onClose }) => {
 			{/* Informations médicales */}
 			<SectionToggle
 				title="Informations médicales"
-				isOpen={openSections.practitionerInfo}
-				onToggle={() => toggleSection("practitionerInfo")}
+				isOpen={openSections.medicalInfo}
+				onToggle={() => toggleSection("medicalInfo")}
 				editable={isEditing}
 			>
-				{" "}
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7 mb-4">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-7 mb-1">
 					{/* Problèmes ORL */}
 					<DetailItem
 						label="Problèmes ORL"
@@ -711,7 +710,7 @@ const PatientDetails = ({ patient, onClose }) => {
 					/>{" "}
 				</div>
 			</SectionToggle>
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 				{/* Informations du praticien et cabinet */}
 				<SectionToggle
 					title="Informations du praticien et cabinet"
@@ -719,8 +718,7 @@ const PatientDetails = ({ patient, onClose }) => {
 					onToggle={() => toggleSection("practitionerInfo")}
 					editable={isEditing}
 				>
-					{" "}
-					<div className="grid grid-cols-1 gap-4 sm:gap-6">
+					<div className="grid grid-cols-1 gap-4">
 						<DetailItem
 							label="Médecin traitant"
 							value={
@@ -735,21 +733,29 @@ const PatientDetails = ({ patient, onClose }) => {
 						<DetailItem
 							label="Ostéopathe"
 							value={patient.osteopath?.name || "Non renseigné"}
+							editable={isEditing}
+							onChange={(value) =>
+								handleChange("osteopath.name", value)
+							}
 						/>
 						<DetailItem
 							label="Cabinet"
 							value={patient.cabinet?.name || "Non renseigné"}
-						/>{" "}
+							editable={isEditing}
+							onChange={(value) =>
+								handleChange("cabinet.name", value)
+							}
+						/>
 					</div>
 				</SectionToggle>
+
 				{/* Documents médicaux et consultations */}
-				<div className="mb-4 border rounded-lg overflow-hidden">
-					<div className="bg-gray-100 dark:bg-gray-700 p-3 text-gray-800 dark:text-gray-200">
-						<span className="font-semibold">
-							Documents médicaux et consultations
-						</span>
-					</div>
-					<div className="p-4 bg-white dark:bg-gray-800">
+				<SectionToggle
+					title="Documents médicaux et consultations"
+					isOpen={openSections.documentsAndConsultations}
+					onToggle={() => toggleSection("documentsAndConsultations")}
+				>
+					<div className="grid grid-cols-1 gap-4">
 						<DetailItem
 							label="Documents médicaux"
 							value={`${
@@ -781,17 +787,19 @@ const PatientDetails = ({ patient, onClose }) => {
 							).toLocaleDateString("fr-FR")}
 						/>
 					</div>
-				</div>
+				</SectionToggle>
 			</div>
-			{isEditing && (
-				<button
-					onClick={handleUpdatePatient}
-					className="border border-gray-500 hover:bg-green-600 hover:text-white p-2 text-lg rounded-md transition-all duration-200"
-				>
-					<CheckIcon className="h-6 w-6 inline-block mr-2" />
-					Mettre à jour
-				</button>
-			)}
+			<div className="flex justify-end m-4">
+				{isEditing && (
+					<button
+						onClick={handleUpdatePatient}
+						className="border border-gray-500 bg-green-300 dark:text-zinc-900 hover:bg-green-600 hover:text-white p-1 text-lg rounded-md transition-all duration-200"
+					>
+						<CheckIcon className="h-4 w-4 inline-block mr-2" />
+						Mettre à jour
+					</button>
+				)}
+			</div>
 		</div>
 	);
 };

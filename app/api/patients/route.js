@@ -8,7 +8,7 @@ export async function GET(request) {
 		const { searchParams } = new URL(request.url);
 		const fetchAll = searchParams.get("fetchAll") === "true";
 		const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-		const pageSize = parseInt(searchParams.get("pageSize") || "15", 10);
+		const pageSize = parseInt(searchParams.get("pageSize") || "20", 10);
 		const searchTerm =
 			searchParams.get("search") || searchParams.get("term") || "";
 		const letter = searchParams.get("letter") || "";

@@ -119,6 +119,13 @@ export const PasskeyModal: React.FC<PasskeyModalProps> = ({
 						maxLength={6}
 						value={passkey}
 						onChange={(value: string) => setPasskey(value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter") {
+								validatePasskey(
+									e as unknown as React.MouseEvent<HTMLButtonElement>
+								);
+							}
+						}}
 					>
 						<InputOTPGroup className="shad-otp w-full flex justify-between p-2 text-gray-500">
 							{Array.from({ length: 6 }, (_, index) => (
