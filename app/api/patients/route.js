@@ -64,8 +64,6 @@ export async function GET(request) {
 				console.log(
 					`Patient: ${patient.firstName} ${patient.lastName}`
 				);
-				console.log(`Osteopath ID: ${patient.osteopathId}`);
-				console.log(`Osteopath Name: ${patient.osteopath?.name}`);
 			});
 
 			// Retourner la réponse des patients avec l'ostéopathe
