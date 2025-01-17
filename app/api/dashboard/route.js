@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 export async function GET() {
 	try {
 		const currentDate = new Date();
+		const currentYear = currentDate.getFullYear();
 
 		// Récupérer tous les patients
 		const patients = await prisma.patient.findMany({
@@ -76,7 +77,7 @@ export async function GET() {
 				: 0;
 
 		// Patients créés avant février 2024 (le premier mois du graphique)
-		const startOfGraph = new Date("2024-02-01"); // Le mois de départ du graphique
+		const startOfGraph = new Date("2024-02-01");
 		const initialPatients = patients.filter(
 			(p) => new Date(p.createdAt) < startOfGraph
 		).length;
@@ -84,10 +85,9 @@ export async function GET() {
 		// Patients créés il y a 30 jours
 		const thirtyDaysAgo = new Date(currentDate);
 		thirtyDaysAgo.setDate(currentDate.getDate() - 30);
-		const patients30DaysAgo = patients.filter((p) => {
-			const createdAt = new Date(p.createdAt);
-			return createdAt >= thirtyDaysAgo;
-		}).length;
+		const totalPatients30DaysAgo = patients.filter(
+			(p) => new Date(p.createdAt) < thirtyDaysAgo
+		).length;
 
 		// Croissance mensuelle sur les 12 derniers mois
 		const monthlyGrowth = [];
@@ -157,10 +157,29 @@ export async function GET() {
 			},
 		});
 
+		// Calcul du nombre de patients à la fin de l'année précédente
+		const patientsLastYearEnd = patients.filter(
+			(p) => new Date(p.createdAt) < new Date(currentYear, 0, 1)
+		).length;
+
+		// Nouveaux patients cette année (déjà calculé)
+		const newPatientsThisYear = patients.filter(
+			(p) => new Date(p.createdAt).getFullYear() === currentYear
+		).length;
+
+		// Calcul du pourcentage de croissance
+		let growthPercentage = 0;
+		if (patientsLastYearEnd > 0) {
+			growthPercentage = (
+				(newPatientsThisYear / patientsLastYearEnd) *
+				100
+			).toFixed(2);
+		}
+
 		return NextResponse.json({
 			totalPatients,
 			maleCount,
-			patients30DaysAgo,
+			totalPatients30DaysAgo,
 			femaleCount,
 			unspecifiedGenderCount,
 			averageAge,
@@ -171,16 +190,12 @@ export async function GET() {
 				(p) =>
 					new Date(p.createdAt).getMonth() === currentDate.getMonth()
 			).length,
-			newPatientsThisYear: patients.filter(
-				(p) =>
-					new Date(p.createdAt).getFullYear() ===
-					currentDate.getFullYear()
-			).length,
+			newPatientsThisYear,
 			newPatientsLastYear: patients.filter(
-				(p) =>
-					new Date(p.createdAt).getFullYear() ===
-					currentDate.getFullYear() - 1
+				(p) => new Date(p.createdAt).getFullYear() === currentYear - 1
 			).length,
+			patientsLastYearEnd,
+			growthPercentage,
 			appointmentsToday,
 			nextAppointment: nextAppointment
 				? nextAppointment.date.toISOString()

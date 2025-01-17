@@ -210,7 +210,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				<div className="flex flex-col">
 					<div className="mt-2 flex flex-col space-y-2">
 						<button
-							className="border border-gray-500 bg-blue-300 dark:text-zinc-900 hover:bg-blue-500 dark:hover:bg-blue-500 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
+							className="border border-gray-200 bg-blue-300 dark:text-zinc-900 hover:bg-blue-500 dark:hover:bg-blue-500 hover:text-white dark:hover:text-white p-1 text-xs rounded-md transition-all duration-200"
 							onClick={() => setIsEditing(!isEditing)}
 							aria-label="Éditer les informations du patient"
 						>
@@ -229,7 +229,7 @@ const PatientDetails = ({ patient, onClose }) => {
 							/>
 						)}
 						<button
-							className="border border-gray-500 bg-red-300 dark:text-zinc-900 hover:bg-red-600 hover:text-white p-1 text-xs rounded-md transition-all duration-200"
+							className="border border-gray-200 bg-red-400 dark:text-zinc-900 hover:bg-red-600 hover:text-white dark:hover:text-white p-1 text-xs rounded-md transition-all duration-200"
 							onClick={() => setIsConfirmDeleteOpen(true)}
 						>
 							<TrashIcon className="h-4 w-4 inline-block mr-2" />
@@ -793,7 +793,7 @@ const PatientDetails = ({ patient, onClose }) => {
 				{isEditing && (
 					<button
 						onClick={handleUpdatePatient}
-						className="border border-gray-500 bg-green-300 dark:text-zinc-900 hover:bg-green-600 hover:text-white p-1 text-md rounded-md transition-all duration-200"
+						className="border border-gray-200 bg-green-400 dark:text-zinc-900 hover:bg-green-500 dark:hover:bg-green-500 hover:text-white dark:hover:text-white p-1 text-sm rounded-md transition-all duration-200"
 					>
 						<CheckIcon className="h-4 w-4 inline-block mr-2" />
 						Mettre à jour

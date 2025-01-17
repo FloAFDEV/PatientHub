@@ -44,6 +44,9 @@ interface DashboardData {
 	newPatientsLastYear: number;
 	appointmentsToday: number;
 	nextAppointment: string;
+	patientsLastYearEnd: number;
+	totalPatients30DaysAgo: number;
+	growthPercentage: number;
 	monthlyGrowth: {
 		month: string;
 		patients: number;
@@ -217,31 +220,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							? dashboardData.totalPatients
 							: "Chargement..."
 					}
-					change={(() => {
-						const currentPatients = dashboardData?.totalPatients;
-						const patients30DaysAgo =
-							dashboardData?.patients30DaysAgo;
-
-						if (
-							currentPatients !== undefined &&
-							patients30DaysAgo !== undefined
-						) {
-							// Calcul du pourcentage de variation par rapport aux 30 derniers jours
-							const increase =
-								patients30DaysAgo !== 0
-									? ((currentPatients - patients30DaysAgo) /
-											patients30DaysAgo) *
-									  100
-									: 0;
-
-							// Affichage du pourcentage avec un formatage de nombre
-							return `+ ${
-								increase >= 0 ? increase.toFixed(0) : 0
-							}% sur 30 jours`;
-						}
-
-						return "Chargement...";
-					})()}
 				/>
 
 				<StatCard
@@ -267,13 +245,34 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							/>
 						</div>
 					}
-					title="Nouveaux patients (Ce mois-ci)"
+					title="Nouveaux patients (30 derniers jours)"
 					explanation="Représente le nombre de nouveaux patients enregistrés ce mois-ci."
 					value={
 						dashboardData?.newPatientsThisMonth !== undefined
 							? dashboardData.newPatientsThisMonth
 							: "Chargement..."
 					}
+					change={(() => {
+						const currentPatients = dashboardData?.totalPatients;
+						const totalPatients30DaysAgo =
+							dashboardData?.totalPatients30DaysAgo;
+
+						if (
+							currentPatients !== undefined &&
+							totalPatients30DaysAgo !== undefined &&
+							totalPatients30DaysAgo !== 0
+						) {
+							const increase =
+								((currentPatients - totalPatients30DaysAgo) /
+									totalPatients30DaysAgo) *
+								100;
+							const formattedIncrease = increase.toFixed(1);
+							const sign = increase >= 0 ? "+" : "";
+							return `${sign}${formattedIncrease}% sur 30 jours`;
+						}
+
+						return "Chargement...";
+					})()}
 				/>
 				<StatCard
 					icon={
@@ -292,36 +291,16 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							: "Chargement..."
 					}
 					change={
-						dashboardData?.newPatientsLastYear !== undefined &&
-						dashboardData.newPatientsLastYear !== 0
+						dashboardData?.patientsLastYearEnd !== undefined &&
+						dashboardData.patientsLastYearEnd !== 0
 							? (() => {
-									const currentYearPatients =
-										dashboardData.newPatientsThisYear;
-									const lastYearPatients =
-										dashboardData.newPatientsLastYear;
-
-									if (
-										lastYearPatients !== 0 &&
-										currentYearPatients !== undefined
-									) {
-										let growth =
-											((currentYearPatients -
-												lastYearPatients) /
-												lastYearPatients) *
-											100;
-
-										// Si la croissance est négative, afficher 0%
-										if (growth < 0) {
-											growth = 0;
-										}
-
-										return `${Math.round(
-											growth
-										)}% sur l'année en cours`;
-									}
-									return "Pas de comparaison";
+									const growthPercentage =
+										dashboardData.growthPercentage;
+									const prefix =
+										growthPercentage >= 0 ? "+" : "";
+									return `${prefix}${growthPercentage}% depuis le 1er janvier`;
 							  })()
-							: undefined
+							: "Pas de comparaison"
 					}
 				/>
 
