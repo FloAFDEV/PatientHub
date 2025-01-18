@@ -232,8 +232,10 @@ export default function AppointmentsManager() {
 	);
 	const [patients, setPatients] = useState<Patient[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [events, setEvents] = useState<any[]>([]);
-	const [holidaysAndVacations, setHolidaysAndVacations] = useState<any[]>([]);
+	const [events, setEvents] = useState<AppointmentType[]>([]);
+	const [holidaysAndVacations, setHolidaysAndVacations] = useState<
+		HolidayOrVacationEvent[]
+	>([]);
 	const [selectedZone, setSelectedZone] = useState<string>("A");
 
 	useEffect(() => {
@@ -340,12 +342,12 @@ export default function AppointmentsManager() {
 		}
 	};
 
-	const handleDateClick = (arg: any) => {
+	const handleDateClick = (arg: { date: Date }) => {
 		setSelectedDate(arg.date);
 		setIsNewAppointmentOpen(true);
 	};
 
-	const handleEventClick = (info: any) => {
+	const handleEventClick = (info: { event: { id: string } }) => {
 		const appointment = events.find(
 			(event) => event.id === parseInt(info.event.id)
 		);
