@@ -420,137 +420,137 @@ export default function AppointmentsManager() {
 								<option value="C">Zone C</option>
 							</select>
 						</div>
-						<FullCalendar
-							plugins={[
-								dayGridPlugin,
-								interactionPlugin,
-								timeGridPlugin,
-								listPlugin,
-							]}
-							initialView="dayGridMonth"
-							locale={frLocale}
-							firstDay={1}
-							events={[
-								...events.map((event) => ({
-									...event,
-									id: event.id.toString(),
-								})),
-								...holidaysAndVacations,
-							]}
-							dateClick={handleDateClick}
-							eventClick={handleEventClick}
-							height="auto"
-							dayCellClassNames={({
-								date,
-								isToday,
-							}: {
-								date: Date;
-								isToday: boolean;
-							}) => {
-								const day = date.getDay();
-								const isWeekend = day === 0 || day === 6;
-								const baseClass = isWeekend
-									? "text-red-500"
-									: "text-gray-800";
 
-								const darkModeClass = isWeekend
-									? "dark:bg-cyan-950 dark:text-red-500"
-									: "dark:bg-gray-700 dark:text-white";
-								const todayClass = isToday
-									? "bg-blue-100 dark:bg-blue-900 font-bold"
-									: "";
-								return `${baseClass} ${darkModeClass} ${todayClass}`;
-							}}
-							dayHeaderClassNames="uppercase text-lg font-semibold bg-gray-100 dark:bg-gray-800 dark:text-white"
-							dayHeaderContent={(arg: { text: string }) => (
-								<span className="uppercase text-lg font-semibold dark:text-white">
-									{arg.text}
-								</span>
-							)}
-							buttonText={{
-								today: "Aujourd'hui",
-								allDay: "Jour",
-							}}
-							headerToolbar={{
-								left: "prev,next today",
-								center: "title",
-								right: "dayGridMonth,timeGridDay,timeGridWeek,listWeek",
-							}}
-							views={{
-								dayGridMonth: { buttonText: "Mois" },
-								timeGridDay: {
-									buttonText: "Jour",
-									slotDuration: "00:30:00",
-									slotMinTime: "06:00:00",
-									slotMaxTime: "21:00:00",
-									nowIndicator: true,
-									scrollTime: "06:00:00",
-								},
-								timeGridWeek: {
-									buttonText: "Semaine",
-									slotDuration: "00:30:00",
-									slotMinTime: "06:00:00",
-									slotMaxTime: "21:00:00",
-									nowIndicator: true,
-									scrollTime: "06:00:00",
-								},
-								listWeek: {
-									buttonText: "Liste",
-								},
-							}}
-							eventContent={(info: EventContentArg) => (
-								<div
-									className="p-1 text-sm bg-blue
--500 text-white rounded"
-								>
-									{info.event.title === "All-day"
-										? "Jour"
-										: info.event.title}
-								</div>
-							)}
-							allDayText="Jour"
-							nowIndicator={true}
-							now={new Date()}
-						/>
+						<div className="mb-6">
+							<FullCalendar
+								plugins={[
+									dayGridPlugin,
+									interactionPlugin,
+									timeGridPlugin,
+									listPlugin,
+								]}
+								initialView="dayGridMonth"
+								locale={frLocale}
+								firstDay={1}
+								events={[
+									...events.map((event) => ({
+										...event,
+										id: event.id.toString(),
+									})),
+									...holidaysAndVacations,
+								]}
+								dateClick={handleDateClick}
+								eventClick={handleEventClick}
+								height="auto"
+								dayCellClassNames={({
+									date,
+									isToday,
+								}: {
+									date: Date;
+									isToday: boolean;
+								}) => {
+									const day = date.getDay();
+									const isWeekend = day === 0 || day === 6;
+									const baseClass = isWeekend
+										? "text-red-500"
+										: "text-gray-800";
+
+									const darkModeClass = isWeekend
+										? "dark:bg-cyan-950 dark:text-red-500"
+										: "dark:bg-gray-700 dark:text-white";
+									const todayClass = isToday
+										? "bg-blue-100 dark:bg-blue-900 font-bold"
+										: "";
+									return `${baseClass} ${darkModeClass} ${todayClass}`;
+								}}
+								dayHeaderClassNames="uppercase text-lg font-semibold bg-gray-100 dark:bg-gray-800 dark:text-white"
+								dayHeaderContent={(arg: { text: string }) => (
+									<span className="uppercase text-lg font-semibold dark:text-white">
+										{arg.text}
+									</span>
+								)}
+								buttonText={{
+									today: "Aujourd'hui",
+									allDay: "Jour",
+								}}
+								headerToolbar={{
+									left: "prev,next today",
+									center: "title",
+									right: "dayGridMonth,timeGridDay,timeGridWeek,listWeek",
+								}}
+								views={{
+									dayGridMonth: { buttonText: "Mois" },
+									timeGridDay: {
+										buttonText: "Jour",
+										slotDuration: "00:30:00",
+										slotMinTime: "06:00:00",
+										slotMaxTime: "21:00:00",
+										nowIndicator: true,
+										scrollTime: "06:00:00",
+									},
+									timeGridWeek: {
+										buttonText: "Semaine",
+										slotDuration: "00:30:00",
+										slotMinTime: "06:00:00",
+										slotMaxTime: "21:00:00",
+										nowIndicator: true,
+										scrollTime: "06:00:00",
+									},
+									listWeek: {
+										buttonText: "Liste",
+									},
+								}}
+								eventContent={(info: EventContentArg) => (
+									<div className="p-1 text-sm bg-blue-500 text-white rounded">
+										{info.event.title === "All-day"
+											? "Jour"
+											: info.event.title}
+									</div>
+								)}
+								allDayText="Jour"
+								nowIndicator={true}
+								now={new Date()}
+							/>
+						</div>
+					</div>
+
+					<div className="w-full md:w-1/3">
+						<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+							<h2 className="text-2xl font-bold mb-6">
+								Rendez-vous du{" "}
+								{format(selectedDate, "dd MMMM yyyy", {
+									locale: fr,
+								})}
+							</h2>
+							<AppointmentList
+								date={selectedDate}
+								onEdit={handleEditAppointment}
+								onDelete={handleDeleteAppointment}
+								onCancel={handleCancelAppointment}
+							/>
+						</div>
 					</div>
 				</div>
 
-				<div className="w-full md:w-1/3">
-					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-						<h2 className="text-2xl font-bold mb-6">
-							Rendez-vous du{" "}
-							{format(selectedDate, "dd MMMM yyyy", {
-								locale: fr,
-							})}
-						</h2>
-						<AppointmentList
-							date={selectedDate}
-							onEdit={handleEditAppointment}
-							onDelete={handleDeleteAppointment}
-							onCancel={handleCancelAppointment}
-						/>
-					</div>
-				</div>
-			</div>
-
-			<AppointmentDialog
-				open={isNewAppointmentOpen}
-				onOpenChange={setIsNewAppointmentOpen}
-				patients={patients}
-				selectedDate={selectedDate}
-				selectedPatient={selectedPatient}
-			/>
-
-			{selectedAppointment && (
 				<AppointmentDialog
-					open={isEditAppointmentOpen}
-					onOpenChange={setIsEditAppointmentOpen}
+					open={isNewAppointmentOpen}
+					onOpenChange={setIsNewAppointmentOpen}
 					patients={patients}
 					selectedDate={selectedDate}
-					appointment={selectedAppointment}
-					mode="edit"
+					selectedPatient={selectedPatient}
 				/>
-			)}
+
+				{selectedAppointment && (
+					<AppointmentDialog
+						open={isEditAppointmentOpen}
+						onOpenChange={setIsEditAppointmentOpen}
+						patients={patients}
+						selectedDate={selectedDate}
+						appointment={selectedAppointment}
+						mode="edit"
+					/>
+				)}
+			</div>
 		</div>
 	);
 }
