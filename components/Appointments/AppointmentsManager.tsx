@@ -30,6 +30,51 @@ export interface Patient {
 	phone?: string;
 }
 
+const getEasterMonday = (year: number) => {
+	const f = Math.floor(year / 100);
+	const g = Math.floor(year % 100);
+	const c = Math.floor(f / 4);
+	const e = Math.floor(f % 4);
+	const h = Math.floor((8 * f + 13) / 25);
+	const l = Math.floor((19 * g + f - c - h + 15) % 30);
+	const p = Math.floor(g / 4);
+	const q = Math.floor((32 + 2 * e + 2 * p - l) % 7);
+	const r = Math.floor((l + q - 7) % 7);
+	const easterDate = new Date(year, 2, 1);
+	easterDate.setDate(22 + r + (l == 29 || (l == 28 && r == 6) ? 1 : 0));
+	const easterMonday = new Date(easterDate);
+	easterMonday.setDate(easterDate.getDate() + 1);
+	return easterMonday.getDate(); // Returns the day of the month
+};
+
+const getEasterDate = (year: number) => {
+	const f = Math.floor(year / 100);
+	const g = year % 19;
+	const c = Math.floor(
+		(15 + 19 * g + Math.floor(f / 4) - Math.floor((f + 8) / 25)) % 30
+	);
+	const h = Math.floor(
+		(32 + 2 * (year % 4) + 2 * Math.floor(year / 4) - c - (year % 7)) % 7
+	);
+	const easterDate = new Date(year, 2, 1);
+	easterDate.setDate(22 + c + h);
+	return easterDate;
+};
+
+const getAscensionDay = (year: number) => {
+	const easterDate = getEasterDate(year); // Assuming `getEasterDate` gives Easter Sunday
+	const ascensionDate = new Date(easterDate);
+	ascensionDate.setDate(easterDate.getDate() + 39);
+	return ascensionDate.getDate(); // Returns the day of the month
+};
+
+const getWhitMonday = (year: number) => {
+	const easterDate = getEasterDate(year);
+	const whitMondayDate = new Date(easterDate);
+	whitMondayDate.setDate(easterDate.getDate() + 50);
+	return whitMondayDate.getDate(); // Returns the day of the month
+};
+
 const generateHolidaysAndVacations = (
 	startYear: number,
 	endYear: number,
@@ -38,6 +83,10 @@ const generateHolidaysAndVacations = (
 	const events = [];
 
 	for (let year = startYear; year <= endYear; year++) {
+		const easterMondayDate = getEasterMonday(year);
+		const ascensionDayDate = getAscensionDay(year);
+		const whitMondayDate = getWhitMonday(year);
+
 		events.push(
 			{
 				title: "Jour de l'An",
@@ -47,7 +96,7 @@ const generateHolidaysAndVacations = (
 			},
 			{
 				title: "Lundi de Pâques",
-				start: `${year}-04-${getEasterMonday(year)}`,
+				start: `${year}-04-${easterMondayDate}`,
 				allDay: true,
 				color: "#ff9f89",
 			},
@@ -65,13 +114,13 @@ const generateHolidaysAndVacations = (
 			},
 			{
 				title: "Ascension",
-				start: `${year}-05-${getAscensionDay(year)}`,
+				start: `${year}-05-${ascensionDayDate}`,
 				allDay: true,
 				color: "#ff9f89",
 			},
 			{
 				title: "Lundi de Pentecôte",
-				start: `${year}-06-${getWhitMonday(year)}`,
+				start: `${year}-06-${whitMondayDate}`,
 				allDay: true,
 				color: "#ff9f89",
 			},
@@ -144,21 +193,6 @@ const generateHolidaysAndVacations = (
 	}
 
 	return events;
-};
-
-const getEasterMonday = (year: number) => {
-	// Algorithme pour calculer la date de Pâques
-	return 1; // À implémenter correctement
-};
-
-const getAscensionDay = (year: number) => {
-	// 39 jours après Pâques
-	return 1; // À implémenter correctement
-};
-
-const getWhitMonday = (year: number) => {
-	// 50 jours après Pâques
-	return 1; // À implémenter correctement
 };
 
 const getWinterHolidays = (year: number, zone: string) => {
