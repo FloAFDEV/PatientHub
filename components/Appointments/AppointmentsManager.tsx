@@ -234,7 +234,13 @@ export default function AppointmentsManager() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [events, setEvents] = useState<AppointmentType[]>([]);
 	const [holidaysAndVacations, setHolidaysAndVacations] = useState<
-		HolidayOrVacationEvent[]
+		{
+			title: string;
+			start: string;
+			end?: string;
+			allDay?: boolean;
+			color: string;
+		}[]
 	>([]);
 	const [selectedZone, setSelectedZone] = useState<string>("A");
 
@@ -291,7 +297,7 @@ export default function AppointmentsManager() {
 			const data = await response.json();
 			const formattedEvents = data.map(
 				(appointment: AppointmentType) => ({
-					id: appointment.id,
+					id: appointment.id.toString(),
 					title: `${appointment.patientName} - ${appointment.reason}`,
 					start: `${appointment.date}T${appointment.time}`,
 					status: appointment.status,
@@ -423,7 +429,13 @@ export default function AppointmentsManager() {
 							initialView="dayGridMonth"
 							locale={frLocale}
 							firstDay={1}
-							events={[...events, ...holidaysAndVacations]}
+							events={[
+								...events.map((event) => ({
+									...event,
+									id: event.id.toString(),
+								})),
+								...holidaysAndVacations,
+							]}
 							dateClick={handleDateClick}
 							eventClick={handleEventClick}
 							height="auto"
