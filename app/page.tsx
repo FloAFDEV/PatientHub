@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SearchParamProps } from "@/components/types/index";
+import { SearchParamProps } from "@/components/types /index";
 import Footer from "@/components/Footer";
 
 const Home = ({}: SearchParamProps) => {

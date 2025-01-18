@@ -452,8 +452,9 @@ export default function AppointmentsManager() {
 								const baseClass = isWeekend
 									? "text-red-500"
 									: "text-gray-800";
+
 								const darkModeClass = isWeekend
-									? "dark:bg-amber-800 dark:text-white"
+									? "dark:bg-cyan-950 dark:text-red-500"
 									: "dark:bg-gray-700 dark:text-white";
 								const todayClass = isToday
 									? "bg-blue-100 dark:bg-blue-900 font-bold"
