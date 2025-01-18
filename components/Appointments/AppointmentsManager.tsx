@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { AppointmentDialog } from "./AppointmentDialog";
 import { AppointmentList } from "./AppointmentList";
 import FullCalendar from "@fullcalendar/react";
+import { EventContentArg } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -496,7 +497,7 @@ export default function AppointmentsManager() {
 									buttonText: "Liste",
 								},
 							}}
-							eventContent={(info: { event: any }) => (
+							eventContent={(info: EventContentArg) => (
 								<div
 									className="p-1 text-sm bg-blue
 -500 text-white rounded"
