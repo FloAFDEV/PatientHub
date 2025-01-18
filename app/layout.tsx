@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { ThemeProvider } from "@/components/theme-provider";
 import AppLayout from "@/components/AppLayout";
 import ClientLayout from "./ClientLayout";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,6 +35,7 @@ export default function RootLayout({
 				>
 					<ClientLayout>
 						<AppLayout>{children}</AppLayout>
+						<Analytics />
 					</ClientLayout>
 				</ThemeProvider>
 			</body>
