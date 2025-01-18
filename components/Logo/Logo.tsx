@@ -26,10 +26,6 @@ export const Logo = () => {
 					PatientHub
 				</motion.span>
 			</div>
-			{/* Texte en petit en dessous */}
-			<span className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-				Votre plateforme de gestion de patients
-			</span>
 		</div>
 	);
 };

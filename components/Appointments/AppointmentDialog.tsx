@@ -93,12 +93,6 @@ export function AppointmentDialog({
 		},
 	});
 
-	React.useEffect(() => {
-		if (selectedPatient) {
-			form.setValue("patientId", selectedPatient.id.toString());
-		}
-	}, [selectedPatient, form]);
-
 	const onSubmit = async (data: FormValues) => {
 		try {
 			const endpoint =
@@ -179,11 +173,9 @@ export function AppointmentDialog({
 										defaultValue={field.value}
 										value={field.value}
 									>
-										<FormControl>
-											<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-												<SelectValue placeholder="Sélectionner un patient" />
-											</SelectTrigger>
-										</FormControl>
+										<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+											<SelectValue placeholder="Sélectionner un patient" />
+										</SelectTrigger>
 										<SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
 											{patients.map((patient) => (
 												<SelectItem
@@ -216,11 +208,9 @@ export function AppointmentDialog({
 										defaultValue={field.value}
 										value={field.value}
 									>
-										<FormControl>
-											<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-												<SelectValue placeholder="Sélectionner une heure" />
-											</SelectTrigger>
-										</FormControl>
+										<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+											<SelectValue placeholder="Sélectionner une heure" />
+										</SelectTrigger>
 										<SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
 											{generateTimes().map((time) => (
 												<SelectItem
@@ -247,13 +237,10 @@ export function AppointmentDialog({
 										<FileText className="h-4 w-4" />
 										Motif
 									</FormLabel>
-									<FormControl>
-										<Input
-											{...field}
-											className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-											placeholder="Entrez le motif du rendez-vous"
-										/>
-									</FormControl>
+									<Input
+										{...field}
+										placeholder="Entrez le motif du rendez-vous"
+									/>
 									<FormMessage />
 								</FormItem>
 							)}
@@ -264,14 +251,10 @@ export function AppointmentDialog({
 								type="button"
 								variant="outline"
 								onClick={() => onOpenChange(false)}
-								className="h-12 px-6 bg-white dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700"
 							>
 								Annuler
 							</Button>
-							<Button
-								type="submit"
-								className="h-12 px-6 bg-blue-400 dark:bg-gray-800 hover:bg-blue-500 dark:hover:bg-gray-700"
-							>
+							<Button type="submit">
 								{mode === "create" ? "Créer" : "Modifier"}
 							</Button>
 						</div>

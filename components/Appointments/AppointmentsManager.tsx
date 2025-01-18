@@ -3,10 +3,14 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "react-toastify";
-import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
 import { AppointmentDialog } from "./AppointmentDialog";
 import { AppointmentList } from "./AppointmentList";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import frLocale from "@fullcalendar/core/locales/fr";
+import listPlugin from "@fullcalendar/list";
 
 export interface AppointmentType {
 	id: number;
@@ -26,6 +30,163 @@ export interface Patient {
 	phone?: string;
 }
 
+const generateHolidaysAndVacations = (
+	startYear: number,
+	endYear: number,
+	zone: string
+) => {
+	const events = [];
+
+	for (let year = startYear; year <= endYear; year++) {
+		events.push(
+			{
+				title: "Jour de l'An",
+				start: `${year}-01-01`,
+				allDay: true,
+				color: "#ff9f89",
+			},
+			{
+				title: "Lundi de Pâques",
+				start: `${year}-04-${getEasterMonday(year)}`,
+				allDay: true,
+				color: "#ff9f89",
+			},
+			{
+				title: "Fête du Travail",
+				start: `${year}-05-01`,
+				allDay: true,
+				color: "#ff9f89",
+			},
+			{
+				title: "Victoire 1945",
+				start: `${year}-05-08`,
+				allDay: true,
+				color: "#ff9f89",
+			},
+			{
+				title: "Ascension",
+				start: `${year}-05-${getAscensionDay(year)}`,
+				allDay: true,
+				color: "#ff9f89",
+			},
+			{
+				title: "Lundi de Pentecôte",
+				start: `${year}-06-${getWhitMonday(year)}`,
+				allDay: true,
+				color: "#ff9f89",
+			},
+			{
+				title: "Fête Nationale",
+				start: `${year}-07-14`,
+				allDay: true,
+				color: "#ff9f89",
+			},
+			{
+				title: "Assomption",
+				start: `${year}-08-15`,
+				allDay: true,
+				color: "#ff9f89",
+			},
+			{
+				title: "Toussaint",
+				start: `${year}-11-01`,
+				allDay: true,
+				color: "#ff9f89",
+			},
+			{
+				title: "Armistice 1918",
+				start: `${year}-11-11`,
+				allDay: true,
+				color: "#ff9f89",
+			},
+			{
+				title: "Noël",
+				start: `${year}-12-25`,
+				allDay: true,
+				color: "#ff9f89",
+			}
+		);
+
+		const winterHolidays = getWinterHolidays(year, zone);
+		const springHolidays = getSpringHolidays(year, zone);
+		events.push(
+			{
+				title: "Vacances d'hiver",
+				start: winterHolidays.start,
+				end: winterHolidays.end,
+				color: "#ff9f89",
+			},
+			{
+				title: "Vacances de printemps",
+				start: springHolidays.start,
+				end: springHolidays.end,
+				color: "#ff9f89",
+			},
+			{
+				title: "Vacances d'été",
+				start: `${year}-07-06`,
+				end: `${year}-08-31`,
+				color: "#ff9f89",
+			},
+			{
+				title: "Vacances de la Toussaint",
+				start: `${year}-10-19`,
+				end: `${year}-11-03`,
+				color: "#ff9f89",
+			},
+			{
+				title: "Vacances de Noël",
+				start: `${year}-12-21`,
+				end: `${year + 1}-01-05`,
+				color: "#ff9f89",
+			}
+		);
+	}
+
+	return events;
+};
+
+const getEasterMonday = (year: number) => {
+	// Algorithme pour calculer la date de Pâques
+	return 1; // À implémenter correctement
+};
+
+const getAscensionDay = (year: number) => {
+	// 39 jours après Pâques
+	return 1; // À implémenter correctement
+};
+
+const getWhitMonday = (year: number) => {
+	// 50 jours après Pâques
+	return 1; // À implémenter correctement
+};
+
+const getWinterHolidays = (year: number, zone: string) => {
+	switch (zone) {
+		case "A":
+			return { start: `${year}-02-08`, end: `${year}-02-24` };
+		case "B":
+			return { start: `${year}-02-22`, end: `${year}-03-10` };
+		case "C":
+			return { start: `${year}-02-15`, end: `${year}-03-03` };
+		default:
+			return { start: `${year}-02-15`, end: `${year}-03-03` };
+	}
+};
+
+const getSpringHolidays = (year: number, zone: string) => {
+	switch (zone) {
+		case "A":
+			return { start: `${year}-04-12`, end: `${year}-04-28` };
+		case "B":
+			return { start: `${year}-04-26`, end: `${year}-05-12` };
+		case "C":
+			return { start: `${year}-04-19`, end: `${year}-05-05` };
+		default:
+			return { start: `${year}-04-19`, end: `${year}-05-05` };
+	}
+};
+
 export default function AppointmentsManager() {
 	const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 	const [isNewAppointmentOpen, setIsNewAppointmentOpen] = useState(false);
@@ -37,11 +198,22 @@ export default function AppointmentsManager() {
 	);
 	const [patients, setPatients] = useState<Patient[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const [events, setEvents] = useState<any[]>([]);
+	const [holidaysAndVacations, setHolidaysAndVacations] = useState<any[]>([]);
+	const [selectedZone, setSelectedZone] = useState<string>("A");
 
 	useEffect(() => {
 		fetchPatients();
 		checkForPatientInUrl();
-	}, []);
+		fetchAppointments();
+		const currentYear = new Date().getFullYear();
+		const generatedEvents = generateHolidaysAndVacations(
+			currentYear,
+			currentYear + 100,
+			selectedZone
+		);
+		setHolidaysAndVacations(generatedEvents);
+	}, [selectedZone]);
 
 	const checkForPatientInUrl = () => {
 		const params = new URLSearchParams(window.location.search);
@@ -75,6 +247,27 @@ export default function AppointmentsManager() {
 		}
 	};
 
+	const fetchAppointments = async () => {
+		try {
+			const response = await fetch("/api/appointments");
+			if (!response.ok)
+				throw new Error("Erreur lors du chargement des rendez-vous");
+			const data = await response.json();
+			const formattedEvents = data.map(
+				(appointment: AppointmentType) => ({
+					id: appointment.id,
+					title: `${appointment.patientName} - ${appointment.reason}`,
+					start: `${appointment.date}T${appointment.time}`,
+					status: appointment.status,
+				})
+			);
+			setEvents(formattedEvents);
+		} catch (error) {
+			console.error("Erreur:", error);
+			toast.error("Erreur lors du chargement des rendez-vous");
+		}
+	};
+
 	const handleEditAppointment = (appointment: AppointmentType) => {
 		setSelectedAppointment(appointment);
 		setIsEditAppointmentOpen(true);
@@ -89,7 +282,7 @@ export default function AppointmentsManager() {
 			});
 			if (!response.ok) throw new Error("Erreur lors de la suppression");
 			toast.success("Rendez-vous supprimé avec succès");
-			window.location.reload();
+			fetchAppointments();
 		} catch (error) {
 			console.error("Erreur:", error);
 			toast.error("Erreur lors de la suppression du rendez-vous");
@@ -106,10 +299,25 @@ export default function AppointmentsManager() {
 			);
 			if (!response.ok) throw new Error("Erreur lors de l'annulation");
 			toast.success("Rendez-vous annulé avec succès");
-			window.location.reload();
+			fetchAppointments();
 		} catch (error) {
 			console.error("Erreur:", error);
 			toast.error("Erreur lors de l'annulation du rendez-vous");
+		}
+	};
+
+	const handleDateClick = (arg: any) => {
+		setSelectedDate(arg.date);
+		setIsNewAppointmentOpen(true);
+	};
+
+	const handleEventClick = (info: any) => {
+		const appointment = events.find(
+			(event) => event.id === parseInt(info.event.id)
+		);
+		if (appointment) {
+			setSelectedAppointment(appointment);
+			setIsEditAppointmentOpen(true);
 		}
 	};
 
@@ -146,27 +354,118 @@ export default function AppointmentsManager() {
 				</div>
 			</header>
 
-			<div className="flex flex-col md:flex-row gap-8">
-				<div className="w-full md:w-2/3">
-					<div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl shadow-lg">
-						<Calendar
-							mode="single"
-							selected={selectedDate}
-							onSelect={(date) => date && setSelectedDate(date)}
-							locale={fr}
-							className="rounded-lg border-none"
-							disabled={(date) => date < new Date()}
+			<div className="flex flex-col gap-8">
+				<div className="w-full h-full">
+					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+						<div className="mb-4">
+							<label
+								htmlFor="zone-select"
+								className="block text-md font-medium text-gray-700 dark:text-gray-300"
+							>
+								Zones scolaire
+							</label>
+							<select
+								id="zone-select"
+								value={selectedZone}
+								onChange={(e) =>
+									setSelectedZone(e.target.value)
+								}
+								className="mt-1 block pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+							>
+								<option value="A">Zone A</option>
+								<option value="B">Zone B</option>
+								<option value="C">Zone C</option>
+							</select>
+						</div>
+						<FullCalendar
+							plugins={[
+								dayGridPlugin,
+								interactionPlugin,
+								timeGridPlugin,
+								listPlugin,
+							]}
+							initialView="dayGridMonth"
+							locale={frLocale}
+							firstDay={1}
+							events={[...events, ...holidaysAndVacations]}
+							dateClick={handleDateClick}
+							eventClick={handleEventClick}
+							height="auto"
+							dayCellClassNames={({
+								date,
+								isToday,
+							}: {
+								date: Date;
+								isToday: boolean;
+							}) => {
+								const day = date.getDay();
+								const isWeekend = day === 0 || day === 6;
+								const baseClass = isWeekend
+									? "text-red-500"
+									: "text-gray-800";
+								const darkModeClass = isWeekend
+									? "dark:bg-amber-800 dark:text-white"
+									: "dark:bg-gray-700 dark:text-white";
+								const todayClass = isToday
+									? "bg-blue-100 dark:bg-blue-900 font-bold"
+									: "";
+								return `${baseClass} ${darkModeClass} ${todayClass}`;
+							}}
+							dayHeaderClassNames="uppercase text-lg font-semibold bg-gray-100 dark:bg-gray-800 dark:text-white"
+							dayHeaderContent={(arg: { text: string }) => (
+								<span className="uppercase text-lg font-semibold dark:text-white">
+									{arg.text}
+								</span>
+							)}
+							buttonText={{
+								today: "Aujourd'hui",
+								allDay: "Jour",
+							}}
+							headerToolbar={{
+								left: "prev,next today",
+								center: "title",
+								right: "dayGridMonth,timeGridDay,timeGridWeek,listWeek",
+							}}
+							views={{
+								dayGridMonth: { buttonText: "Mois" },
+								timeGridDay: {
+									buttonText: "Jour",
+									slotDuration: "00:30:00",
+									slotMinTime: "06:00:00",
+									slotMaxTime: "21:00:00",
+									nowIndicator: true,
+									scrollTime: "06:00:00",
+								},
+								timeGridWeek: {
+									buttonText: "Semaine",
+									slotDuration: "00:30:00",
+									slotMinTime: "06:00:00",
+									slotMaxTime: "21:00:00",
+									nowIndicator: true,
+									scrollTime: "06:00:00",
+								},
+								listWeek: {
+									buttonText: "Liste",
+								},
+							}}
+							eventContent={(info: { event: any }) => (
+								<div
+									className="p-1 text-sm bg-blue
+-500 text-white rounded"
+								>
+									{info.event.title === "All-day"
+										? "Jour"
+										: info.event.title}
+								</div>
+							)}
+							allDayText="Jour"
+							nowIndicator={true}
+							now={new Date()}
 						/>
-						<Button
-							className="w-full mt-6 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 hover:from-gray-200 hover:to-gray-300 dark:hover:from-gray-600 dark:hover:to-gray-700"
-							onClick={() => setIsNewAppointmentOpen(true)}
-						>
-							Nouveau rendez-vous
-						</Button>
 					</div>
 				</div>
 
-				<div className="w-full md:w-2/3">
+				<div className="w-full md:w-1/3">
 					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
 						<h2 className="text-2xl font-bold mb-6">
 							Rendez-vous du{" "}
