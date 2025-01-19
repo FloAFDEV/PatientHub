@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -81,6 +81,8 @@ export function AppointmentDialog({
 	mode = "create",
 	selectedPatient,
 }: AppointmentDialogProps) {
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
 	const form = useForm<FormValues>({
 		defaultValues: {
 			patientId:
@@ -93,7 +95,30 @@ export function AppointmentDialog({
 	});
 
 	const onSubmit = async (data: FormValues) => {
+		setIsSubmitting(true);
 		try {
+			if (!data.patientId) {
+				form.setError("patientId", {
+					type: "manual",
+					message: "Patient requis.",
+				});
+				return;
+			}
+			if (!data.time) {
+				form.setError("time", {
+					type: "manual",
+					message: "Heure requise.",
+				});
+				return;
+			}
+			if (!data.reason) {
+				form.setError("reason", {
+					type: "manual",
+					message: "Motif requis.",
+				});
+				return;
+			}
+
 			const endpoint =
 				mode === "create"
 					? "/api/appointments"
@@ -102,9 +127,7 @@ export function AppointmentDialog({
 
 			const response = await fetch(endpoint, {
 				method,
-				headers: {
-					"Content-Type": "application/json",
-				},
+				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					...data,
 					date: format(selectedDate, "yyyy-MM-dd"),
@@ -119,10 +142,11 @@ export function AppointmentDialog({
 					: "Rendez-vous modifié avec succès"
 			);
 			onOpenChange(false);
-			window.location.reload();
 		} catch (error) {
 			console.error("Erreur:", error);
 			toast.error("Une erreur est survenue");
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
@@ -253,8 +277,12 @@ export function AppointmentDialog({
 							>
 								Annuler
 							</Button>
-							<Button type="submit">
-								{mode === "create" ? "Créer" : "Modifier"}
+							<Button type="submit" disabled={isSubmitting}>
+								{isSubmitting
+									? "Chargement..."
+									: mode === "create"
+									? "Créer"
+									: "Modifier"}
 							</Button>
 						</div>
 					</form>

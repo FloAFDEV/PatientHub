@@ -69,7 +69,7 @@ export function AppointmentList({ date, onEdit }: AppointmentListProps) {
 					Aucun rendez-vous pour cette date
 				</p>
 				<p className="text-sm mt-2 p-4">
-					Cliquez sur &quot;Nouveau rendez-vous&quot; pour en créer un
+					Cliquez sur le calendrier pour en créer
 				</p>
 			</div>
 		);

@@ -398,6 +398,23 @@ export default function AppointmentsManager() {
 			</header>
 
 			<div className="flex flex-col gap-8">
+				{" "}
+				<div className="w-full mt-8">
+					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+						<h2 className="text-2xl font-bold mb-6">
+							Rendez-vous du{" "}
+							{format(selectedDate, "dd MMMM yyyy", {
+								locale: fr,
+							})}
+						</h2>
+						<AppointmentList
+							date={selectedDate}
+							onEdit={handleEditAppointment}
+							onDelete={handleDeleteAppointment}
+							onCancel={handleCancelAppointment}
+						/>
+					</div>
+				</div>
 				<div className="w-full h-full">
 					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
 						<div className="mb-4">
@@ -482,19 +499,19 @@ export default function AppointmentsManager() {
 									dayGridMonth: { buttonText: "Mois" },
 									timeGridDay: {
 										buttonText: "Jour",
-										slotDuration: "00:30:00",
-										slotMinTime: "06:00:00",
+										slotDuration: "00:45:00",
+										slotMinTime: "08:00:00",
 										slotMaxTime: "21:00:00",
 										nowIndicator: true,
-										scrollTime: "06:00:00",
+										scrollTime: "08:00:00",
 									},
 									timeGridWeek: {
 										buttonText: "Semaine",
-										slotDuration: "00:30:00",
-										slotMinTime: "06:00:00",
+										slotDuration: "00:45:00",
+										slotMinTime: "08:00:00",
 										slotMaxTime: "21:00:00",
 										nowIndicator: true,
-										scrollTime: "06:00:00",
+										scrollTime: "08:00:00",
 									},
 									listWeek: {
 										buttonText: "Liste",
@@ -513,25 +530,7 @@ export default function AppointmentsManager() {
 							/>
 						</div>
 					</div>
-
-					<div className="w-full md:w-1/3">
-						<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-							<h2 className="text-2xl font-bold mb-6">
-								Rendez-vous du{" "}
-								{format(selectedDate, "dd MMMM yyyy", {
-									locale: fr,
-								})}
-							</h2>
-							<AppointmentList
-								date={selectedDate}
-								onEdit={handleEditAppointment}
-								onDelete={handleDeleteAppointment}
-								onCancel={handleCancelAppointment}
-							/>
-						</div>
-					</div>
 				</div>
-
 				<AppointmentDialog
 					open={isNewAppointmentOpen}
 					onOpenChange={setIsNewAppointmentOpen}
@@ -539,7 +538,6 @@ export default function AppointmentsManager() {
 					selectedDate={selectedDate}
 					selectedPatient={selectedPatient}
 				/>
-
 				{selectedAppointment && (
 					<AppointmentDialog
 						open={isEditAppointmentOpen}
