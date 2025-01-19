@@ -33,12 +33,14 @@ interface Patient {
 	lastName: string;
 }
 
-interface Appointment {
+interface AppointmentType {
 	id: number;
-	patientId: number;
 	date: string;
 	time: string;
+	patientId: number;
+	patientName: string;
 	reason: string;
+	status: "SCHEDULED" | "COMPLETED" | "CANCELED";
 }
 
 interface AppointmentDialogProps {
@@ -46,7 +48,7 @@ interface AppointmentDialogProps {
 	onOpenChange: (open: boolean) => void;
 	patients: Patient[];
 	selectedDate: Date;
-	appointment?: Appointment;
+	appointment?: AppointmentType;
 	mode?: "create" | "edit";
 	selectedPatient?: Patient | null;
 }
@@ -62,7 +64,7 @@ const generateTimes = () => {
 	const currentTime = new Date();
 	currentTime.setHours(8, 0, 0, 0);
 
-	while (currentTime.getHours() < 19) {
+	while (currentTime.getHours() < 21) {
 		const hour = currentTime.getHours().toString().padStart(2, "0");
 		const minutes = currentTime.getMinutes().toString().padStart(2, "0");
 		times.push(`${hour}:${minutes}`);
@@ -134,8 +136,14 @@ export function AppointmentDialog({
 				}),
 			});
 
-			if (!response.ok) throw new Error("Erreur lors de la sauvegarde");
-
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(
+					`Erreur lors de la sauvegarde: ${
+						errorData.message || response.statusText
+					}`
+				);
+			}
 			toast.success(
 				mode === "create"
 					? "Rendez-vous créé avec succès"
@@ -143,16 +151,21 @@ export function AppointmentDialog({
 			);
 			onOpenChange(false);
 		} catch (error) {
-			console.error("Erreur:", error);
-			toast.error("Une erreur est survenue");
+			console.error("Erreur détaillée:", error);
+			toast.error(`Une erreur est survenue: ${(error as Error).message}`);
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
+	const descriptionId = "appointment-dialog-description";
+
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-[500px] p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
+			<DialogContent
+				className="sm:max-w-[500px] p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700"
+				aria-describedby={descriptionId}
+			>
 				<DialogHeader className="space-y-4">
 					<DialogTitle className="text-2xl font-bold flex items-center gap-3 text-gray-900 dark:text-white">
 						{mode === "create" ? (

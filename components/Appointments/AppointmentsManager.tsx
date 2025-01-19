@@ -45,7 +45,7 @@ const getEasterMonday = (year: number) => {
 	easterDate.setDate(22 + r + (l == 29 || (l == 28 && r == 6) ? 1 : 0));
 	const easterMonday = new Date(easterDate);
 	easterMonday.setDate(easterDate.getDate() + 1);
-	return easterMonday.getDate(); // Returns the day of the month
+	return easterMonday.getDate();
 };
 
 const getEasterDate = (year: number) => {
@@ -63,17 +63,17 @@ const getEasterDate = (year: number) => {
 };
 
 const getAscensionDay = (year: number) => {
-	const easterDate = getEasterDate(year); // Assuming `getEasterDate` gives Easter Sunday
+	const easterDate = getEasterDate(year);
 	const ascensionDate = new Date(easterDate);
 	ascensionDate.setDate(easterDate.getDate() + 39);
-	return ascensionDate.getDate(); // Returns the day of the month
+	return ascensionDate.getDate();
 };
 
 const getWhitMonday = (year: number) => {
 	const easterDate = getEasterDate(year);
 	const whitMondayDate = new Date(easterDate);
 	whitMondayDate.setDate(easterDate.getDate() + 50);
-	return whitMondayDate.getDate(); // Returns the day of the month
+	return whitMondayDate.getDate();
 };
 
 const generateHolidaysAndVacations = (
@@ -336,9 +336,7 @@ export default function AppointmentsManager() {
 		try {
 			const response = await fetch(
 				`/api/appointments/${appointmentId}/cancel`,
-				{
-					method: "PUT",
-				}
+				{ method: "PUT" }
 			);
 			if (!response.ok) throw new Error("Erreur lors de l'annulation");
 			toast.success("Rendez-vous annulé avec succès");
@@ -398,7 +396,6 @@ export default function AppointmentsManager() {
 			</header>
 
 			<div className="flex flex-col gap-8">
-				{" "}
 				<div className="w-full mt-8">
 					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
 						<h2 className="text-2xl font-bold mb-6">
@@ -437,7 +434,6 @@ export default function AppointmentsManager() {
 								<option value="C">Zone C</option>
 							</select>
 						</div>
-
 						<div className="mb-6">
 							<FullCalendar
 								plugins={[
@@ -471,10 +467,9 @@ export default function AppointmentsManager() {
 									const baseClass = isWeekend
 										? "text-red-500"
 										: "text-gray-800";
-
 									const darkModeClass = isWeekend
 										? "dark:bg-cyan-950 dark:text-red-500"
-										: "dark:bg-gray-700 dark:text-white";
+										: "dark:bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg dark:text-white";
 									const todayClass = isToday
 										? "bg-blue-100 dark:bg-blue-900 font-bold"
 										: "";
