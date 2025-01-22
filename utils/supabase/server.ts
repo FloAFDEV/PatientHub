@@ -1,4 +1,5 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
+// utils/supabase/server.ts
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 if (

@@ -1,9 +1,8 @@
 // utils/supabase/client.ts
 import { createBrowserClient } from "@supabase/ssr";
 
-// Fonction pour créer une instance de Supabase côté client
+// Fonction pour créer une instance de Supabase côté serveur
 export function createClient() {
-	// Vérification des variables d'environnement
 	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 	const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
