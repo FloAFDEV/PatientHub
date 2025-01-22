@@ -3,13 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { createClient } from "@/utils/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { ModeToggle } from "@/components/ModeToggle";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import { PasskeyModal } from "@/components/PassKeyModal";
 import Link from "next/link";
-
-const supabase = createClient();
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -239,7 +237,7 @@ export default function LoginPage() {
 
 			{/* Image latérale */}
 			<Image
-				src="/assets/images/onboarding-img.png"
+				src="/assets/images/onboarding-img.webp"
 				height={1000}
 				width={1000}
 				priority

@@ -1,4 +1,5 @@
-import { createClient } from "../utils/supabase/client";
+// lib/session.ts
+import { supabase } from "./supabase";
 
 export interface SessionUser {
 	id: string;
@@ -13,25 +14,44 @@ export interface Session {
 
 export async function getSession(): Promise<Session | null> {
 	try {
-		const supabase = createClient();
-
+		// Utiliser l'instance partagée de Supabase
 		const {
 			data: { session },
-			error,
+			error: sessionError,
 		} = await supabase.auth.getSession();
 
-		if (error || !session) {
+		if (sessionError) {
+			console.error(
+				"Erreur lors de la récupération de la session Supabase:",
+				sessionError
+			);
 			return null;
 		}
 
-		// Récupérer les informations supplémentaires de l'utilisateur depuis la base de données
+		if (!session) {
+			return null;
+		}
+
+		// Récupérer les informations utilisateur supplémentaires
 		const { data: userData, error: userError } = await supabase
 			.from("users")
 			.select("*, osteopath:osteopaths(*)")
 			.eq("id", session.user.id)
 			.single();
 
-		if (userError || !userData) {
+		if (userError) {
+			console.error(
+				"Erreur lors de la récupération des données utilisateur:",
+				userError
+			);
+			return null;
+		}
+
+		if (!userData) {
+			console.warn(
+				"Aucune donnée utilisateur trouvée pour l'ID:",
+				session.user.id
+			);
 			return null;
 		}
 
@@ -44,7 +64,10 @@ export async function getSession(): Promise<Session | null> {
 			},
 		};
 	} catch (error) {
-		console.error("Erreur lors de la récupération de la session:", error);
+		console.error(
+			"Erreur inattendue lors de la récupération de la session:",
+			error
+		);
 		return null;
 	}
 }

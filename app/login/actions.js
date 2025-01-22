@@ -1,26 +1,31 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
+import { supabase } from "@/lib/supabase";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 // Fonction pour vérifier si l'utilisateur actuel est un administrateur
-async function isAdmin(supabase) {
-	const {
-		data: { user },
-		error,
-	} = await supabase.auth.getUser();
-	if (error || !user) return false;
+async function isAdmin() {
+	try {
+		const {
+			data: { user },
+			error,
+		} = await supabase.auth.getUser();
+		if (error || !user) return false;
 
-	const { data, error: roleError } = await supabase
-		.from("users")
-		.select("role")
-		.eq("id", user.id)
-		.single();
+		const { data, error: roleError } = await supabase
+			.from("users")
+			.select("role")
+			.eq("id", user.id)
+			.single();
 
-	if (roleError || !data) return false;
-	return data.role === "admin";
+		if (roleError || !data) return false;
+		return data.role === "admin";
+	} catch (err) {
+		console.error("isAdmin error:", err);
+		return false;
+	}
 }
 
 // Gestion des erreurs
@@ -35,8 +40,6 @@ function handleNotFound() {
 
 // Fonction de connexion
 export async function login(formData) {
-	const supabase = createClient();
-
 	const email = formData.get("email");
 	const password = formData.get("password");
 
@@ -46,7 +49,7 @@ export async function login(formData) {
 	}
 
 	try {
-		const { error } = await supabase.auth.signIn({
+		const { data, error } = await supabase.auth.signInWithPassword({
 			email,
 			password,
 		});
@@ -73,9 +76,7 @@ export async function login(formData) {
 
 // Fonction d'inscription pour les administrateurs
 export async function adminAddUser(formData) {
-	const supabase = createClient();
-
-	if (!(await isAdmin(supabase))) {
+	if (!(await isAdmin())) {
 		handleNotFound(); // Redirection vers 404 si l'utilisateur n'est pas admin
 		return;
 	}
@@ -128,9 +129,13 @@ export async function adminAddUser(formData) {
 
 // Fonction de déconnexion
 export async function logout() {
-	const supabase = createClient();
-	await supabase.auth.signOut();
-	cookies().delete("session");
-	revalidatePath("/");
-	redirect("/login");
+	try {
+		await supabase.auth.signOut();
+		cookies().delete("session");
+		revalidatePath("/");
+		redirect("/login");
+	} catch (err) {
+		console.error("Logout error:", err);
+		handleError("Erreur lors de la déconnexion");
+	}
 }

@@ -15,7 +15,7 @@ function ErrorContent() {
 			{/* Image humoristique 404 */}
 			<div className="w-full h-1/2 flex items-center justify-center">
 				<Image
-					src="/assets/images/funny-404-image.png"
+					src="/assets/images/funny-404-image.webp"
 					alt="404 error illustration"
 					className="max-h-full object-contain"
 					height={700}
