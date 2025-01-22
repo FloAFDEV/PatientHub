@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/client";
 import { ModeToggle } from "@/components/ModeToggle";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
 import { PasskeyModal } from "@/components/PassKeyModal";
 import Link from "next/link";
+
+const supabase = createClient();
 
 export default function LoginPage() {
 	const router = useRouter();

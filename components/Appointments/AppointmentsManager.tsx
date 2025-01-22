@@ -382,7 +382,7 @@ export default function AppointmentsManager() {
 						alt="Modern Planning Desktop"
 						className="w-full h-full object-cover object-center opacity-80"
 						style={{ objectPosition: "center 30%" }}
-						layout="fill"
+						layout="responsive"
 					/>
 					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
 						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">

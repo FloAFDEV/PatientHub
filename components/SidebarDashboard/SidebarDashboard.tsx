@@ -17,7 +17,7 @@ import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/logout/actions";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/client";
 import PatientList from "@/components/PatientList/PatientList";
 import CabinetContent from "@/components/CabinetContent/CabinetContent";
 import AddPatientForm from "@/components/addPatientForm/addPatientForm";
@@ -26,6 +26,7 @@ import Dashboard from "@/components/Dashboard/Dashboard";
 import { User } from "@supabase/supabase-js";
 import Footer from "@/components/Footer";
 
+const supabase = createClient();
 const MemoizedDashboard = React.memo(Dashboard);
 const MemoizedPatientList = React.memo(PatientList);
 const MemoizedCabinetContent = React.memo(CabinetContent);

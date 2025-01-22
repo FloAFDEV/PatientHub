@@ -1,5 +1,4 @@
-"use client";
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -27,7 +26,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { AppointmentStatus } from "@prisma/client";
 
 interface Patient {
 	id: number;
@@ -42,15 +40,15 @@ interface AppointmentType {
 	patientId: number;
 	patientName: string;
 	reason: string;
-	status: AppointmentStatus;
+	status: "SCHEDULED" | "COMPLETED" | "CANCELED";
 }
 
 interface AppointmentDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
-	patients: Patient[] | null;
+	patients: Patient[];
 	selectedDate: Date;
-	appointment?: AppointmentType | null;
+	appointment?: AppointmentType;
 	mode?: "create" | "edit";
 	selectedPatient?: Patient | null;
 }
@@ -86,7 +84,6 @@ export function AppointmentDialog({
 	selectedPatient,
 }: AppointmentDialogProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [apiError, setApiError] = useState<string | null>(null);
 
 	const form = useForm<FormValues>({
 		defaultValues: {
@@ -99,90 +96,67 @@ export function AppointmentDialog({
 		},
 	});
 
-	const onSubmit = useCallback(
-		async (data: FormValues) => {
-			setIsSubmitting(true);
-			setApiError(null);
-
-			try {
-				// Validation des données avant l'envoi
-				if (!data.patientId) {
-					form.setError("patientId", {
-						type: "manual",
-						message: "Patient requis.",
-					});
-					return;
-				}
-				if (!data.time) {
-					form.setError("time", {
-						type: "manual",
-						message: "Heure requise.",
-					});
-					return;
-				}
-				if (!data.reason) {
-					form.setError("reason", {
-						type: "manual",
-						message: "Motif requis.",
-					});
-					return;
-				}
-
-				// Définition de l'endpoint et de la méthode en fonction du mode
-				const endpoint =
-					mode === "create"
-						? "/api/appointments"
-						: `/api/appointments/${appointment?.id}`;
-				const method = mode === "create" ? "POST" : "PUT";
-
-				// Appel API
-				const response = await fetch(endpoint, {
-					method,
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						...data,
-						date: format(selectedDate, "yyyy-MM-dd"),
-					}),
+	const onSubmit = async (data: FormValues) => {
+		setIsSubmitting(true);
+		try {
+			if (!data.patientId) {
+				form.setError("patientId", {
+					type: "manual",
+					message: "Patient requis.",
 				});
-
-				// Vérification de la réponse de l'API
-				if (!response.ok) {
-					const errorData = await response.json();
-					throw new Error(
-						`Erreur lors de la sauvegarde: ${
-							errorData.message || response.statusText
-						}`
-					);
-				}
-
-				// Affichage du message de succès
-				toast.success(
-					mode === "create"
-						? "Rendez-vous créé avec succès"
-						: "Rendez-vous modifié avec succès"
-				);
-				onOpenChange(false);
-			} catch (error: unknown) {
-				// Gestion du typage d'erreur avec 'unknown'
-				console.error("Erreur détaillée:", error);
-
-				// Vérification du type d'erreur
-				if (error instanceof Error) {
-					// Si c'est une instance d'Error, on accède à 'message'
-					setApiError(error.message || "Une erreur est survenue.");
-					toast.error(`Une erreur est survenue: ${error.message}`);
-				} else {
-					// Si l'erreur n'est pas une instance d'Error, on affiche une erreur générique
-					setApiError("Une erreur inconnue est survenue.");
-					toast.error("Une erreur inconnue est survenue.");
-				}
-			} finally {
-				// Réinitialisation du statut de soumission
-				setIsSubmitting(false);
+				return;
 			}
-		},
-		[form, mode, onOpenChange, selectedDate, appointment?.id]
-	);
+			if (!data.time) {
+				form.setError("time", {
+					type: "manual",
+					message: "Heure requise.",
+				});
+				return;
+			}
+			if (!data.reason) {
+				form.setError("reason", {
+					type: "manual",
+					message: "Motif requis.",
+				});
+				return;
+			}
+
+			const endpoint =
+				mode === "create"
+					? "/api/appointments"
+					: `/api/appointments/${appointment?.id}`;
+			const method = mode === "create" ? "POST" : "PUT";
+
+			const response = await fetch(endpoint, {
+				method,
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					...data,
+					date: format(selectedDate, "yyyy-MM-dd"),
+				}),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(
+					`Erreur lors de la sauvegarde: ${
+						errorData.message || response.statusText
+					}`
+				);
+			}
+			toast.success(
+				mode === "create"
+					? "Rendez-vous créé avec succès"
+					: "Rendez-vous modifié avec succès"
+			);
+			onOpenChange(false);
+		} catch (error) {
+			console.error("Erreur détaillée:", error);
+			toast.error(`Une erreur est survenue: ${(error as Error).message}`);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
 
 	const descriptionId = "appointment-dialog-description";
 
@@ -215,9 +189,6 @@ export function AppointmentDialog({
 						</span>
 					</div>
 				</DialogHeader>
-				{apiError && (
-					<div className="text-red-500 mb-4 text-sm">{apiError}</div>
-				)}
 				<Form {...form}>
 					<form
 						onSubmit={form.handleSubmit(onSubmit)}
@@ -236,13 +207,12 @@ export function AppointmentDialog({
 										onValueChange={field.onChange}
 										defaultValue={field.value}
 										value={field.value}
-										disabled={!patients}
 									>
 										<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
 											<SelectValue placeholder="Sélectionner un patient" />
 										</SelectTrigger>
 										<SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-											{patients?.map((patient) => (
+											{patients.map((patient) => (
 												<SelectItem
 													key={patient.id}
 													value={patient.id.toString()}
@@ -316,7 +286,6 @@ export function AppointmentDialog({
 								type="button"
 								variant="outline"
 								onClick={() => onOpenChange(false)}
-								disabled={isSubmitting}
 							>
 								Annuler
 							</Button>
