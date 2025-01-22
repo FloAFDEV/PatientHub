@@ -157,7 +157,7 @@ export function AppointmentDialog({
 						: "Rendez-vous modifié avec succès"
 				);
 				onOpenChange(false);
-			} catch (error: any) {
+			} catch (error: Error | unknown) {
 				console.error("Erreur détaillée:", error);
 				setApiError(error.message || "Une erreur est survenue.");
 				toast.error(`Une erreur est survenue: ${error.message}`);
