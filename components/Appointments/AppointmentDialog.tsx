@@ -105,6 +105,7 @@ export function AppointmentDialog({
 			setApiError(null);
 
 			try {
+				// Validation des données avant l'envoi
 				if (!data.patientId) {
 					form.setError("patientId", {
 						type: "manual",
@@ -127,12 +128,14 @@ export function AppointmentDialog({
 					return;
 				}
 
+				// Définition de l'endpoint et de la méthode en fonction du mode
 				const endpoint =
 					mode === "create"
 						? "/api/appointments"
 						: `/api/appointments/${appointment?.id}`;
 				const method = mode === "create" ? "POST" : "PUT";
 
+				// Appel API
 				const response = await fetch(endpoint, {
 					method,
 					headers: { "Content-Type": "application/json" },
@@ -142,6 +145,7 @@ export function AppointmentDialog({
 					}),
 				});
 
+				// Vérification de la réponse de l'API
 				if (!response.ok) {
 					const errorData = await response.json();
 					throw new Error(
@@ -151,17 +155,29 @@ export function AppointmentDialog({
 					);
 				}
 
+				// Affichage du message de succès
 				toast.success(
 					mode === "create"
 						? "Rendez-vous créé avec succès"
 						: "Rendez-vous modifié avec succès"
 				);
 				onOpenChange(false);
-			} catch (error: Error | unknown) {
+			} catch (error: unknown) {
+				// Gestion du typage d'erreur avec 'unknown'
 				console.error("Erreur détaillée:", error);
-				setApiError(error.message || "Une erreur est survenue.");
-				toast.error(`Une erreur est survenue: ${error.message}`);
+
+				// Vérification du type d'erreur
+				if (error instanceof Error) {
+					// Si c'est une instance d'Error, on accède à 'message'
+					setApiError(error.message || "Une erreur est survenue.");
+					toast.error(`Une erreur est survenue: ${error.message}`);
+				} else {
+					// Si l'erreur n'est pas une instance d'Error, on affiche une erreur générique
+					setApiError("Une erreur inconnue est survenue.");
+					toast.error("Une erreur inconnue est survenue.");
+				}
 			} finally {
+				// Réinitialisation du statut de soumission
 				setIsSubmitting(false);
 			}
 		},
