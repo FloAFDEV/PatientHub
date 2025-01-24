@@ -191,8 +191,11 @@ const PatientDetails = ({ patient, onClose }) => {
 			<div className="flex items-center space-x-4 md:space-x-6 mb-6">
 				<Image
 					src={
-						patient.avatarUrl ||
-						"/assets/images/default-avatar.webp"
+						patient.avatarUrl &&
+						typeof patient.avatarUrl === "string" &&
+						patient.avatarUrl.trim()
+							? patient.avatarUrl
+							: "/assets/images/default-avatar.webp"
 					}
 					alt={`Avatar de ${patient.firstName || "Prénom Inconnu"} ${
 						patient.lastName || "Nom Inconnu"
@@ -206,6 +209,10 @@ const PatientDetails = ({ patient, onClose }) => {
 					}`}
 					width={128}
 					height={128}
+					onError={(e) =>
+						(e.currentTarget.src =
+							"/assets/images/default-avatar.webp")
+					}
 				/>
 				<div className="flex flex-col">
 					<div className="mt-2 flex flex-col space-y-2">

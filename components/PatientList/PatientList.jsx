@@ -273,7 +273,6 @@ const PatientList = ({ onAddPatientClick }) => {
 								</div>
 							</SheetContent>
 						</Sheet>
-
 						{/* Actions rapides */}
 						<div className="flex gap-2 mb-6">
 							<Button
@@ -286,7 +285,6 @@ const PatientList = ({ onAddPatientClick }) => {
 						</div>
 					</div>
 				</div>
-
 				{/* Filtre alphabétique desktop */}
 				<div className="hidden md:flex flex-wrap justify-center gap-1.5">
 					{alphabet.map((letter) => (
@@ -313,7 +311,6 @@ const PatientList = ({ onAddPatientClick }) => {
 					</Button>
 				</div>
 			</div>
-
 			{/* Liste des patients */}
 			<div className="space-y-3 m-2 gap-6 p-22">
 				{!sortedPatients.length ? (
@@ -338,7 +335,7 @@ const PatientList = ({ onAddPatientClick }) => {
 								animation: "fadeSlideIn 0.5s ease forwards",
 							}}
 						>
-							<div className="p-3 sm:p-2 ">
+							<div className="p-1">
 								<div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
 									<div className="flex items-start sm:items-center gap-3 flex-1">
 										<div className="mt-1 sm:mt-0">
