@@ -27,6 +27,7 @@ import { User } from "@supabase/supabase-js";
 import Footer from "@/components/Footer";
 
 const supabase = createClient();
+
 const MemoizedDashboard = React.memo(Dashboard);
 const MemoizedPatientList = React.memo(PatientList);
 const MemoizedCabinetContent = React.memo(CabinetContent);
