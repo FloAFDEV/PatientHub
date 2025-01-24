@@ -10,6 +10,7 @@ import {
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
+	DialogDescription,
 } from "@/components/ui/dialog";
 import {
 	Form,
@@ -158,13 +159,11 @@ export function AppointmentDialog({
 		}
 	};
 
-	const descriptionId = "appointment-dialog-description";
-
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent
 				className="sm:max-w-[500px] p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700"
-				aria-describedby={descriptionId}
+				aria-describedby="appointment-dialog-description"
 			>
 				<DialogHeader className="space-y-4">
 					<DialogTitle className="text-2xl font-bold flex items-center gap-3 text-gray-900 dark:text-white">
@@ -180,6 +179,11 @@ export function AppointmentDialog({
 							</>
 						)}
 					</DialogTitle>
+					<DialogDescription id="appointment-dialog-description">
+						{mode === "create"
+							? "Créez un nouveau rendez-vous en remplissant les détails ci-dessous."
+							: "Modifiez les détails du rendez-vous existant."}
+					</DialogDescription>
 					<div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
 						<Calendar className="h-4 w-4" />
 						<span className="text-lg">

@@ -400,22 +400,6 @@ export default function AppointmentsManager() {
 			</header>
 
 			<div className="flex flex-col gap-8">
-				<div className="w-full mt-8">
-					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-						<h2 className="text-2xl font-bold mb-6">
-							Rendez-vous du{" "}
-							{format(selectedDate, "dd MMMM yyyy", {
-								locale: fr,
-							})}
-						</h2>
-						<AppointmentList
-							date={selectedDate}
-							onEdit={handleEditAppointment}
-							onDelete={handleDeleteAppointment}
-							onCancel={handleCancelAppointment}
-						/>
-					</div>
-				</div>
 				<div className="w-full h-full">
 					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
 						<div className="mb-4">
@@ -473,7 +457,8 @@ export default function AppointmentsManager() {
 										: "text-gray-800";
 									const darkModeClass = isWeekend
 										? "dark:bg-cyan-950 dark:text-red-500"
-										: "dark:bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg dark:text-white";
+										: "dark:bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-sm dark:text-white hover:bg-gray-100 hover:text-blue-700 dark:hover:text-amber-500";
+
 									const todayClass = isToday
 										? "bg-blue-100 dark:bg-blue-900 font-bold"
 										: "";
@@ -526,6 +511,22 @@ export default function AppointmentsManager() {
 								allDayText="Jour"
 								nowIndicator={true}
 								now={new Date()}
+							/>
+						</div>
+					</div>
+					<div className="w-full mt-8">
+						<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+							<h2 className="text-2xl font-bold mb-6">
+								Rendez-vous du{" "}
+								{format(selectedDate, "dd MMMM yyyy", {
+									locale: fr,
+								})}
+							</h2>
+							<AppointmentList
+								date={selectedDate}
+								onEdit={handleEditAppointment}
+								onDelete={handleDeleteAppointment}
+								onCancel={handleCancelAppointment}
 							/>
 						</div>
 					</div>

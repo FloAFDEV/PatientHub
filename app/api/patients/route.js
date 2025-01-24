@@ -60,11 +60,7 @@ export async function GET(request) {
 			});
 
 			// Log des informations liées à l'ostéopathe pour chaque patient
-			patients.forEach((patient) => {
-				console.log(
-					`Patient: ${patient.firstName} ${patient.lastName}`
-				);
-			});
+			patients.forEach((patient) => {});
 
 			// Retourner la réponse des patients avec l'ostéopathe
 			return NextResponse.json(patients);
