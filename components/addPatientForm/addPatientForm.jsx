@@ -12,13 +12,43 @@ import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 
 const AddPatientForm = ({}) => {
+	const defaultValues = {
+		firstName: "",
+		lastName: "",
+		email: "",
+		phone: "",
+		address: "",
+		birthDate: null,
+		gender: "",
+		maritalStatus: "",
+		occupation: "",
+		handedness: "",
+		contraception: "",
+		generalPractitioner: "",
+		isSmoker: "",
+		hasVisionCorrection: "",
+		isDeceased: "no",
+		activityLevel: "",
+		entProblems: "",
+		entDoctorName: "",
+		digestiveProblems: "",
+		digestiveDoctorName: "",
+		currentTreatment: "",
+		surgicalHistory: "",
+		traumaHistory: "",
+		rheumatologicalHistory: "",
+		hdlm: "",
+	};
+
 	const {
 		control,
 		handleSubmit,
 		reset,
-		formState: { errors, isSubmitting },
 		setValue,
-	} = useForm();
+		formState: { errors, isSubmitting },
+	} = useForm({
+		defaultValues,
+	});
 
 	const [hasChildren, setHasChildren] = useState(false);
 	const [childrenAges, setChildrenAges] = useState([0]);
