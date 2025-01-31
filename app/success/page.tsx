@@ -87,6 +87,10 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 						style={{ width: `${progress}%` }}
 					/>
 				</div>
+				{/* Affichage du pourcentage */}
+				<div className="text-center text-sm mt-2">
+					{Math.round(progress)}%
+				</div>
 			</div>
 
 			{/* Notification de redirection */}
