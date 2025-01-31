@@ -1,0 +1,41 @@
+{
+	"compilerOptions": {
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"incremental": true,
+		"types": ["node", "jest", "@testing-library/jest-dom"],
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"paths": {
+			"@/*": ["./*"]
+		}
+	},
+	"include": [
+		"next-env.d.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		"utils/supabase/server.ts",
+		"utils/supabase/middleware.ts",
+		"utils/supabase/client.ts",
+		"app/layout.js",
+		"middleware.js",
+		"components/lib/prisma.js",
+		"components/PatientList/PatientList.jsx",
+		"components/SidebarDashboard/SidebarDashboard.jsx",
+		"app/patients/page.jsx",
+		"app/AddPatient/page.jsx"
+	],
+	"exclude": ["node_modules"]
+}
