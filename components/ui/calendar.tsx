@@ -30,7 +30,7 @@ function Calendar({
 				day_selected:
 					"bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 font-semibold rounded-full",
 				day_today:
-					"bg-yellow-100 text-yellow-500 text-amber-500 dark:bg-orange-400 dark:text-white font-semibold rounded-full",
+					"bg-yellow-100 text-yellow-500 text-amber-500 dark:bg-green-500 dark:text-white font-semibold rounded-full",
 				day_outside:
 					"text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 opacity-70",
 				day_disabled:

@@ -140,9 +140,6 @@ export async function POST(request) {
 			);
 		}
 
-		// Log de l'ID de l'ostéopathe pour débogage
-		console.log("ID de l'ostéopathe récupéré:", osteopathId);
-
 		const cabinetData = await request.json(); // Récupérer les données du cabinet
 
 		// Validation des données du cabinet

@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function testConnection() {
 	try {
 		const patients = await prisma.patient.findMany();
-		console.log("Patients:", patients);
+		// console.log("Patients:", patients);
 	} catch (error) {
 		console.error("Erreur de connexion Prisma :", error);
 	} finally {

@@ -440,7 +440,6 @@ export default function AppointmentsManager() {
 									dayGridPlugin,
 									interactionPlugin,
 									timeGridPlugin,
-									listPlugin,
 								]}
 								initialView="dayGridMonth"
 								locale={frLocale}
@@ -469,13 +468,13 @@ export default function AppointmentsManager() {
 										: "text-gray-800";
 									const darkModeClass = isWeekend
 										? "dark:bg-cyan-950 dark:text-red-500"
-										: "dark:bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg dark:text-white";
+										: "dark:bg-gray-800 dark:text-white";
 									const todayClass = isToday
-										? "bg-blue-100 dark:bg-blue-900 font-bold"
+										? "bg-blue-500 text-white dark:bg-amber-600 dark:text-green-500 font-bold"
 										: "";
 									return `${baseClass} ${darkModeClass} ${todayClass}`;
 								}}
-								dayHeaderClassNames="uppercase text-lg font-semibold bg-gray-100 dark:bg-gray-800 dark:text-white"
+								dayHeaderClassNames="uppercase text-lg font-semibold bg-gray-300 dark:bg-gray-500 dark:text-white"
 								dayHeaderContent={(arg: { text: string }) => (
 									<span className="uppercase text-lg font-semibold dark:text-white">
 										{arg.text}
@@ -488,7 +487,7 @@ export default function AppointmentsManager() {
 								headerToolbar={{
 									left: "prev,next today",
 									center: "title",
-									right: "dayGridMonth,timeGridDay,timeGridWeek,listWeek",
+									right: "dayGridMonth,timeGridDay,timeGridWeek",
 								}}
 								views={{
 									dayGridMonth: { buttonText: "Mois" },
@@ -508,12 +507,9 @@ export default function AppointmentsManager() {
 										nowIndicator: true,
 										scrollTime: "08:00:00",
 									},
-									listWeek: {
-										buttonText: "Liste",
-									},
 								}}
 								eventContent={(info: EventContentArg) => (
-									<div className="p-1 text-sm bg-blue-500 text-white rounded">
+									<div className="p-1 text-sm bg-pink-400 text-white rounded">
 										{info.event.title === "All-day"
 											? "Jour"
 											: info.event.title}
