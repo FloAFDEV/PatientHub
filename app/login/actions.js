@@ -46,17 +46,17 @@ export async function login(formData) {
 	}
 
 	try {
-		const { error } = await supabase.auth.signIn({
+		const { data, error } = await supabase.auth.signInWithPassword({
 			email,
 			password,
 		});
 
 		if (error) throw new Error("Email ou mot de passe incorrect");
 
-		if (data.session) {
-			cookies().set("session", JSON.stringify(data.session), {
+		if (data) {
+			cookies().set("supabase-auth-token", JSON.stringify(data.session), {
 				httpOnly: true,
-				secure: true, // Toujours utiliser HTTPS en production
+				secure: process.env.NODE_ENV === "production", // Toujours utiliser HTTPS en production
 				sameSite: "strict", // Ajout de la politique SameSite pour plus de sécurité
 				maxAge: 60 * 60 * 24 * 7, // 1 semaine
 				path: "/",

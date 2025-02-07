@@ -59,13 +59,6 @@ export async function GET(request) {
 				orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
 			});
 
-			// Log des informations liées à l'ostéopathe pour chaque patient
-			patients.forEach((patient) => {
-				console.log(
-					`Patient: ${patient.firstName} ${patient.lastName}`
-				);
-			});
-
 			// Retourner la réponse des patients avec l'ostéopathe
 			return NextResponse.json(patients);
 		}
@@ -182,13 +175,6 @@ export async function POST(request) {
 		const newPatient = await prisma.patient.create({
 			data: formattedPatientData,
 		});
-
-		// Log de la création du patient et de l'ostéopathe associé
-		console.log("New Patient created:", newPatient);
-		if (newPatient.osteopath) {
-			console.log("Osteopath ID:", newPatient.osteopath.id);
-			console.log("Osteopath Name:", newPatient.osteopath.name);
-		}
 
 		// Retourner la réponse de création avec les données du patient
 		return new Response(JSON.stringify(newPatient), {

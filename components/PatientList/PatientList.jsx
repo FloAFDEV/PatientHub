@@ -183,8 +183,8 @@ const PatientList = ({ onAddPatientClick }) => {
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
 			<ToastContainer />
 			{/* Header */}
-			<header className="relative mb-8 group">
-				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-[1.01]">
+			<header className="relative mb-4 group">
+				<div className="relative w-full h-36 sm:h-48 md:h-64 lg:h-72 overflow-hidden rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-[1.01]">
 					<Image
 						src="/assets/images/PatientRoom.webp"
 						alt="Cabinet médical moderne"
@@ -315,7 +315,7 @@ const PatientList = ({ onAddPatientClick }) => {
 			</div>
 
 			{/* Liste des patients */}
-			<div className="space-y-3 m-2 gap-6 p-22">
+			<div className="space-y-3 m-2 gap-6 p-2">
 				{!sortedPatients.length ? (
 					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-md animate-fadeIn">
 						<IconSearch className="mx-auto h-12 w-12 text-gray-400 animate-pulse" />
@@ -338,7 +338,7 @@ const PatientList = ({ onAddPatientClick }) => {
 								animation: "fadeSlideIn 0.5s ease forwards",
 							}}
 						>
-							<div className="p-3 sm:p-2 ">
+							<div className="p-1">
 								<div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
 									<div className="flex items-start sm:items-center gap-3 flex-1">
 										<div className="mt-1 sm:mt-0">
