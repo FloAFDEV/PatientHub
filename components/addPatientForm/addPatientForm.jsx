@@ -498,7 +498,7 @@ const AddPatientForm = ({}) => {
 							<SelectField
 								name="isSmoker"
 								control={control}
-								label="Fumeur ?"
+								label="Fumeur"
 								options={yesOptions}
 								required
 								rules={{

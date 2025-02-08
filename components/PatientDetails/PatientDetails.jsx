@@ -393,7 +393,7 @@ const PatientDetails = ({ patient, onClose }) => {
 						}
 					/>
 					<DetailItem
-						label="Fumeur ?"
+						label="Fumeur"
 						value={
 							isEditing ? (
 								<select
@@ -423,7 +423,7 @@ const PatientDetails = ({ patient, onClose }) => {
 
 					{/* Champ pour la mention du décès */}
 					<DetailItem
-						label="Décédé ?"
+						label="Décédé"
 						value={
 							isEditing ? (
 								<select
