@@ -35,7 +35,6 @@ interface DashboardData {
 	totalPatients: number;
 	maleCount: number;
 	femaleCount: number;
-	patients30DaysAgo: number;
 	averageAge: number;
 	averageAgeMale: number;
 	averageAgeFemale: number;
@@ -45,8 +44,9 @@ interface DashboardData {
 	appointmentsToday: number;
 	nextAppointment: string;
 	patientsLastYearEnd: number;
-	totalPatients30DaysAgo: number;
-	growthPercentage: number;
+	newPatientsLast30Days: number;
+	thirtyDayGrowthPercentage: number;
+	annualGrowthPercentage: number;
 	monthlyGrowth: {
 		month: string;
 		patients: number;
@@ -248,29 +248,17 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 					title="Nouveaux patients (30 derniers jours)"
 					explanation="Représente le nombre de nouveaux patients enregistrés ce mois-ci."
 					value={
-						dashboardData?.newPatientsThisMonth !== undefined
-							? dashboardData.newPatientsThisMonth
+						dashboardData?.newPatientsLast30Days !== undefined
+							? dashboardData.newPatientsLast30Days
 							: "Chargement..."
 					}
 					change={(() => {
-						const currentPatients = dashboardData?.totalPatients;
-						const totalPatients30DaysAgo =
-							dashboardData?.totalPatients30DaysAgo;
-
 						if (
-							currentPatients !== undefined &&
-							totalPatients30DaysAgo !== undefined &&
-							totalPatients30DaysAgo !== 0
+							dashboardData?.thirtyDayGrowthPercentage !==
+							undefined
 						) {
-							const increase =
-								((currentPatients - totalPatients30DaysAgo) /
-									totalPatients30DaysAgo) *
-								100;
-							const formattedIncrease = increase.toFixed(1);
-							const sign = increase >= 0 ? "+" : "";
-							return `${sign}${formattedIncrease}% sur 30 jours`;
+							return `+${dashboardData.thirtyDayGrowthPercentage}% sur 30 jours`;
 						}
-
 						return "Chargement...";
 					})()}
 				/>
@@ -295,7 +283,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						dashboardData.patientsLastYearEnd !== 0
 							? (() => {
 									const growthPercentage =
-										dashboardData.growthPercentage;
+										dashboardData.annualGrowthPercentage;
 									const prefix =
 										growthPercentage >= 0 ? "+" : "";
 									return `${prefix}${growthPercentage}% depuis le 1er janvier`;

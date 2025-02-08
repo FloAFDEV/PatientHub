@@ -6,9 +6,7 @@ const SESSION_EXPIRATION = 60 * 60 * 1000;
 
 export async function updateSession(request: NextRequest) {
 	let response = NextResponse.next({
-		request: {
-			headers: request.headers,
-		},
+		request,
 	});
 
 	// Création du client Supabase avec gestion des cookies
@@ -29,61 +27,46 @@ export async function updateSession(request: NextRequest) {
 		}
 	);
 
-	try {
-		// Vérification de la session actuelle
-		const {
-			data: { session },
-			error,
-		} = await supabase.auth.getSession();
+	// Vérification de la session actuelle
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
 
-		if (error) {
-			console.error("Erreur récupération session middleware:", error);
-		} else {
-			console.log(
-				"Session récupérée avec succès dans le middleware:",
-				session
-			);
-		}
-
-		if (session) {
-			// Mise à jour du cookie d'expiration
-			const expirationTime = Date.now() + SESSION_EXPIRATION;
-			response.cookies.set({
-				name: "sessionExpiration",
-				value: expirationTime.toString(),
-				httpOnly: true,
-				secure: process.env.NODE_ENV === "production",
-				sameSite: "strict",
-				maxAge: SESSION_EXPIRATION / 1000, // en secondes
-			});
-		} else {
-			// Vérification si la session a expiré
-			const sessionExpiration = request.cookies.get("sessionExpiration");
-			if (
-				sessionExpiration &&
-				Date.now() > parseInt(sessionExpiration.value)
-			) {
-				// Déconnexion si la session a expiré
-				await supabase.auth.signOut();
-				return NextResponse.redirect(new URL("/login", request.url));
-			}
-		}
-
-		// 🔥 Ajout pour éviter la mise en cache
-		response.headers.set("Cache-Control", "no-store");
-
-		// Redirection uniquement si nécessaire
+	if (user) {
+		// Mise à jour du cookie d'expiration si la session est active
+		const expirationTime = Date.now() + SESSION_EXPIRATION;
+		response.cookies.set({
+			name: "sessionExpiration",
+			value: expirationTime.toString(),
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "strict",
+			maxAge: SESSION_EXPIRATION / 1000, // en secondes
+		});
+	} else {
+		// Vérification de l'expiration de la session
+		const sessionExpiration = request.cookies.get("sessionExpiration");
 		if (
-			!session &&
-			!request.nextUrl.pathname.startsWith("/login") &&
-			!request.nextUrl.pathname.startsWith("/auth")
+			sessionExpiration &&
+			Date.now() > parseInt(sessionExpiration.value)
 		) {
+			// Déconnexion si la session a expiré
+			await supabase.auth.signOut();
 			return NextResponse.redirect(new URL("/login", request.url));
 		}
-
-		return response;
-	} catch (error) {
-		console.error("Erreur lors de la mise à jour de la session:", error);
-		return response;
 	}
+
+	// Désactivation de la mise en cache
+	response.headers.set("Cache-Control", "no-store");
+
+	// Redirection si l'utilisateur n'est pas authentifié
+	if (
+		!user &&
+		!request.nextUrl.pathname.startsWith("/login") &&
+		!request.nextUrl.pathname.startsWith("/auth")
+	) {
+		return NextResponse.redirect(new URL("/login", request.url));
+	}
+
+	return response;
 }
