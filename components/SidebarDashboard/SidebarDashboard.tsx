@@ -46,7 +46,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 			try {
 				const result = await signOut();
 				if (result.success) {
-					router.push("/login");
+					router.push("/");
 				} else {
 					throw new Error(
 						result.error || "Erreur lors de la déconnexion."
@@ -75,7 +75,7 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 				if (data.session) {
 					setUser(data.session.user);
 				} else {
-					router.push("/login");
+					router.push("/");
 				}
 			} catch (error) {
 				console.error(

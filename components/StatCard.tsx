@@ -21,7 +21,7 @@ const StatCard: React.FC<StatCardProps> = ({
 
 	return (
 		<div
-			className="relative bg-gradient-to-br from-gray-50/90 to-gray-200/90 dark:from-gray-700/90 dark:to-gray-800/90 p-4 sm:p-6 rounded-xl shadow-lg transition-all duration-500 ease-in-out sm:hover:scale-[1.02] sm:hover:shadow-xl sm:hover:backdrop-blur-sm border border-gray-100/50 dark:border-gray-600/50"
+			className="relative bg-gradient-to-br from-gray-50/90 to-gray-200/90 dark:from-gray-700/90 dark:to-gray-800/90 p-4 sm:p-6 rounded-xl shadow-lg transition-all duration-500 ease-in-out sm:hover:scale-[1.02] sm:hover:shadow-xl border border-gray-100/50 dark:border-gray-600/50 before:absolute before:inset-0 before:rounded-xl before:transition-all before:duration-500 before:ease-in-out before:bg-inherit before:z-[-1] sm:hover:before:backdrop-blur-sm"
 			onMouseEnter={() => setIsHovered(true)}
 			onMouseLeave={() => setIsHovered(false)}
 		>

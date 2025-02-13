@@ -19,7 +19,7 @@ export default async function PrivatePage() {
 			console.log(
 				"Aucune session trouvée, redirection vers la page de connexion"
 			);
-			redirect("/login");
+			redirect("/");
 		}
 
 		// Récupérer les informations de l'utilisateur
@@ -35,7 +35,7 @@ export default async function PrivatePage() {
 			console.log(
 				"Données utilisateur non trouvées, redirection vers la page de connexion"
 			);
-			redirect("/login");
+			redirect("/");
 		}
 
 		// Retourner le rendu de la page si tout est valide
@@ -52,6 +52,6 @@ export default async function PrivatePage() {
 			"Erreur d'authentification ou de récupération des données:",
 			error
 		);
-		redirect("/login");
+		redirect("/");
 	}
 }

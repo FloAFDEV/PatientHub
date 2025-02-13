@@ -6,7 +6,6 @@ import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import { ModeToggle } from "@/components/ModeToggle";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
-import { PasskeyModal } from "@/components/PassKeyModal";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -16,17 +15,7 @@ export default function LoginPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [hiddenField] = useState(""); // Champ caché pour le spam
-	const [isMounted, setIsMounted] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-
-	// Vérifier si l'utilisateur est déjà authentifié à chaque chargement de la page
-	useEffect(() => {
-		setIsMounted(true);
-		const isUserAuthenticated = localStorage.getItem("authToken");
-		if (isUserAuthenticated) {
-			router.push("/success");
-		}
-	}, [router]);
 
 	const validateForm = () => {
 		if (!email) {
@@ -84,9 +73,15 @@ export default function LoginPage() {
 		}
 	};
 
-	const closeModal = () => {
-		setIsModalOpen(false);
-	};
+	// Effectuer la redirection une fois que la modale est ouverte
+	useEffect(() => {
+		if (isModalOpen) {
+			console.log(
+				"Redirection vers /success après l'ouverture de la modale..."
+			);
+			router.push("/success");
+		}
+	}, [isModalOpen, router]);
 
 	return (
 		<div className="flex h-screen max-h-screen flex-col lg:flex-row">
@@ -95,17 +90,11 @@ export default function LoginPage() {
 					suppressHydrationWarning
 					className="flex-grow flex flex-col justify-between min-h-screen px-4"
 				>
-					{/* Affichage de la modal si authentifié */}
-					{isModalOpen && (
-						<PasskeyModal open={isModalOpen} onClose={closeModal} />
-					)}
 					<div className="flex-1 flex flex-col items-center justify-center p-4">
-						{/* Toggle du mode d'affichage si monté */}
-						{isMounted && (
-							<div className="absolute top-4 right-4 z-10">
-								<ModeToggle />
-							</div>
-						)}
+						{/* Toggle du mode d'affichage */}
+						<div className="absolute top-4 right-4 z-10">
+							<ModeToggle />
+						</div>
 						{/* Texte d'accueil */}
 						<div className="mx-auto max-w-md w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 lg:py-16 mt-20 lg:mt-28">
 							<div className="text-center">
@@ -118,9 +107,11 @@ export default function LoginPage() {
 								</p>
 							</div>
 						</div>
-						<h1 className="absolute top-4 left-4 text-4xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
-							PatientHub
-						</h1>
+						<Link href="/">
+							<h1 className="absolute top-4 left-4 text-4xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+								PatientHub
+							</h1>
+						</Link>
 						<div className="w-full max-w-md text-card-foreground border p-8 shadow-lg rounded-lg mt-4 mb-12 sm:mb-24 lg:mb-6">
 							<h2 className="text-lg font-bold text-center mb-2">
 								Connexion
@@ -205,14 +196,14 @@ export default function LoginPage() {
 								)}
 
 								<p className="text-sm text-muted-foreground text-center">
-									Vous n&apos;avez pas accès ?{" "}
+									Vous n'avez pas accès ?{" "}
 									<Link
 										href="mailto:afdevflo@gmail.com?subject=Demande%20d'accès%20à%20PatientHub&body=Bonjour%20[Nom%20complet%20ou%20société],%0A%0AJ'aimerais%20demander%20un%20acc%C3%A8s%20%C3%A0%20la%20plateforme.%0A%0AVoici%20quelques%20informations%20:%0A%0A-%20Nom%20complet%20ou%20société%20:%20[Nom%20complet%20ou%20société]%0A- %20Email%20:%20[Votre%20adresse%20e-mail]%0A- %20Raison%20de%20la%20demande%20:%20[Expliquez%20bri%C3%A8vement%20pourquoi%20vous%20souhaitez%20acc%C3%A9der%20%C3%A0%20la%20plateforme]%0A%0AJe%20vous%20remercie%20d'avance%20pour%20votre%20aide.%0A%0AMerci%20pour%20l'intérêt%20porté.%0A%0ACordialement,%0AAFDEV"
 										className="text-sky-700 underline hover:text-sky-800"
 									>
-										Contactez l&apos;administrateur
+										Contactez l'administrateur
 									</Link>{" "}
-									pour plus d&apos;informations.
+									pour plus d'informations.
 								</p>
 							</form>
 						</div>
@@ -229,7 +220,7 @@ export default function LoginPage() {
 						</div>
 						<div className="mt-auto py-4">
 							<p className="text-secondary text-sm md:text-base font-light text-center ">
-								© 2024 AFDEV. Tous droits réservés.
+								© 2024 PatientHub. Tous droits réservés.
 							</p>
 						</div>
 					</div>

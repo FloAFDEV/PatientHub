@@ -62,11 +62,3 @@ export const formatDateTime = (
 		timeOnly: date.toLocaleString("fr-FR", timeOptions),
 	};
 };
-
-export function encryptKey(passkey: string): string {
-	return btoa(passkey);
-}
-
-export function decryptKey(passkey: string): string {
-	return atob(passkey);
-}

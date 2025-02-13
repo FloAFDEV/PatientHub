@@ -9,7 +9,23 @@ const nextConfig = {
 			},
 		],
 	},
-	// Autres options de configuration
+	async headers() {
+		return [
+			{
+				source: "/:path*",
+				headers: [
+					{
+						key: "Cache-Control",
+						value: "public, max-age=3600, stale-while-revalidate=86400",
+					},
+					{
+						key: "ETag",
+						value: "W/etag-value", // Vous pouvez générer dynamiquement cette valeur
+					},
+				],
+			},
+		];
+	},
 };
 
 module.exports = nextConfig;
