@@ -160,7 +160,7 @@ export default function Home() {
 										{testimonial.role}
 									</p>
 									<p className="mt-2 text-gray-700 italic text-lg">
-										"{testimonial.comment}"
+										&quot;{testimonial.comment}&quot;
 									</p>
 								</div>
 							</ClientMotion>
@@ -190,7 +190,7 @@ export default function Home() {
 						</div>
 						<div className="p-6 bg-gray-50 rounded-2xl shadow-md border border-gray-200">
 							<h3 className="text-xl font-semibold text-gray-900 mb-2">
-								Améliorer l'organisation
+								Améliorer l&apos;organisation
 							</h3>
 							<p className="text-gray-600 text-lg">
 								Centralisez toutes les informations de votre
@@ -250,10 +250,10 @@ export default function Home() {
 						Votre avis compte !
 					</h2>
 					<p className="text-xl text-gray-700 max-w-4xl mx-auto mb-12">
-						Nous sommes constamment en train d'améliorer PatientHub
-						et votre feedback est essentiel. Partagez vos idées, vos
-						suggestions et vos besoins pour nous aider à créer la
-						meilleure plateforme pour les ostéopathes.
+						Nous sommes constamment en train d&apos;améliorer
+						PatientHub et votre feedback est essentiel. Partagez vos
+						idées, vos suggestions et vos besoins pour nous aider à
+						créer la meilleure plateforme pour les ostéopathes.
 					</p>
 					<Link href="/feedback">
 						<Button className="px-14 py-6 text-xl font-semibold bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full transform hover:scale-105 transition duration-300 ease-in-out">
@@ -271,13 +271,13 @@ export default function Home() {
 					transition={{ duration: 0.7, ease: "easeOut" }}
 				>
 					<h2 className="text-4xl font-bold text-gray-900 mb-8">
-						Simplifiez votre pratique ostéopathique dès aujourd'hui
-						!
+						Simplifiez votre pratique ostéopathique dès
+						aujourd&apos;hui !
 					</h2>
 					<p className="text-xl max-w-4xl mx-auto text-gray-700 mb-12">
-						Rejoignez une communauté d'ostéopathes qui ont choisi
-						PatientHub pour simplifier leur quotidien et offrir un
-						service exceptionnel à leurs patients.
+						Rejoignez une communauté d&apos;ostéopathes qui ont
+						choisi PatientHub pour simplifier leur quotidien et
+						offrir un service exceptionnel à leurs patients.
 					</p>
 					<Link href="/signup">
 						<Button className="px-14 py-6 text-xl font-semibold bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full transform hover:scale-105 transition duration-300 ease-in-out">

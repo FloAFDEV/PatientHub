@@ -10,11 +10,6 @@ function App() {
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [hiddenField] = useState(""); // Champ caché pour le spam
-	const [isMounted, setIsMounted] = useState(false);
-
-	useEffect(() => {
-		setIsMounted(true);
-	}, []);
 
 	const validateForm = () => {
 		if (!email) {
