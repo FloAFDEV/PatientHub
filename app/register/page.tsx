@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import Image from "next/image";
 import { LucideShieldCheck } from "lucide-react";
 
 function App() {
@@ -214,10 +215,11 @@ function App() {
 			</div>
 
 			<div className="hidden lg:block w-1/2">
-				<img
+				<Image
 					src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
 					alt="Medical professional at work"
-					className="h-full w-full object-cover"
+					layout="fill"
+					objectFit="cover"
 				/>
 			</div>
 		</div>
