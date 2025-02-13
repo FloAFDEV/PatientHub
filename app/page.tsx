@@ -88,7 +88,15 @@ export default function Home() {
 							</Link>
 						</div>
 					</div>
-				</ClientMotion>
+				</ClientMotion>{" "}
+				{/* Espace pour les mockups */}
+				<div className="relative z-10 mt-16 flex justify-center">
+					<div className="w-full max-w-5xl bg-gray-200 rounded-xl h-96 flex items-center justify-center">
+						<p className="text-gray-500 text-lg">
+							Espace dédié aux mockups
+						</p>
+					</div>
+				</div>
 			</header>
 
 			{/* Features Section */}
@@ -100,12 +108,12 @@ export default function Home() {
 					{features.map((feature, index) => (
 						<ClientMotion
 							key={index}
-							className="bg-white text-gray-800 rounded-2xl p-10 shadow-md hover:shadow-xl transform hover:-translate-y-3 transition duration-300 ease-in-out flex flex-col items-center text-center border border-gray-200"
+							className="text-gray-800 rounded-2xl p-10 shadow-md hover:shadow-xl transform hover:-translate-y-3 transition duration-300 ease-in-out flex flex-col items-center text-center border border-gray-200"
 							initial={{ opacity: 0, y: 40 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.7, delay: index * 0.2 }}
 						>
-							<div className="w-48 h-48 mb-8 relative rounded-md bg-gray-100 p-4">
+							<div className="w-48 h-48 mb-8 relative rounded-xl bg-gray-100 p-4">
 								<Image
 									src={feature.icon}
 									alt={feature.title}
@@ -127,7 +135,7 @@ export default function Home() {
 			{/* Testimonials Section */}
 			<section className="py-24 bg-gray-50">
 				<div className="container mx-auto px-6">
-					<h2 className="text-center text-4xl font-bold text-gray-900 mb-16">
+					<h2 className="text-center text-4xl font-bold text-gray-900 mb-16 ">
 						Ce que nos utilisateurs disent
 					</h2>
 					<div className="grid md:grid-cols-2 gap-12">

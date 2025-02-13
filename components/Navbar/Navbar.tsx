@@ -11,22 +11,14 @@ const Navbar = () => {
 						<Image
 							src="/assets/icons/logo-full.svg"
 							alt="PatientHub"
-							width={40}
-							height={40}
-							className="w-auto h-10 rounded-md"
+							width={60}
+							height={60}
+							className="w-auto h-20 rounded-md"
 						/>
 						<span className="text-4xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
 							PatientHub
 						</span>
 					</Link>
-
-					<div className="flex items-center space-x-4">
-						<Link href="/login">
-							<Button className="hidden sm:flex items-center space-x-2 bg-amber-500">
-								Connexion
-							</Button>
-						</Link>
-					</div>
 				</div>
 			</div>
 		</nav>
