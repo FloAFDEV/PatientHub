@@ -180,7 +180,7 @@ export default function Home() {
 									className="inline-block mr-2 align-middle text-purple-500"
 									size={20}
 								/>{" "}
-								Améliorer l'organisation
+								Améliorer l&apos;organisation
 							</h3>
 							<p className="text-gray-600 text-lg">
 								Centralisez toutes les informations de votre
@@ -248,10 +248,10 @@ export default function Home() {
 						Votre avis compte !
 					</h2>
 					<p className="text-xl text-gray-700 max-w-4xl mx-auto mb-8">
-						Nous sommes constamment en train d'améliorer PatientHub
-						et votre feedback est essentiel. Partagez vos idées, vos
-						suggestions et vos besoins pour nous aider à créer la
-						meilleure plateforme pour les ostéopathes.
+						Nous sommes constamment en train d&apos;améliorer
+						PatientHub et votre feedback est essentiel. Partagez vos
+						idées, vos suggestions et vos besoins pour nous aider à
+						créer la meilleure plateforme pour les ostéopathes.
 					</p>
 					<Link href="/feedback">
 						<Button className="px-12 py-4 text-xl font-semibold bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full transform hover:scale-105 transition duration-300 ease-in-out">
@@ -269,13 +269,13 @@ export default function Home() {
 					transition={{ duration: 0.7, ease: "easeOut" }}
 				>
 					<h2 className="text-3xl font-bold text-gray-900 mb-6">
-						Simplifiez votre pratique ostéopathique dès aujourd'hui
-						!
+						Simplifiez votre pratique ostéopathique dès
+						aujourd&apos;hui !
 					</h2>
 					<p className="text-xl max-w-4xl mx-auto text-gray-700 mb-8">
-						Rejoignez une communauté d'ostéopathes qui ont choisi
-						PatientHub pour simplifier leur quotidien et offrir un
-						service exceptionnel à leurs patients.
+						Rejoignez une communauté d&apos;ostéopathes qui ont
+						choisi PatientHub pour simplifier leur quotidien et
+						offrir un service exceptionnel à leurs patients.
 					</p>
 					<Link href="/signup">
 						<Button className="px-12 py-4 text-xl font-semibold bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full transform hover:scale-105 transition duration-300 ease-in-out">
@@ -324,7 +324,7 @@ const testimonials = [
 		name: "Dr. Pierre Dubois",
 		role: "Ostéopathe",
 		comment:
-			"L'interface est simple et intuitive, et les fonctionnalités sont parfaitement adaptées à mes besoins. Je recommande PatientHub à tous les ostéopathes.",
+			"Une interface simple et intuitive, et les fonctionnalités sont parfaitement adaptées à mes besoins. Je recommande PatientHub à tous les ostéopathes.",
 		image: "/assets/images/testimonial-2.jpg",
 	},
 ];
