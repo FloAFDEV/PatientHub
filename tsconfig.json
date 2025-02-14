@@ -36,7 +36,9 @@
 		"components/PatientList/PatientList.jsx",
 		"components/SidebarDashboard/SidebarDashboard.jsx",
 		"app/patients/page.jsx",
-		"app/AddPatient/page.jsx"
+		"app/AddPatient/page.jsx",
+		"app/privacy/page.jsx",
+		"components/Privacy/Privacy.jsx"
 	],
 	"exclude": ["node_modules"]
 }

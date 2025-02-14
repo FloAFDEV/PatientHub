@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -114,7 +113,11 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 
 			{/* Footer */}
 			<div className="w-screen mt-auto">
-				<Footer />
+				<footer className="mt-auto py-4 bg-gray-200 dark:bg-gray-900">
+					<p className="text-secondary text-sm md:text-base font-light text-center min-w-screen ">
+						© 2024 AFDEV. Tous droits réservés.
+					</p>
+				</footer>
 			</div>
 		</div>
 	);

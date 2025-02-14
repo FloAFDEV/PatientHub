@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const Footer = () => {
 	return (
 		<footer className="bg-gray-900 text-gray-400 py-12 border-t border-gray-800">
@@ -18,28 +20,28 @@ const Footer = () => {
 						</h4>
 						<ul className="space-y-2">
 							<li>
-								<a
+								<Link
 									href="#features"
 									className="hover:text-white transition-colors"
 								>
 									Fonctionnalités
-								</a>
+								</Link>
 							</li>
 							<li>
-								<a
+								<Link
 									href="#pricing"
 									className="hover:text-white transition-colors"
 								>
 									Tarifs
-								</a>
+								</Link>
 							</li>
 							<li>
-								<a
+								<Link
 									href="#testimonials"
 									className="hover:text-white transition-colors"
 								>
 									Témoignages
-								</a>
+								</Link>
 							</li>
 						</ul>
 					</div>
@@ -49,20 +51,20 @@ const Footer = () => {
 						</h4>
 						<ul className="space-y-2">
 							<li>
-								<a
+								<Link
 									href="/help"
 									className="hover:text-white transition-colors"
 								>
 									Centre d&apos;aide
-								</a>
+								</Link>
 							</li>
 							<li>
-								<a
+								<Link
 									href="/contact"
 									className="hover:text-white transition-colors"
 								>
 									Contact
-								</a>
+								</Link>
 							</li>
 						</ul>
 					</div>
@@ -72,20 +74,20 @@ const Footer = () => {
 						</h4>
 						<ul className="space-y-2">
 							<li>
-								<a
+								<Link
 									href="/privacy"
 									className="hover:text-white transition-colors"
 								>
 									Confidentialité
-								</a>
+								</Link>
 							</li>
 							<li>
-								<a
+								<Link
 									href="/terms"
 									className="hover:text-white transition-colors"
 								>
 									Conditions d&apos;utilisation
-								</a>
+								</Link>
 							</li>
 						</ul>
 					</div>

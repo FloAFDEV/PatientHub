@@ -48,6 +48,7 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 		let timeoutId: NodeJS.Timeout;
 		let activityTimeout: NodeJS.Timeout;
 		const IDLE_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+
 		const resetTimeout = () => {
 			clearTimeout(timeoutId);
 			timeoutId = setTimeout(async () => {

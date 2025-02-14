@@ -24,7 +24,6 @@ import AddPatientForm from "@/components/addPatientForm/addPatientForm";
 import { Logo, LogoIcon } from "@/components/Logo/Logo";
 import Dashboard from "@/components/Dashboard/Dashboard";
 import { User } from "@supabase/supabase-js";
-import Footer from "@/components/Footer";
 
 const MemoizedDashboard = React.memo(Dashboard);
 const MemoizedPatientList = React.memo(PatientList);
@@ -257,7 +256,11 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 					{activeComponent}
 					{children}
 				</main>
-				<Footer />
+				<footer className="mt-auto py-4 bg-gray-200 dark:bg-gray-900">
+					<p className="text-secondary text-sm md:text-base font-light text-center min-w-screen ">
+						© 2024 AFDEV. Tous droits réservés.
+					</p>
+				</footer>{" "}
 			</div>
 		</div>
 	);
