@@ -142,7 +142,7 @@ export default function Home() {
 									</p>{" "}
 									{/* Taille réduite */}
 									<p className="mt-2 text-gray-700 italic text-base">
-										"{testimonial.comment}"
+										&quot;{testimonial.comment}&quot;
 									</p>
 								</div>
 							</ClientMotion>
