@@ -190,8 +190,8 @@ const PatientList = ({ onAddPatientClick }) => {
 		);
 	}
 
-	const filteredPatients = useMemo(() => {
-		return (patients || []).filter((patient) => {
+	const sortedPatients = useMemo(() => {
+		const filtered = (patients || []).filter((patient) => {
 			const firstName = patient.firstName || "";
 			const lastName = patient.lastName || "";
 
@@ -210,15 +210,13 @@ const PatientList = ({ onAddPatientClick }) => {
 
 			return isMatchingByLetter || isMatchingByTerm;
 		});
-	}, [patients, searchLetter, searchTerm]);
 
-	const sortedPatients = useMemo(() => {
-		return filteredPatients.sort((a, b) => {
+		return filtered.sort((a, b) => {
 			const nameA = `${a.firstName || ""} ${a.lastName || ""}`;
 			const nameB = `${b.firstName || ""} ${b.lastName || ""}`;
 			return nameA.localeCompare(nameB, "fr", { sensitivity: "base" });
 		});
-	}, [filteredPatients]);
+	}, [patients, searchLetter, searchTerm]);
 
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
