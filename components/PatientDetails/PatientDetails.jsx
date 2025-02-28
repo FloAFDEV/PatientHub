@@ -14,7 +14,7 @@ import SectionToggle from "@/components/SectionToggle";
 import DetailItem from "@/components/DetailItem";
 
 // Utilisation des hooks d'état (useState)
-const PatientDetails = ({ patient, onClose }) => {
+const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 	const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
 	const [error, setError] = useState(null);
 	const [openSections, setOpenSections] = useState({
@@ -169,7 +169,7 @@ const PatientDetails = ({ patient, onClose }) => {
 						icon: "🎉",
 					}
 				);
-
+				onPatientUpdated();
 				setIsEditing(false);
 			} else {
 				const errorData = await response.json();

@@ -44,9 +44,7 @@ const PatientList = ({ onAddPatientClick }) => {
 	const [selectedPatientForAppointment, setSelectedPatientForAppointment] =
 		useState(null);
 	const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
-
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
-
 	const { patients, totalPages, isLoading, isError, mutate } = usePatients(
 		currentPage,
 		debouncedSearchTerm,
@@ -55,12 +53,21 @@ const PatientList = ({ onAddPatientClick }) => {
 
 	const handlePatientDeleted = async (patientId) => {
 		try {
-			await deletePatient(patientId);
+			const response = await fetch(`/api/patients?id=${patientId}`, {
+				method: "DELETE",
+			});
+
+			if (!response.ok) {
+				throw new Error("Erreur lors de la suppression du patient");
+			}
+			mutate(
+				`/api/patients?page=${currentPage}&search=${debouncedSearchTerm}&letter=${searchLetter}`
+			); // Invalidation du cache
+			forceUpdate({});
 			toast.success("Le patient a été supprimé avec succès !", {
 				className: "custom-toast",
 				position: "top-center",
 			});
-			mutate();
 		} catch (error) {
 			console.error("Erreur de suppression:", error);
 			toast.error(`Une erreur est survenue: ${error.message}`, {
@@ -333,9 +340,10 @@ const PatientList = ({ onAddPatientClick }) => {
 							key={patient.id}
 							className="relative bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 px-1 py-2"
 							style={{
-								animationDelay: `${index * 50}ms`,
+								animation: `fadeSlideIn 0.5s ease forwards ${
+									index * 50
+								}ms`,
 								opacity: 0,
-								animation: "fadeSlideIn 0.5s ease forwards",
 							}}
 						>
 							<div className="p-1">
@@ -461,6 +469,7 @@ const PatientList = ({ onAddPatientClick }) => {
 											setSelectedPatientId(null)
 										}
 										onPatientDeleted={handlePatientDeleted}
+										onPatientUpdated={handlePatientUpdated}
 									/>
 								</React.Suspense>
 							)}

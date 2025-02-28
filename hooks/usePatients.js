@@ -11,9 +11,10 @@ export function usePatients(page, search = "", letter = "") {
 		`/api/patients?page=${page}&search=${search}&letter=${letter}`,
 		fetcher,
 		{
-			revalidateOnFocus: false,
-			dedupingInterval: 5000,
-			keepPreviousData: true,
+			revalidateOnFocus: true, // Revalidation sur focus
+			dedupingInterval: 0, // Désactivation de la déduplication
+			keepPreviousData: false, // Désactivation de la conservation des données précédentes
+			revalidateIfStale: true, //Revalidation si les données sont périmées
 		}
 	);
 
