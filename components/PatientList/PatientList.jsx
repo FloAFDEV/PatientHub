@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { usePatients } from "@/hooks/usePatients";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ToastContainer, toast } from "react-toastify";
 import { AppointmentDialog } from "@/components/Appointments/AppointmentDialog";
 import "react-toastify/dist/ReactToastify.css";
-import { useCallback } from "react";
 
 import {
 	IconGenderMale,
@@ -79,7 +78,7 @@ const PatientList = ({ onAddPatientClick }) => {
 				toast.error(`Erreur : ${error.message}`);
 			}
 		},
-		[mutate]
+		[mutate, isLoading]
 	);
 
 	const handlePatientDeleted = async (patientId) => {
@@ -110,10 +109,10 @@ const PatientList = ({ onAddPatientClick }) => {
 		}
 	};
 
-	const handleAddAppointment = (patient) => {
+	const handleAddAppointment = useCallback((patient) => {
 		setSelectedPatientForAppointment(patient);
 		setShowAppointmentDialog(true);
-	};
+	}, []);
 
 	const calculateAge = (birthDate) => {
 		if (!birthDate || isNaN(new Date(birthDate).getTime())) return "N/A";
@@ -132,23 +131,26 @@ const PatientList = ({ onAddPatientClick }) => {
 
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-	const handleLetterClick = (letter) => {
-		setSearchLetter(letter === searchLetter ? "" : letter);
-		setCurrentPage(1);
-		setIsFilterOpen(false);
-	};
+	const handleLetterClick = useCallback(
+		(letter) => {
+			setSearchLetter(letter === searchLetter ? "" : letter);
+			setCurrentPage(1);
+			setIsFilterOpen(false);
+		},
+		[searchLetter]
+	);
 
-	const handleResetFilters = () => {
+	const handleResetFilters = useCallback(() => {
 		setSearchTerm("");
 		setSearchLetter("");
 		setCurrentPage(1);
 		setIsFilterOpen(false);
-	};
+	}, []);
 
-	const handleSearchChange = (e) => {
+	const handleSearchChange = useCallback((e) => {
 		setSearchTerm(e.target.value);
 		setCurrentPage(1);
-	};
+	}, []);
 
 	if (isLoading) {
 		return (
@@ -188,36 +190,35 @@ const PatientList = ({ onAddPatientClick }) => {
 		);
 	}
 
-	const filteredPatients = (patients || []).filter((patient) => {
-		const firstName = patient.firstName || "";
-		const lastName = patient.lastName || "";
+	const filteredPatients = useMemo(() => {
+		return (patients || []).filter((patient) => {
+			const firstName = patient.firstName || "";
+			const lastName = patient.lastName || "";
 
-		// Vérification de la correspondance par lettre (nom ou prénom commence par la lettre sélectionnée)
-		const isMatchingByLetter = searchLetter
-			? firstName.toUpperCase().startsWith(searchLetter.toUpperCase()) ||
-			  lastName.toUpperCase().startsWith(searchLetter.toUpperCase())
-			: true;
+			const isMatchingByLetter = searchLetter
+				? firstName
+						.toUpperCase()
+						.startsWith(searchLetter.toUpperCase()) ||
+				  lastName.toUpperCase().startsWith(searchLetter.toUpperCase())
+				: true;
 
-		// Vérification de la correspondance par terme (nom complet contient le terme de recherche)
-		const isMatchingByTerm = searchTerm
-			? `${firstName} ${lastName}`
-					.toUpperCase()
-					.includes(searchTerm.toUpperCase())
-			: true;
+			const isMatchingByTerm = searchTerm
+				? `${firstName} ${lastName}`
+						.toUpperCase()
+						.includes(searchTerm.toUpperCase())
+				: true;
 
-		// Le patient est retenu si au moins un des deux critères correspond
-		const isMatching = isMatchingByLetter || isMatchingByTerm;
+			return isMatchingByLetter || isMatchingByTerm;
+		});
+	}, [patients, searchLetter, searchTerm]);
 
-		return isMatching;
-	});
-
-	// Ensuite, trie les patients filtrés par prénom et nom de famille
-	const sortedPatients = filteredPatients.sort((a, b) => {
-		const nameA = `${a.firstName || ""} ${a.lastName || ""}`;
-		const nameB = `${b.firstName || ""} ${b.lastName || ""}`;
-		// Utilise localeCompare pour gérer les accents et la casse
-		return nameA.localeCompare(nameB, "fr", { sensitivity: "base" });
-	});
+	const sortedPatients = useMemo(() => {
+		return filteredPatients.sort((a, b) => {
+			const nameA = `${a.firstName || ""} ${a.lastName || ""}`;
+			const nameB = `${b.firstName || ""} ${b.lastName || ""}`;
+			return nameA.localeCompare(nameB, "fr", { sensitivity: "base" });
+		});
+	}, [filteredPatients]);
 
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
