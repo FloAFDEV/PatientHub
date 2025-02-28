@@ -58,8 +58,6 @@ const PatientList = ({ onAddPatientClick }) => {
 	// Dans votre composant PatientList
 	const handlePatientUpdated = useCallback(
 		async (patientData) => {
-			console.log("handlePatientUpdated called with:", patientData); // Ici, on voit ce qui est passé à la fonction
-
 			if (isLoading) return; // Empêche la mise à jour si déjà en cours
 			setIsLoading(true); // Active le chargement
 			try {
