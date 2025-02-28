@@ -7,6 +7,8 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { ToastContainer, toast } from "react-toastify";
 import { AppointmentDialog } from "@/components/Appointments/AppointmentDialog";
 import "react-toastify/dist/ReactToastify.css";
+import { useCallback } from "react";
+
 import {
 	IconGenderMale,
 	IconGenderFemale,
@@ -45,13 +47,46 @@ const PatientList = ({ onAddPatientClick }) => {
 		useState(null);
 	const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
-	const { patients, totalPages, isLoading, isError, mutate } = usePatients(
+	const { patients, totalPages, isError, mutate } = usePatients(
 		currentPage,
 		debouncedSearchTerm,
 		searchLetter
 	);
+	const [, setRefresh] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+
+	// Dans votre composant PatientList
+	const handlePatientUpdated = useCallback(
+		async (patientData) => {
+			console.log("handlePatientUpdated called with:", patientData); // Ici, on voit ce qui est passé à la fonction
+
+			if (isLoading) return; // Empêche la mise à jour si déjà en cours
+			setIsLoading(true); // Active le chargement
+			try {
+				const response = await fetch(
+					`/api/patients/${patientData.id}`,
+					{
+						method: "PATCH",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify(patientData),
+					}
+				);
+				if (!response.ok)
+					throw new Error("Erreur lors de la mise à jour du patient");
+				mutate();
+				setRefresh((prev) => !prev); // Forcer un re-render
+				toast.success("Le patient a été mis à jour avec succès !");
+			} catch (error) {
+				console.error(error);
+				toast.error(`Erreur : ${error.message}`);
+			}
+		},
+		[mutate]
+	);
 
 	const handlePatientDeleted = async (patientId) => {
+		if (isLoading) return; // Empêche la suppression si déjà en cours
+		setIsLoading(true); // Active le chargement
 		try {
 			const response = await fetch(`/api/patients?id=${patientId}`, {
 				method: "DELETE",
@@ -469,7 +504,7 @@ const PatientList = ({ onAddPatientClick }) => {
 											setSelectedPatientId(null)
 										}
 										onPatientDeleted={handlePatientDeleted}
-										onPatientUpdated={handlePatientUpdated}
+										onUpdatePatient={handlePatientUpdated}
 									/>
 								</React.Suspense>
 							)}
