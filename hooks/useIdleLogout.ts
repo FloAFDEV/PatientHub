@@ -3,10 +3,12 @@ import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import { AuthChangeEvent, Session } from "@supabase/supabase-js";
+
 interface IdleLogoutOptions {
 	redirectDelay?: number;
 	onAuthChange?: (event: AuthChangeEvent, session: Session | null) => void;
 }
+
 export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 	const router = useRouter();
 	const supabase = createBrowserClient(
@@ -14,6 +16,7 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 	);
 	const { redirectDelay = 1000, onAuthChange } = options;
+
 	const cleanupStorage = useCallback(() => {
 		// Nettoyer localStorage
 		localStorage.clear();
@@ -26,6 +29,7 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 		});
 		console.log("🧹 Nettoyage du stockage effectué");
 	}, []);
+
 	const handleAuthChange = useCallback(
 		async (event: AuthChangeEvent, session: Session | null) => {
 			console.log(`🔥 Événement Auth : ${event}`);
@@ -44,6 +48,7 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 		},
 		[router, redirectDelay, onAuthChange, cleanupStorage]
 	);
+
 	useEffect(() => {
 		let timeoutId: NodeJS.Timeout;
 		let activityTimeout: NodeJS.Timeout;
@@ -58,27 +63,33 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 				router.push("/");
 			}, IDLE_TIMEOUT);
 		};
+
 		const handleActivity = () => {
 			clearTimeout(activityTimeout);
 			activityTimeout = setTimeout(resetTimeout, 1000);
 		};
-		// Événements à surveiller pour l'activité
-		const events = [
+
+		// Liste des événements à surveiller pour l'activité
+		const activityEvents = [
 			"mousedown",
 			"mousemove",
 			"keypress",
 			"scroll",
 			"touchstart",
 		];
-		events.forEach((event) => {
+
+		activityEvents.forEach((event) => {
 			window.addEventListener(event, handleActivity);
 		});
+
 		resetTimeout(); // Initialiser le timeout
+
 		const {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange(handleAuthChange);
+
 		return () => {
-			events.forEach((event) => {
+			activityEvents.forEach((event) => {
 				window.removeEventListener(event, handleActivity);
 			});
 			clearTimeout(timeoutId);
@@ -86,6 +97,7 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 			subscription.unsubscribe();
 		};
 	}, [supabase, handleAuthChange, router, cleanupStorage]);
+
 	const refreshSession = useCallback(async () => {
 		try {
 			const { error } = await supabase.auth.refreshSession();
@@ -99,6 +111,7 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 			router.push("/");
 		}
 	}, [supabase, router]);
+
 	return {
 		refreshSession,
 		logout: async () => {
