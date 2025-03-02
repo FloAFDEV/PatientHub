@@ -54,32 +54,19 @@ const PatientList = ({ onAddPatientClick }) => {
 	const [, setRefresh] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
-	// Dans votre composant PatientList
-	const handlePatientUpdated = useCallback(
-		async (patientData) => {
-			if (isLoading) return; // Empêche la mise à jour si déjà en cours
-			setIsLoading(true); // Active le chargement
-			try {
-				const response = await fetch(
-					`/api/patients/${patientData.id}`,
-					{
-						method: "PATCH",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify(patientData),
-					}
-				);
-				if (!response.ok)
-					throw new Error("Erreur lors de la mise à jour du patient");
-				mutate();
-				setRefresh((prev) => !prev); // Forcer un re-render
-				toast.success("Le patient a été mis à jour avec succès !");
-			} catch (error) {
-				console.error(error);
-				toast.error(`Erreur : ${error.message}`);
-			}
-		},
-		[mutate, isLoading]
-	);
+	const handlePatientUpdated = useCallback(() => {
+		if (isLoading) return; // Empêche les mises à jour simultanées
+		setIsLoading(true);
+		try {
+			mutate(); // Recharge les patients depuis l'API
+			toast.success("La liste des patients a été mise à jour !");
+		} catch (error) {
+			console.error(error);
+			toast.error(`Erreur : ${error.message}`);
+		} finally {
+			setIsLoading(false); // Réinitialise l'état de chargement
+		}
+	}, [mutate, isLoading]);
 
 	const handlePatientDeleted = async (patientId) => {
 		if (isLoading) return; // Empêche la suppression si déjà en cours
@@ -115,18 +102,17 @@ const PatientList = ({ onAddPatientClick }) => {
 	}, []);
 
 	const calculateAge = (birthDate) => {
-		if (!birthDate || isNaN(new Date(birthDate).getTime())) return "N/A";
+		if (!birthDate) return "N/A";
 		const today = new Date();
 		const birth = new Date(birthDate);
-		let age = today.getFullYear() - birth.getFullYear();
-		const monthDiff = today.getMonth() - birth.getMonth();
-		if (
-			monthDiff < 0 ||
-			(monthDiff === 0 && today.getDate() < birth.getDate())
-		) {
-			age--;
-		}
-		return age;
+		return (
+			today.getFullYear() -
+			birth.getFullYear() -
+			(today <
+			new Date(today.getFullYear(), birth.getMonth(), birth.getDate())
+				? 1
+				: 0)
+		);
 	};
 
 	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -491,7 +477,7 @@ const PatientList = ({ onAddPatientClick }) => {
 											setSelectedPatientId(null)
 										}
 										onPatientDeleted={handlePatientDeleted}
-										onUpdatePatient={handlePatientUpdated}
+										onPatientUpdated={handlePatientUpdated}
 									/>
 								</React.Suspense>
 							)}

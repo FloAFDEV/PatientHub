@@ -145,11 +145,16 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 				),
 			};
 
+			console.log("Données envoyées au serveur:", preparedPatient);
+
 			const response = await fetch(`/api/patients`, {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(preparedPatient),
 			});
+
+			console.log("Réponse du serveur:", response);
+
 			if (response.ok) {
 				toast.success(
 					<div className="relative">
@@ -162,18 +167,19 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 					</div>,
 					{
 						className: `absolute z-50 left-1/2 w-72 p-4 border border-gray-200 dark:border-gray-700 
-				bg-gradient-to-br from-gray-50 to-gray-200 dark:from-slate-700 dark:to-gray-800
-				text-sm rounded-lg shadow-xl transform -translate-x-1/2 
-				opacity-100 pointer-events-auto transition-all duration-300 ease-in-out !important`,
+			  bg-gradient-to-br from-gray-50 to-gray-200 dark:from-slate-700 dark:to-gray-800
+			  text-sm rounded-lg shadow-xl transform -translate-x-1/2 
+			  opacity-100 pointer-events-auto transition-all duration-300 ease-in-out !important`,
 						position: "top-right",
 						icon: "🎉",
 					}
 				);
+
 				onPatientUpdated();
 				setIsEditing(false);
 			} else {
 				const errorData = await response.json();
-				console.error("Error data:", errorData);
+				console.error("Erreur du serveur:", errorData);
 				toast.error(
 					`Erreur: ${
 						errorData.error || "Erreur lors de la mise à jour"
