@@ -51,7 +51,6 @@ const PatientList = ({ onAddPatientClick }) => {
 		debouncedSearchTerm,
 		searchLetter
 	);
-	const [, setRefresh] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handlePatientUpdated = useCallback(() => {
