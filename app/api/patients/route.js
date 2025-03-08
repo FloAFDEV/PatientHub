@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { formatPatientData } from "@/utils/formatPatientData";
 
 const prisma = new PrismaClient();
 
@@ -116,6 +117,7 @@ export async function POST(request) {
 	const patientData = await request.json();
 
 	try {
+		// Validation des champs firstName et lastName
 		if (!patientData.firstName || !patientData.lastName) {
 			console.log("Error: firstName or lastName missing");
 			return new Response("Firstname and lastname are required", {
@@ -123,15 +125,20 @@ export async function POST(request) {
 			});
 		}
 
+		// Formater les données du patient
 		const formattedPatientData = formatPatientData(patientData);
+
+		// Ajouter firstName et lastName à formattedPatientData
 		formattedPatientData.firstName = patientData.firstName;
 		formattedPatientData.lastName = patientData.lastName;
 
-		const osteopathId = patientData.osteopathId || 1;
+		// Validation de l'ostéopathe
+		const osteopathId = patientData.osteopathId || 1; // Valeur d'ostéopathe par défaut pour tests
 		if (!osteopathId) {
 			return new Response("Osteopath ID is required", { status: 400 });
 		}
 
+		// Connexion de l'ostéopathe à la donnée du patient
 		const osteopathExists = await prisma.osteopath.findUnique({
 			where: { id: osteopathId },
 		});
@@ -139,8 +146,11 @@ export async function POST(request) {
 			return new Response("Osteopath not found", { status: 404 });
 		}
 
-		formattedPatientData.osteopath = { connect: { id: osteopathId } };
+		formattedPatientData.osteopath = {
+			connect: { id: osteopathId },
+		};
 
+		// Vérification de l'ID du cabinet si fourni
 		if (patientData.cabinetId) {
 			const cabinetExists = await prisma.cabinet.findUnique({
 				where: { id: parseInt(patientData.cabinetId) },
@@ -153,16 +163,19 @@ export async function POST(request) {
 			};
 		}
 
+		// Traitement de `hasChildren` : Conversion en booléen si nécessaire
 		if (patientData.hasChildren === "true") {
 			formattedPatientData.hasChildren = true;
 		} else if (patientData.hasChildren === "false") {
 			formattedPatientData.hasChildren = false;
 		}
 
+		// Création d'un nouveau patient dans la base de données avec Prisma
 		const newPatient = await prisma.patient.create({
 			data: formattedPatientData,
 		});
 
+		// Retourner la réponse de création avec les données du patient
 		return new Response(JSON.stringify(newPatient), {
 			status: 201,
 			headers: { "Content-Type": "application/json" },
