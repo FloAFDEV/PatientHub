@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Clock, Users, FileText, CheckCircle, Activity } from "lucide-react";
+import Image from "next/image";
 
 function App() {
 	return (
@@ -39,9 +40,11 @@ function App() {
 
 				{/* Hero Image */}
 				<div className="mt-16 relative">
-					<img
+					<Image
 						src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000&q=80"
 						alt="Medical Professional at Work"
+						width={2000}
+						height={400}
 						className="w-full h-[400px] object-cover rounded-xl opacity-80"
 					/>
 				</div>
@@ -84,9 +87,11 @@ function App() {
 								key={index}
 								className="bg-white rounded-2xl p-8 shadow-lg flex items-start"
 							>
-								<img
+								<Image
 									src={testimonial.image}
 									alt={testimonial.name}
+									width={64}
+									height={64}
 									className="w-16 h-16 rounded-full mr-6 object-cover"
 								/>
 								<div>

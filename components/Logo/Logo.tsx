@@ -4,19 +4,17 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Activity } from "lucide-react";
 
 export const Logo = () => {
 	return (
 		<div className="font-normal flex flex-col items-center text-sm py-1 relative z-20">
 			<div className="flex items-center space-x-2">
 				<div className="h-10 w-10 flex-shrink-0">
-					<Image
-						src="/assets/icons/logo-full.svg"
-						alt="Logo de PatientHub"
-						width={60}
-						height={60}
-						className="object-contain rounded-md shadow-xl"
-					/>
+					{" "}
+					<div className="flex items-center space-x-2 mb-12">
+						<Activity className="w-12 h-12 text-blue-500" />
+					</div>
 				</div>
 				<motion.span
 					initial={{ opacity: 0 }}
