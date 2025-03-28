@@ -7,6 +7,10 @@ const nextConfig = {
 				protocol: "https",
 				hostname: "assets.aceternity.com",
 			},
+			{
+				protocol: "https",
+				hostname: "images.unsplash.com",
+			},
 		],
 	},
 	async headers() {
@@ -20,7 +24,7 @@ const nextConfig = {
 					},
 					{
 						key: "ETag",
-						value: "W/etag-value", // Vous pouvez générer dynamiquement cette valeur
+						value: "W/etag-value",
 					},
 				],
 			},

@@ -161,7 +161,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 	}
 
 	return (
-		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
+		<div className="flex-1 p-3 bg-gray-50 dark:bg-gray-900">
 			{/* En-tête de bienvenue */}
 			<header className="mb-8">
 				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
@@ -313,7 +313,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 			</div>
 
 			{/* Section des graphiques */}
-			<section className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6 ">
+			<section className="rounded-lg p-0 ">
 				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-8 text-center">
 					Graphiques et visualisations
 				</h2>

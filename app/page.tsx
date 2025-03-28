@@ -8,7 +8,7 @@ function App() {
 		<div className="min-h-screen bg-gray-100 text-gray-800 flex flex-col">
 			{/* Hero Section */}
 			<header className="relative pt-16 pb-32 px-6 bg-slate-900 text-white">
-				<div className="flex items-center space-x-2 mb-12">
+				<div className="flex items-center space-x-2 mb-12 justify-center md:justify-start">
 					<Activity className="w-12 h-12 text-blue-500" />
 					<span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
 						PatientHub
@@ -36,17 +36,22 @@ function App() {
 							</button>
 						</Link>
 					</div>
-				</div>
 
-				{/* Hero Image */}
-				<div className="mt-16 relative">
-					<Image
-						src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000&q=80"
-						alt="Medical Professional at Work"
-						width={2000}
-						height={400}
-						className="w-full h-[400px] object-cover rounded-xl opacity-80"
-					/>
+					{/* Hero Image */}
+					<div className="mt-16 relative">
+						<Image
+							src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000&q=80"
+							alt="Medical Professional at Work"
+							width={2000}
+							height={400}
+							style={{
+								objectFit: "cover",
+								width: "100%",
+								height: "auto",
+							}}
+							className="rounded-xl opacity-80"
+						/>
+					</div>
 				</div>
 			</header>
 
@@ -55,7 +60,7 @@ function App() {
 				<h2 className="text-center text-3xl font-bold text-gray-900 mb-12">
 					Les fonctionnalités clés de PatientHub
 				</h2>
-				<div className="grid md:grid-cols-3 gap-8">
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 					{features.map((feature, index) => (
 						<div
 							key={index}
@@ -81,7 +86,7 @@ function App() {
 					<h2 className="text-center text-3xl font-bold text-gray-900 mb-12">
 						Ce que nos utilisateurs disent
 					</h2>
-					<div className="grid md:grid-cols-2 gap-8">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 						{testimonials.map((testimonial, index) => (
 							<div
 								key={index}
@@ -92,7 +97,8 @@ function App() {
 									alt={testimonial.name}
 									width={64}
 									height={64}
-									className="w-16 h-16 rounded-full mr-6 object-cover"
+									style={{ objectFit: "cover" }}
+									className="rounded-full mr-6"
 								/>
 								<div>
 									<h4 className="text-lg font-semibold">
@@ -117,7 +123,7 @@ function App() {
 					<h2 className="text-center text-3xl font-bold text-gray-900 mb-12">
 						Pourquoi PatientHub est indispensable ?
 					</h2>
-					<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 						{valueProps.map((prop, index) => (
 							<div
 								key={index}
@@ -159,8 +165,8 @@ function App() {
 			{/* Footer */}
 			<footer className="bg-gray-900 text-white py-12">
 				<div className="container mx-auto px-6">
-					<div className="flex items-center justify-between">
-						<div className="flex items-center space-x-2">
+					<div className="flex flex-col items-center md:flex-row justify-between">
+						<div className="flex items-center space-x-2 mb-4 md:mb-0">
 							<Activity className="w-8 h-8 text-blue-500" />
 							<span className="text-2xl font-bold">
 								PatientHub
