@@ -4,14 +4,15 @@ import React, { useState, useLayoutEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import AppointmentsManager from "@/components/Appointments/AppointmentsManager";
+
 import {
-	ArrowLeftIcon,
-	DocumentIcon,
-	UserCircleIcon,
 	ChartBarIcon,
-	CalendarIcon,
-	BuildingOfficeIcon,
+	UserGroupIcon,
 	UserPlusIcon,
+	BuildingOfficeIcon,
+	CalendarDaysIcon,
+	EnvelopeIcon,
+	ArrowRightEndOnRectangleIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { ModeToggle } from "@/components/ModeToggle";
@@ -92,57 +93,57 @@ function SidebarDashboard({ children }: { children: React.ReactNode }) {
 	const links = useMemo(
 		() => [
 			{
-				label: "Tableau de bord",
+				label: <span className="font-medium">Tableau de bord</span>,
 				href: "#",
 				icon: (
-					<ChartBarIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+					<ChartBarIcon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
 				),
 				onClick: () => handleTabChange("dashboard"),
 			},
 			{
-				label: "Vos patients",
+				label: <span className="font-medium">Vos patients</span>,
 				href: "#",
 				onClick: () => handleTabChange("patients"),
 				icon: (
-					<UserCircleIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+					<UserGroupIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
 				),
 			},
 			{
-				label: "Ajouter un patient",
+				label: <span className="font-medium">Ajouter un patient</span>,
 				href: "#",
 				onClick: () => handleTabChange("addPatient"),
 				icon: (
-					<UserPlusIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+					<UserPlusIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
 				),
 			},
 			{
-				label: "Cabinet",
+				label: <span className="font-medium">Cabinet</span>,
 				href: "#",
 				icon: (
-					<BuildingOfficeIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+					<BuildingOfficeIcon className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
 				),
 				onClick: () => handleTabChange("Cabinet"),
 			},
 			{
-				label: "Rendez-vous",
+				label: <span className="font-medium">Rendez-vous</span>,
 				href: "#",
 				icon: (
-					<CalendarIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+					<CalendarDaysIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
 				),
 				onClick: () => handleTabChange("appointments"),
 			},
 			{
-				label: "Contact",
+				label: <span className="font-medium">Contact</span>,
 				href: "mailto:afdevflo@gmail.com?subject=Contact%20Request&body=Bonjour%2C%0A%0AJe%20souhaite%20vous%20contacter%20au%20sujet%20de...%0A%0AMerci%21",
 				icon: (
-					<DocumentIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7 flex-shrink-0" />
+					<EnvelopeIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />
 				),
 			},
 			{
 				label: isLoggingOut ? "Déconnexion..." : "Se déconnecter",
 				href: "#",
 				icon: (
-					<ArrowLeftIcon className="text-neutral-700 dark:text-neutral-200 h-7 w-7" />
+					<ArrowRightEndOnRectangleIcon className="h-6 w-6 text-gray-600 dark:text-gray-400" />
 				),
 				onClick: handleLogout,
 				disabled: isLoggingOut,

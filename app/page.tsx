@@ -1,69 +1,49 @@
-import ClientMotion from "@/components/ClientMotion";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import React from "react";
 import Link from "next/link";
-import { CheckCircle, Clock, FileText, Users } from "lucide-react";
-import Footer from "@/components/Footer";
+import { Clock, Users, FileText, CheckCircle, Activity } from "lucide-react";
 
-export default function Home() {
+function App() {
 	return (
 		<div className="min-h-screen bg-gray-100 text-gray-800 flex flex-col">
 			{/* Hero Section */}
-			<header className="relative pt-24 pb-32 px-6 rounded-b-3xl shadow-2xl overflow-hidden bg-slate-900 text-white">
-				<Link href="/" className="flex items-center space-x-2">
-					<Image
-						src="/assets/icons/logo-full.svg"
-						alt="PatientHub"
-						width={60}
-						height={60}
-						className="w-auto h-20 rounded-md"
-					/>
-					<span className="text-4xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+			<header className="relative pt-16 pb-32 px-6 bg-slate-900 text-white">
+				<div className="flex items-center space-x-2 mb-12">
+					<Activity className="w-12 h-12 text-blue-500" />
+					<span className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
 						PatientHub
 					</span>
-				</Link>
-				<ClientMotion
-					initial={{ opacity: 0, y: -40 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.9, ease: "easeInOut" }}
-					className="relative z-10 mt-12" // Ajout de mt-12 pour espacer du logo
-				>
-					<div className="max-w-6xl mx-auto text-center">
-						<h1 className="text-4xl sm:text-5xl font-extrabold leading-tight mb-6 text-white">
-							<span className="text-5xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
-								PatientHub
-							</span>{" "}
-							La solution idéale pour les ostéopathes
-						</h1>
-						<p className="mt-6 text-xl max-w-4xl mx-auto text-gray-500 opacity-90">
-							Simplifiez la gestion de votre cabinet et
-							concentrez-vous sur vos patients. Découvrez
-							PatientHub gratuitement !
-						</p>
-						<div className="mt-12 flex flex-col sm:flex-row justify-center gap-4 sm:space-x-6">
-							<Link href="/signup">
-								<Button className="w-full sm:w-auto px-8 py-4 text-lg font-semibold bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full transform hover:scale-105 transition duration-300 ease-in-out">
-									Découvrir PatientHub gratuitement
-								</Button>
-							</Link>
-							<Link href="/login">
-								<Button
-									variant="outline"
-									className="w-full sm:w-auto px-8 py-4 text-lg font-semibold shadow-lg rounded-full transform hover:scale-105 transition duration-300 ease-in-out"
-								>
-									Déjà inscrit ? Se connecter
-								</Button>
-							</Link>
-						</div>
+				</div>
+				<div className="max-w-6xl mx-auto text-center">
+					<h1 className="text-4xl sm:text-5xl font-extrabold leading-tight mb-6">
+						<span className="text-5xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+							PatientHub
+						</span>{" "}
+						La solution idéale pour les ostéopathes
+					</h1>
+					<p className="mt-6 text-xl max-w-4xl mx-auto text-gray-400">
+						Simplifiez la gestion de votre cabinet et
+						concentrez-vous sur vos patients. Découvrez PatientHub
+						gratuitement !
+					</p>
+					<div className="mt-12 flex flex-col sm:flex-row justify-center gap-4">
+						<button className="px-8 py-4 text-lg font-semibold bg-blue-500 hover:bg-blue-600 text-white rounded-full transform hover:scale-105 transition duration-300">
+							Découvrir PatientHub gratuitement
+						</button>
+						<Link href="/login">
+							<button className="px-8 py-4 text-lg font-semibold border border-white hover:bg-white/10 rounded-full transform hover:scale-105 transition duration-300">
+								Déjà inscrit ? Se connecter
+							</button>
+						</Link>
 					</div>
-				</ClientMotion>
-				{/* Espace pour les mockups */}
-				<div className="relative z-10 mt-16 flex justify-center">
-					<div className="w-full max-w-5xl bg-gray-200 rounded-xl h-96 flex items-center justify-center">
-						<p className="text-gray-500 text-lg">
-							Espace dédié aux mockups
-						</p>
-					</div>
+				</div>
+
+				{/* Hero Image */}
+				<div className="mt-16 relative">
+					<img
+						src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000&q=80"
+						alt="Medical Professional at Work"
+						className="w-full h-[400px] object-cover rounded-xl opacity-80"
+					/>
 				</div>
 			</header>
 
@@ -74,37 +54,25 @@ export default function Home() {
 				</h2>
 				<div className="grid md:grid-cols-3 gap-8">
 					{features.map((feature, index) => (
-						<ClientMotion
+						<div
 							key={index}
-							className="text-gray-800 rounded-2xl p-8 shadow-md hover:shadow-xl transform hover:-translate-y-3 transition duration-300 ease-in-out flex flex-col items-start text-left border border-gray-200" // alignement à gauche
-							initial={{ opacity: 0, y: 40 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.7, delay: index * 0.2 }}
+							className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition duration-300"
 						>
-							<div className="w-24 h-24 mb-6 relative rounded-xl bg-gray-100 p-4">
-								{" "}
-								{/* Taille réduite */}
-								<Image
-									src={feature.icon}
-									alt={feature.title}
-									fill
-									className="object-contain"
-								/>
+							<div className="w-12 h-12 mb-6 text-blue-500">
+								{feature.icon}
 							</div>
-							<h3 className="text-xl font-semibold mb-2">
+							<h3 className="text-xl font-semibold mb-4">
 								{feature.title}
-							</h3>{" "}
-							{/* Taille réduite */}
-							<p className="mt-2 text-gray-600 text-base">
+							</h3>
+							<p className="text-gray-600">
 								{feature.description}
-							</p>{" "}
-							{/* Taille réduite */}
-						</ClientMotion>
+							</p>
+						</div>
 					))}
 				</div>
 			</section>
 
-			{/* Testimonials Section */}
+			{/* Testimonials */}
 			<section className="py-24 bg-gray-50">
 				<div className="container mx-auto px-6">
 					<h2 className="text-center text-3xl font-bold text-gray-900 mb-12">
@@ -112,181 +80,93 @@ export default function Home() {
 					</h2>
 					<div className="grid md:grid-cols-2 gap-8">
 						{testimonials.map((testimonial, index) => (
-							<ClientMotion
+							<div
 								key={index}
-								className="bg-white rounded-2xl p-8 shadow-md flex items-start border border-gray-200"
-								initial={{
-									opacity: 0,
-									x: index % 2 === 0 ? -60 : 60,
-								}}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{
-									duration: 0.8,
-									delay: index * 0.3,
-								}}
+								className="bg-white rounded-2xl p-8 shadow-lg flex items-start"
 							>
-								<Image
+								<img
 									src={testimonial.image}
 									alt={testimonial.name}
-									width={72} // Taille réduite
-									height={72} // Taille réduite
-									className="w-18 h-18 rounded-full mr-6 object-cover shadow-md"
+									className="w-16 h-16 rounded-full mr-6 object-cover"
 								/>
 								<div>
-									<h4 className="text-lg font-semibold text-gray-900">
+									<h4 className="text-lg font-semibold">
 										{testimonial.name}
-									</h4>{" "}
-									{/* Taille réduite */}
-									<p className="text-gray-600 text-base mb-2">
+									</h4>
+									<p className="text-gray-600 mb-2">
 										{testimonial.role}
-									</p>{" "}
-									{/* Taille réduite */}
-									<p className="mt-2 text-gray-700 italic text-base">
-										&quot;{testimonial.comment}&quot;
+									</p>
+									<p className="text-gray-700 italic">
+										&quot;{testimonial.quote}&quot;
 									</p>
 								</div>
-							</ClientMotion>
+							</div>
 						))}
 					</div>
 				</div>
 			</section>
 
-			{/* Added Value Proposition Section */}
-			<section className="py-24 px-6 bg-white">
-				<div className="container mx-auto text-center">
-					<h2 className="text-3xl font-bold text-gray-900 mb-6">
+			{/* Value Props */}
+			<section className="py-24 bg-white">
+				<div className="container mx-auto px-6">
+					<h2 className="text-center text-3xl font-bold text-gray-900 mb-12">
 						Pourquoi PatientHub est indispensable ?
 					</h2>
-					<p className="text-xl text-gray-700 max-w-4xl mx-auto mb-8">
-						PatientHub vous offre une solution complète pour :
-					</p>
 					<div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-						<div className="p-6 bg-gray-50 rounded-2xl shadow-md border border-gray-200">
-							<h3 className="text-xl font-semibold text-gray-900 mb-2">
-								<Clock
-									className="inline-block mr-2 align-middle text-blue-500"
-									size={20}
-								/>{" "}
-								Gagner du temps
-							</h3>
-							<p className="text-gray-600 text-lg">
-								Automatisez les tâches répétitives et
-								concentrez-vous sur vos patients.
-							</p>
-						</div>
-						<div className="p-6 bg-gray-50 rounded-2xl shadow-md border border-gray-200">
-							<h3 className="text-xl font-semibold text-gray-900 mb-2">
-								<Users
-									className="inline-block mr-2 align-middle text-purple-500"
-									size={20}
-								/>{" "}
-								Améliorer l&apos;organisation
-							</h3>
-							<p className="text-gray-600 text-lg">
-								Centralisez toutes les informations de votre
-								cabinet en un seul endroit.
-							</p>
-						</div>
-						<div className="p-6 bg-gray-50 rounded-2xl shadow-md border border-gray-200">
-							<h3 className="text-xl font-semibold text-gray-900 mb-2">
-								<FileText
-									className="inline-block mr-2 align-middle text-pink-500"
-									size={20}
-								/>{" "}
-								Développer votre activité
-							</h3>
-							<p className="text-gray-600 text-lg">
-								Disponible sur mobile et toujours à portée de
-								main, pour une gestion simplifiée dans votre
-								poche.
-							</p>
-						</div>
-						<div className="p-6 bg-gray-50 rounded-2xl shadow-md border border-gray-200">
-							<h3 className="text-xl font-semibold text-gray-900 mb-2">
-								<CheckCircle
-									className="inline-block mr-2 align-middle text-green-500"
-									size={20}
-								/>{" "}
-								Rester serein
-							</h3>
-							<p className="text-gray-600 text-lg">
-								Confiez la gestion de votre cabinet à un outil
-								fiable et sécurisé.
-							</p>
-						</div>
+						{valueProps.map((prop, index) => (
+							<div
+								key={index}
+								className="p-6 bg-gray-50 rounded-2xl shadow-md"
+							>
+								<div className="text-blue-500 mb-4">
+									{prop.icon}
+								</div>
+								<h3 className="text-xl font-semibold mb-2">
+									{prop.title}
+								</h3>
+								<p className="text-gray-600">
+									{prop.description}
+								</p>
+							</div>
+						))}
 					</div>
 				</div>
 			</section>
 
-			{/* Pricing Section (NEW) */}
-			<section className="py-24 px-6 bg-gray-50">
-				<div className="container mx-auto text-center">
-					<h2 className="text-3xl font-bold text-gray-900 mb-6">
-						Essayez PatientHub gratuitement (pour le moment !)
-					</h2>
-					<p className="text-xl text-gray-700 max-w-4xl mx-auto mb-8">
-						Profitez de toutes les fonctionnalités de PatientHub
-						gratuitement pendant une période limitée. Ne manquez pas
-						cette opportunité de simplifier votre pratique
-						ostéopathique.
-					</p>
-					<Link href="/signup">
-						<Button className="px-12 py-4 text-xl font-semibold bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full transform hover:scale-105 transition duration-300 ease-in-out">
-							Commencer votre essai gratuit
-						</Button>
-					</Link>
-					<p className="mt-4 text-gray-500 italic">
-						Offre valable pour une durée limitée.
-					</p>
-				</div>
-			</section>
-
-			{/* Feedback Section (NEW) */}
-			<section className="py-24 px-6 bg-white">
-				<div className="container mx-auto text-center">
-					<h2 className="text-3xl font-bold text-gray-900 mb-6">
-						Votre avis compte !
-					</h2>
-					<p className="text-xl text-gray-700 max-w-4xl mx-auto mb-8">
-						Nous sommes constamment en train d&apos;améliorer
-						PatientHub et votre feedback est essentiel. Partagez vos
-						idées, vos suggestions et vos besoins pour nous aider à
-						créer la meilleure plateforme pour les ostéopathes.
-					</p>
-					<Link href="/feedback">
-						<Button className="px-12 py-4 text-xl font-semibold bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full transform hover:scale-105 transition duration-300 ease-in-out">
-							Envoyer votre feedback
-						</Button>
-					</Link>
-				</div>
-			</section>
-
-			{/* Call to Action Section */}
+			{/* CTA Section */}
 			<section className="bg-blue-100 py-32 text-center">
-				<ClientMotion
-					initial={{ opacity: 0, scale: 0.9 }}
-					animate={{ opacity: 1, scale: 1 }}
-					transition={{ duration: 0.7, ease: "easeOut" }}
-				>
+				<div className="container mx-auto px-6">
 					<h2 className="text-3xl font-bold text-gray-900 mb-6">
-						Simplifiez votre pratique ostéopathique dès
-						aujourd&apos;hui !
+						Simplifiez votre pratique ostéopathique dès aujourd'hui
+						!
 					</h2>
 					<p className="text-xl max-w-4xl mx-auto text-gray-700 mb-8">
-						Rejoignez une communauté d&apos;ostéopathes qui ont
-						choisi PatientHub pour simplifier leur quotidien et
-						offrir un service exceptionnel à leurs patients.
+						Rejoignez une communauté d'ostéopathes qui ont choisi
+						PatientHub pour simplifier leur quotidien et offrir un
+						service exceptionnel à leurs patients.
 					</p>
-					<Link href="/signup">
-						<Button className="px-12 py-4 text-xl font-semibold bg-blue-500 hover:bg-blue-600 text-white shadow-lg rounded-full transform hover:scale-105 transition duration-300 ease-in-out">
-							Découvrir PatientHub gratuitement
-						</Button>
-					</Link>
-				</ClientMotion>
+					<button className="px-12 py-4 text-xl font-semibold bg-blue-500 hover:bg-blue-600 text-white rounded-full transform hover:scale-105 transition duration-300">
+						Découvrir PatientHub gratuitement
+					</button>
+				</div>
 			</section>
 
 			{/* Footer */}
-			<Footer />
+			<footer className="bg-gray-900 text-white py-12">
+				<div className="container mx-auto px-6">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center space-x-2">
+							<Activity className="w-8 h-8 text-blue-500" />
+							<span className="text-2xl font-bold">
+								PatientHub
+							</span>
+						</div>
+						<div className="text-gray-400">
+							© 2024 PatientHub. Tous droits réservés.
+						</div>
+					</div>
+				</div>
+			</footer>
 		</div>
 	);
 }
@@ -295,20 +175,20 @@ const features = [
 	{
 		title: "Gestion simplifiée des patients",
 		description:
-			"Accédez rapidement à l'historique de vos patients, à leurs informations de contact et à leurs rendez-vous.",
-		icon: "/assets/icons/feature-icons/management.svg",
+			"Accédez rapidement à l'historique de vos patients, leurs informations et rendez-vous.",
+		icon: <Users className="w-full h-full" />,
 	},
 	{
-		title: "Planning intuitif des rendez-vous",
+		title: "Planning intuitif",
 		description:
-			"Organisez facilement votre emploi du temps, visualisez vos disponibilités et envoyez des rappels automatiques à vos patients.",
-		icon: "/assets/icons/feature-icons/calendar.svg",
+			"Organisez votre emploi du temps et envoyez des rappels automatiques à vos patients.",
+		icon: <Clock className="w-full h-full" />,
 	},
 	{
 		title: "Facturation automatisée",
 		description:
-			"Générez des factures professionnelles en quelques clics, suivez les paiements et simplifiez votre comptabilité.",
-		icon: "/assets/icons/feature-icons/invoice.svg",
+			"Générez des factures professionnelles en quelques clics et suivez vos paiements.",
+		icon: <FileText className="w-full h-full" />,
 	},
 ];
 
@@ -316,15 +196,40 @@ const testimonials = [
 	{
 		name: "Dr. Élise Martin",
 		role: "Ostéopathe",
-		comment:
-			"PatientHub a transformé ma façon de travailler. Je gagne un temps précieux et je peux me concentrer sur mes patients.",
-		image: "/assets/images/testimonial-1.jpg",
+		quote: "PatientHub a transformé ma façon de travailler. Je gagne un temps précieux pour mes patients.",
+		image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=300&q=80",
 	},
 	{
 		name: "Dr. Pierre Dubois",
 		role: "Ostéopathe",
-		comment:
-			"Une interface simple et intuitive, et les fonctionnalités sont parfaitement adaptées à mes besoins. Je recommande PatientHub à tous les ostéopathes.",
-		image: "/assets/images/testimonial-2.jpg",
+		quote: "Une interface simple et intuitive, parfaitement adaptée à mes besoins. Je recommande !",
+		image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80",
 	},
 ];
+
+const valueProps = [
+	{
+		title: "Gagner du temps",
+		description:
+			"Automatisez les tâches répétitives et concentrez-vous sur l'essentiel.",
+		icon: <Clock className="w-8 h-8" />,
+	},
+	{
+		title: "Organisation optimale",
+		description:
+			"Centralisez toutes les informations de votre cabinet en un seul endroit.",
+		icon: <Users className="w-8 h-8" />,
+	},
+	{
+		title: "Développement",
+		description: "Gérez votre activité efficacement depuis n'importe où.",
+		icon: <FileText className="w-8 h-8" />,
+	},
+	{
+		title: "Tranquillité d'esprit",
+		description: "Un outil fiable et sécurisé pour votre cabinet.",
+		icon: <CheckCircle className="w-8 h-8" />,
+	},
+];
+
+export default App;

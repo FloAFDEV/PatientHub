@@ -34,7 +34,7 @@
 		"middleware.js",
 		"components/lib/prisma.js",
 		"components/PatientList/PatientList.jsx",
-		"components/SidebarDashboard/SidebarDashboard.jsx",
+		"components/SidebarDashboard/SidebarDashboard.tsx",
 		"app/patients/page.jsx",
 		"app/AddPatient/page.jsx",
 		"app/privacy/page.jsx",

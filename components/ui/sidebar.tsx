@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 
 export interface Links {
-	label: string;
+	label: string | React.ReactNode; // <-- Modifier ici
 	href: string;
 	icon: React.JSX.Element | React.ReactNode;
 	onClick?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
