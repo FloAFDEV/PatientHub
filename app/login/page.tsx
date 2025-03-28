@@ -84,11 +84,11 @@ export default function LoginPage() {
 	}, [isModalOpen, router]);
 
 	return (
-		<div className="flex h-screen max-h-screen flex-col lg:flex-row">
+		<div className="flex min-h-screen h-full flex-col lg:flex-row">
 			<BackgroundBeamsWithCollision className="flex-grow">
 				<div
 					suppressHydrationWarning
-					className="flex-grow flex flex-col justify-between min-h-screen px-4"
+					className="flex-grow flex flex-col justify-between min-h-screen px-6 sm:px-8 lg:px-12"
 				>
 					<div className="flex-1 flex flex-col items-center justify-center p-4">
 						{/* Toggle du mode d'affichage */}
@@ -96,23 +96,24 @@ export default function LoginPage() {
 							<ModeToggle />
 						</div>
 						{/* Texte d'accueil */}
-						<div className="mx-auto max-w-md w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 lg:py-16 mt-20 lg:mt-28">
-							<div className="text-center">
-								<h1 className="text-3xl sm:text-lg md:text-4xl lg:text-4xl font-bold tracking-tight mt-6">
-									Votre espace dédié aux ostéopathes
-								</h1>
-								<p className="mt-4 text-base leading-7 sm:mt-2 sm:text-xl lg:mt-2">
-									Suivez vos patients en toute simplicité.
-									Connectez-vous pour consulter vos dossiers.
-								</p>
-							</div>
+						<div className="mx-auto max-w-md w-full sm:max-w-lg lg:max-w-2xl text-center mt-16 lg:mt-20">
+							<h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+								Votre espace dédié aux ostéopathes
+							</h1>
+
+							<p className="mt-3 sm:mt-4 text-base sm:text-lg lg:text-xl text-gray-400">
+								Connectez-vous pour consulter vos dossiers.
+							</p>
 						</div>
+
 						<Link href="/">
-							<h1 className="absolute top-4 left-4 text-4xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+							<h1 className="absolute top-4 left-4 text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
 								PatientHub
 							</h1>
 						</Link>
-						<div className="w-full max-w-md text-card-foreground border p-8 shadow-lg rounded-lg mt-4 mb-12 sm:mb-24 lg:mb-6">
+
+						{/* Formulaire de connexion */}
+						<div className="w-full max-w-md border p-6 sm:p-8 shadow-lg rounded-lg mt-6 sm:mt-8">
 							<h2 className="text-lg font-bold text-center mb-2">
 								Connexion
 							</h2>
@@ -137,7 +138,6 @@ export default function LoginPage() {
 										onChange={(e) =>
 											setEmail(e.target.value)
 										}
-										aria-describedby="email-error"
 									/>
 								</div>
 
@@ -161,15 +161,8 @@ export default function LoginPage() {
 										onChange={(e) =>
 											setPassword(e.target.value)
 										}
-										aria-describedby="password-error"
 									/>
 								</div>
-
-								<input
-									type="hidden"
-									name="hiddenField"
-									value={hiddenField}
-								/>
 
 								{/* Bouton de soumission */}
 								<button
@@ -178,48 +171,33 @@ export default function LoginPage() {
 										isLoading ? "opacity-50" : ""
 									}`}
 									disabled={isLoading}
-									aria-busy={isLoading}
 								>
 									{isLoading
 										? "Connexion en cours..."
 										: "Se connecter"}
 								</button>
 
-								{/* Message d'erreur */}
 								{error && (
-									<p
-										className="text-red-500 text-xs text-center"
-										role="alert"
-									>
+									<p className="text-red-500 text-xs text-center">
 										{error}
 									</p>
 								)}
-
-								<p className="text-sm text-muted-foreground text-center">
-									Vous n&apos;avez pas accès ?{" "}
-									<Link
-										href="mailto:afdevflo@gmail.com?subject=Demande%20d'accès%20à%20PatientHub&body=Bonjour%20[Nom%20complet%20ou%20société],%0A%0AJ'aimerais%20demander%20un%20acc%C3%A8s%20%C3%A0%20la%20plateforme.%0A%0AVoici%20quelques%20informations%20:%0A%0A-%20Nom%20complet%20ou%20société%20:%20[Nom%20complet%20ou%20société]%0A- %20Email%20:%20[Votre%20adresse%20e-mail]%0A- %20Raison%20de%20la%20demande%20:%20[Expliquez%20bri%C3%A8vement%20pourquoi%20vous%20souhaitez%20acc%C3%A9der%20%C3%A0%20la%20plateforme]%0A%0AJe%20vous%20remercie%20d'avance%20pour%20votre%20aide.%0A%0AMerci%20pour%20l'intérêt%20porté.%0A%0ACordialement,%0AAFDEV"
-										className="text-sky-700 underline hover:text-sky-800"
-									>
-										Contactez l&apos;administrateur
-									</Link>{" "}
-									pour plus d&apos;informations.
-								</p>
 							</form>
 						</div>
+
 						{/* Informations supplémentaires */}
-						<div className="hidden md:block mt-4 text-center text-muted-foreground px-4">
+						<div className="hidden md:block mt-6 text-center text-muted-foreground">
 							<p className="text-base leading-tight">
 								La plateforme conçue pour faciliter la gestion
 								des données médicales.
 							</p>
 							<p className="text-base leading-tight">
-								Gérez vos rendez-vous (Bientôt disponible sur la
-								plateforme).
+								Gérez vos rendez-vous (Bientôt disponible)
 							</p>
 						</div>
-						<div className="mt-auto py-4">
-							<p className="text-secondary text-sm md:text-base font-light text-center ">
+
+						<div className="mt-auto py-4 text-center">
+							<p className="text-secondary text-sm md:text-base font-light">
 								© 2024 PatientHub. Tous droits réservés.
 							</p>
 						</div>
@@ -234,7 +212,7 @@ export default function LoginPage() {
 				width={1000}
 				priority
 				alt="Image d'accueil"
-				className="side-img max-w-[50%] hidden lg:block object-cover"
+				className="hidden lg:block lg:w-1/2 object-cover"
 			/>
 		</div>
 	);

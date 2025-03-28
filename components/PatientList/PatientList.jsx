@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { usePatients } from "@/hooks/usePatients";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -54,7 +52,7 @@ const PatientList = ({ onAddPatientClick }) => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const handlePatientUpdated = useCallback(() => {
-		if (isLoading) return; // Empêche les mises à jour simultanées
+		if (isLoading) return;
 		setIsLoading(true);
 		try {
 			mutate(); // Recharge les patients depuis l'API
@@ -63,13 +61,13 @@ const PatientList = ({ onAddPatientClick }) => {
 			console.error(error);
 			toast.error(`Erreur : ${error.message}`);
 		} finally {
-			setIsLoading(false); // Réinitialise l'état de chargement
+			setIsLoading(false);
 		}
 	}, [mutate, isLoading]);
 
 	const handlePatientDeleted = async (patientId) => {
-		if (isLoading) return; // Empêche la suppression si déjà en cours
-		setIsLoading(true); // Active le chargement
+		if (isLoading) return;
+		setIsLoading(true);
 		try {
 			const response = await fetch(`/api/patients?id=${patientId}`, {
 				method: "DELETE",
@@ -81,7 +79,6 @@ const PatientList = ({ onAddPatientClick }) => {
 			mutate(
 				`/api/patients?page=${currentPage}&search=${debouncedSearchTerm}&letter=${searchLetter}`
 			); // Invalidation du cache
-			forceUpdate({});
 			toast.success("Le patient a été supprimé avec succès !", {
 				className: "custom-toast",
 				position: "top-center",
@@ -92,6 +89,8 @@ const PatientList = ({ onAddPatientClick }) => {
 				className: "custom-toast",
 				position: "top-center",
 			});
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -137,9 +136,9 @@ const PatientList = ({ onAddPatientClick }) => {
 		setCurrentPage(1);
 	}, []);
 
-	// Ne pas conditionner l'appel à useMemo
-	const sortedPatients = useMemo(() => {
-		const filtered = (patients || []).filter((patient) => {
+	// Tri directement dans le rendu, sans useMemo
+	const sortedPatients = (patients || [])
+		.filter((patient) => {
 			const firstName = patient.firstName || "";
 			const lastName = patient.lastName || "";
 
@@ -157,20 +156,18 @@ const PatientList = ({ onAddPatientClick }) => {
 				: true;
 
 			return isMatchingByLetter || isMatchingByTerm;
-		});
-
-		return filtered.sort((a, b) => {
+		})
+		.sort((a, b) => {
 			const nameA = `${a.firstName || ""} ${a.lastName || ""}`;
 			const nameB = `${b.firstName || ""} ${b.lastName || ""}`;
 			return nameA.localeCompare(nameB, "fr", { sensitivity: "base" });
 		});
-	}, [patients, searchLetter, searchTerm]);
 
 	// Gestion du rendu quand isLoading ou isError
 	if (isLoading) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900">
-				{/* Votre animation de chargement */}
+				<p className="mt-2 text-gray-500">Chargement des patients...</p>
 			</div>
 		);
 	}
@@ -192,7 +189,6 @@ const PatientList = ({ onAddPatientClick }) => {
 			</div>
 		);
 	}
-
 	return (
 		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
 			<ToastContainer />
