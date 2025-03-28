@@ -9,10 +9,8 @@ import { Activity } from "lucide-react";
 export const Logo = () => {
 	return (
 		<div className="font-normal flex flex-col items-center text-sm py-1 relative z-20">
-			<div className="flex items-center space-x-2">
-				<div className="flex items-center space-x-2 mb-12">
-					<Activity className="w-12 h-12 text-blue-500" />
-				</div>
+			<div className="flex items-center space-x-2 mb-12">
+				<Activity className="w-12 h-12 text-blue-500" />
 				<motion.span
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
