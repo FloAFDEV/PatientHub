@@ -142,13 +142,13 @@ function App() {
 			<section className="bg-blue-100 py-32 text-center">
 				<div className="container mx-auto px-6">
 					<h2 className="text-3xl font-bold text-gray-900 mb-6">
-						Simplifiez votre pratique ostéopathique dès aujourd'hui
-						!
+						Simplifiez votre pratique ostéopathique dès
+						aujourd&apos;hui !
 					</h2>
 					<p className="text-xl max-w-4xl mx-auto text-gray-700 mb-8">
-						Rejoignez une communauté d'ostéopathes qui ont choisi
-						PatientHub pour simplifier leur quotidien et offrir un
-						service exceptionnel à leurs patients.
+						Rejoignez une communauté d&apos;ostéopathes qui ont
+						choisi PatientHub pour simplifier leur quotidien et
+						offrir un service exceptionnel à leurs patients.
 					</p>
 					<button className="px-12 py-4 text-xl font-semibold bg-blue-500 hover:bg-blue-600 text-white rounded-full transform hover:scale-105 transition duration-300">
 						Découvrir PatientHub gratuitement

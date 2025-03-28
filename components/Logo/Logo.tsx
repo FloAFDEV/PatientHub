@@ -10,11 +10,8 @@ export const Logo = () => {
 	return (
 		<div className="font-normal flex flex-col items-center text-sm py-1 relative z-20">
 			<div className="flex items-center space-x-2">
-				<div className="h-10 w-10 flex-shrink-0">
-					{" "}
-					<div className="flex items-center space-x-2 mb-12">
-						<Activity className="w-12 h-12 text-blue-500" />
-					</div>
+				<div className="flex items-center space-x-2 mb-12">
+					<Activity className="w-12 h-12 text-blue-500" />
 				</div>
 				<motion.span
 					initial={{ opacity: 0 }}
