@@ -55,7 +55,7 @@ const PatientList = ({ onAddPatientClick }) => {
 		if (isLoading) return;
 		setIsLoading(true);
 		try {
-			mutate();
+			mutate(); // Recharge les patients depuis l'API
 			toast.success("La liste des patients a été mise à jour !");
 		} catch (error) {
 			console.error(error);
@@ -77,7 +77,7 @@ const PatientList = ({ onAddPatientClick }) => {
 			}
 			mutate(
 				`/api/patients?page=${currentPage}&search=${debouncedSearchTerm}&letter=${searchLetter}`
-			);
+			); // Invalidation du cache
 			toast.success("Le patient a été supprimé avec succès !", {
 				className: "custom-toast",
 				position: "top-center",
@@ -135,21 +135,25 @@ const PatientList = ({ onAddPatientClick }) => {
 		setCurrentPage(1);
 	}, []);
 
+	// Tri des patients en fonction du filtre et de la recherche
 	const sortedPatients = (patients || [])
 		.filter((patient) => {
 			const firstName = patient.firstName || "";
 			const lastName = patient.lastName || "";
+
 			const isMatchingByLetter = searchLetter
 				? firstName
 						.toUpperCase()
 						.startsWith(searchLetter.toUpperCase()) ||
 				  lastName.toUpperCase().startsWith(searchLetter.toUpperCase())
 				: true;
+
 			const isMatchingByTerm = searchTerm
 				? `${firstName} ${lastName}`
 						.toUpperCase()
 						.includes(searchTerm.toUpperCase())
 				: true;
+
 			return isMatchingByLetter || isMatchingByTerm;
 		})
 		.sort((a, b) => {
@@ -187,7 +191,7 @@ const PatientList = ({ onAddPatientClick }) => {
 	return (
 		<div className="flex-1 p-4 bg-gray-50 dark:bg-gray-900">
 			<ToastContainer />
-			{/* Header */}
+			{/* Header avec image de couverture */}
 			<header className="mb-6">
 				<div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105">
 					<Image
@@ -198,10 +202,10 @@ const PatientList = ({ onAddPatientClick }) => {
 						priority
 					/>
 					<div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30 backdrop-blur-sm flex flex-col items-center justify-center text-center p-4">
-						<h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+						<h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
 							Liste de vos patients
 						</h1>
-						<p className="mt-2 text-sm sm:text-base text-gray-200 max-w-xs sm:max-w-2xl">
+						<p className="mt-2 text-lg text-gray-200 max-w-2xl">
 							Consultez et gérez la liste de vos patients en toute
 							simplicité
 						</p>
@@ -221,24 +225,22 @@ const PatientList = ({ onAddPatientClick }) => {
 						placeholder="Rechercher un patient..."
 						value={searchTerm}
 						onChange={handleSearchChange}
-						className="pl-10 h-10 rounded-md border shadow-sm"
+						className="pl-10 h-11 w-full rounded-md border shadow-sm"
 					/>
 				</div>
 				<div className="flex gap-2">
 					<Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
 						<SheetTrigger asChild>
 							<Button variant="outline" className="sm:hidden">
-								<IconFilter className="h-4 w-4 mr-1" />
-								Filtres
+								<IconFilter className="h-4 w-4 mr-2" />
+								<span>Filtres</span>
 							</Button>
 						</SheetTrigger>
-						<SheetContent side="bottom" className="h-[70vh] p-4">
+						<SheetContent side="bottom" className="h-[80vh]">
 							<SheetHeader>
-								<SheetTitle className="text-lg">
-									Filtrer par lettre
-								</SheetTitle>
+								<SheetTitle>Filtrer par lettre</SheetTitle>
 							</SheetHeader>
-							<div className="grid grid-cols-5 gap-2 mt-4">
+							<div className="grid grid-cols-5 gap-4 p-4 mt-4">
 								{alphabet.map((letter) => (
 									<Button
 										key={letter}
@@ -247,7 +249,7 @@ const PatientList = ({ onAddPatientClick }) => {
 												? "default"
 												: "outline"
 										}
-										className="w-full text-xs"
+										className="w-full"
 										onClick={() =>
 											handleLetterClick(letter)
 										}
@@ -261,7 +263,7 @@ const PatientList = ({ onAddPatientClick }) => {
 											? "default"
 											: "outline"
 									}
-									className="col-span-5 text-xs border-2 border-neutral-900 dark:border-white"
+									className="col-span-5 border-2 border-neutral-900 dark:border-white"
 									onClick={handleResetFilters}
 								>
 									Réinitialiser
@@ -271,9 +273,9 @@ const PatientList = ({ onAddPatientClick }) => {
 					</Sheet>
 					<Button
 						onClick={onAddPatientClick}
-						className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transition-transform duration-300 hover:scale-105 text-sm px-3 py-2"
+						className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transition-all duration-300 hover:scale-105"
 					>
-						<IconPlus size={16} className="mr-1" />
+						<IconPlus size={18} className="mr-2" />
 						Nouveau patient
 					</Button>
 				</div>
@@ -288,7 +290,7 @@ const PatientList = ({ onAddPatientClick }) => {
 						variant={
 							searchLetter === letter ? "default" : "outline"
 						}
-						className="w-7 h-7 p-0 text-xs"
+						className="w-8 h-8 p-0 text-sm"
 						onClick={() => handleLetterClick(letter)}
 					>
 						{letter}
@@ -298,7 +300,7 @@ const PatientList = ({ onAddPatientClick }) => {
 					variant={
 						!searchLetter && !searchTerm ? "default" : "outline"
 					}
-					className="px-2 text-xs"
+					className="px-3 text-sm"
 					onClick={handleResetFilters}
 				>
 					Tous
@@ -306,11 +308,11 @@ const PatientList = ({ onAddPatientClick }) => {
 			</div>
 
 			{/* Liste des patients */}
-			<div className="grid gap-4">
+			<div className="grid gap-6 p-2">
 				{!sortedPatients.length ? (
-					<div className="text-center py-6 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-						<IconSearch className="mx-auto h-10 w-10 text-gray-400 animate-pulse" />
-						<p className="mt-4 text-base font-medium">
+					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+						<IconSearch className="mx-auto h-12 w-12 text-gray-400 animate-pulse" />
+						<p className="mt-4 text-lg font-medium">
 							Aucun patient trouvé
 						</p>
 						<p className="mt-2 text-sm text-gray-500">
@@ -346,22 +348,22 @@ const PatientList = ({ onAddPatientClick }) => {
 										)}
 									</div>
 									<div className="flex-1">
-										<h3 className="text-base font-medium text-gray-900 dark:text-white flex items-center gap-1">
+										<h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
 											{`${
 												patient.firstName || "Inconnu"
 											} ${patient.lastName || ""}`}
 											{patient.isDeceased && (
-												<span className="inline-flex items-center gap-1 text-xs text-red-500">
-													<IconSkull size={14} />
+												<span className="inline-flex items-center gap-1 text-sm text-red-500">
+													<IconSkull size={16} />
 													<span className="hidden sm:inline">
 														Décédé(e)
 													</span>
 												</span>
 											)}
 										</h3>
-										<div className="mt-1 flex flex-wrap gap-1 text-xs text-gray-500 dark:text-gray-400">
+										<div className="mt-1 flex flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400">
 											<span>
-												Âge:{" "}
+												Âge :{" "}
 												{calculateAge(
 													patient.birthDate
 												)}{" "}
@@ -372,23 +374,23 @@ const PatientList = ({ onAddPatientClick }) => {
 													href={`tel:${patient.phone}`}
 													className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
 												>
-													<IconPhone size={12} />
+													<IconPhone size={14} />
 													{patient.phone}
 												</a>
 											)}
 											{patient.email && (
 												<a
 													href={`mailto:${patient.email}`}
-													className="hidden sm:flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs"
+													className="hidden sm:flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
 												>
-													<IconMail size={12} />
+													<IconMail size={14} />
 													{patient.email}
 												</a>
 											)}
 										</div>
 									</div>
 								</div>
-								<div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-2 sm:pt-0 border-t sm:border-0 mt-2 sm:mt-0">
+								<div className="flex flex-col sm:flex-row items-center gap-2 border-t sm:border-0 pt-2 sm:pt-0">
 									<Button
 										aria-label={`Voir les détails du patient ${patient.firstName} ${patient.lastName}`}
 										variant="ghost"
@@ -400,7 +402,7 @@ const PatientList = ({ onAddPatientClick }) => {
 													: patient.id
 											)
 										}
-										className="w-full sm:w-auto hover:text-blue-500 dark:hover:text-amber-500"
+										className="hover:text-blue-500 dark:hover:text-amber-500"
 									>
 										{selectedPatientId === patient.id
 											? "Fermer"
@@ -412,13 +414,26 @@ const PatientList = ({ onAddPatientClick }) => {
 										onClick={() =>
 											handleAddAppointment(patient)
 										}
-										className="w-full sm:w-auto h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
+										className="flex-1 sm:flex-none h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
 									>
 										<IconCalendar className="h-4 w-4 sm:mr-2" />
 										<span className="hidden sm:inline">
 											Rendez-vous
 										</span>
 									</Button>
+									{showAppointmentDialog && (
+										<AppointmentDialog
+											open={showAppointmentDialog}
+											onOpenChange={
+												setShowAppointmentDialog
+											}
+											selectedPatient={
+												selectedPatientForAppointment
+											}
+											selectedDate={new Date()}
+											patients={[]}
+										/>
+									)}
 								</div>
 							</div>
 							{selectedPatientId === patient.id && (
@@ -465,7 +480,7 @@ const PatientList = ({ onAddPatientClick }) => {
 									currentPage === page ? "default" : "outline"
 								}
 								onClick={() => setCurrentPage(page)}
-								className="w-8 h-8 transition-transform hover:scale-110 text-xs"
+								className="w-8 h-8 transition-transform hover:scale-110"
 							>
 								{page}
 							</Button>
