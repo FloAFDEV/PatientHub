@@ -402,7 +402,7 @@ const PatientList = ({ onAddPatientClick }) => {
 													: patient.id
 											)
 										}
-										className="w-full sm:w-auto hover:text-blue-500 dark:hover:text-amber-500"
+										className="hover:text-blue-500 dark:hover:text-amber-500"
 									>
 										{selectedPatientId === patient.id
 											? "Fermer"
@@ -414,13 +414,26 @@ const PatientList = ({ onAddPatientClick }) => {
 										onClick={() =>
 											handleAddAppointment(patient)
 										}
-										className="w-full sm:w-auto h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
+										className="flex-1 sm:flex-none h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
 									>
 										<IconCalendar className="h-4 w-4 sm:mr-2" />
 										<span className="hidden sm:inline">
 											Rendez-vous
 										</span>
 									</Button>
+									{showAppointmentDialog && (
+										<AppointmentDialog
+											open={showAppointmentDialog}
+											onOpenChange={
+												setShowAppointmentDialog
+											}
+											selectedPatient={
+												selectedPatientForAppointment
+											}
+											selectedDate={new Date()}
+											patients={[]}
+										/>
+									)}
 								</div>
 							</div>
 							{selectedPatientId === patient.id && (
