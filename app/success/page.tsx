@@ -29,11 +29,9 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 				setProgress((elapsed / duration) * 100);
 				setSecondsLeft(Math.ceil((duration - elapsed) / 1000));
 			}
-
 			if (elapsed >= duration) {
 				clearInterval(interval);
 				if (isMounted) {
-					console.log("Redirection vers /dashboard...");
 					router.push("/dashboard");
 				}
 			}
@@ -46,77 +44,74 @@ export default function SuccessPage({ searchParams }: SuccessPageProps) {
 	}, [router, isMounted]);
 
 	return (
-		<div className="flex flex-col h-screen w-full items-center justify-center bg-gradient-to-b from-blue-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 px-4 sm:px-6 md:px-8">
-			{/* Logo avec lien vers l'accueil */}
-			<Link
-				href="/"
-				className="mb-4 sm:mb-6 mt-8 sm:mt-16 transition-transform transform hover:scale-110"
-			>
-				<Image
-					src="/assets/icons/logo-full.svg"
-					height={120}
-					width={120}
-					alt="logo"
-					className="rounded-full shadow-xl dark:shadow-gray-700"
-				/>
-			</Link>
-
-			{/* Message de bienvenue */}
-			<div className="text-center">
-				<h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-blue-700 dark:text-blue-400 mt-4 sm:mt-6">
+		<div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+			{/* Header */}
+			<header className="flex flex-col items-center py-6">
+				<Link href="/" className="transition-transform hover:scale-110">
+					<Image
+						src="/assets/icons/logo-full.svg"
+						alt="Logo"
+						width={120}
+						height={120}
+						className="rounded-full shadow-xl dark:shadow-gray-700"
+					/>
+				</Link>
+				<h1 className="mt-4 text-4xl font-extrabold text-blue-700 dark:text-blue-400">
 					Bienvenue !
 				</h1>
-			</div>
+			</header>
 
-			{/* Section de succès avec animation et message */}
-			<section className="flex flex-col items-center text-center mt-8 sm:mt-10">
-				<Image
-					src="/assets/gifs/success.gif"
-					width={200}
-					height={200}
-					alt="success"
-					className="rounded-lg shadow-lg max-w-full h-auto"
-					unoptimized
-				/>
-				<h2
-					className="text-xl sm:text-2xl font-medium text-blue-600 dark:text-blue-300 mt-6 sm:mt-8"
-					style={{ whiteSpace: "pre-line" }}
-				>
-					{message}
-				</h2>
-			</section>
-
-			{/* Barre de progression */}
-			<div className="w-full max-w-md mt-8 sm:mt-10">
-				<div className="relative w-full bg-gray-300 rounded-full h-3 overflow-hidden shadow-inner">
-					<div
-						className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-blue-700 rounded-full transition-all duration-[50ms]"
-						style={{ width: `${progress}%` }}
+			{/* Contenu principal */}
+			<main className="flex flex-col items-center justify-center flex-1 px-4 sm:px-6 md:px-8">
+				<section className="flex flex-col items-center bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-10 max-w-lg w-full">
+					<Image
+						src="/assets/gifs/success.gif"
+						width={200}
+						height={200}
+						alt="Success"
+						className="rounded-lg shadow-lg"
+						unoptimized
 					/>
-				</div>
-				{/* Affichage du pourcentage */}
-				<div className="text-center text-sm mt-3 text-gray-600 dark:text-gray-400">
-					Téléchargement : {Math.round(progress)}%
-				</div>
-			</div>
+					<h2
+						className="mt-6 text-2xl sm:text-3xl font-medium text-blue-600 dark:text-blue-300 text-center"
+						style={{ whiteSpace: "pre-line" }}
+					>
+						{message}
+					</h2>
 
-			{/* Notification de redirection */}
-			<p className="mt-6 sm:mt-8 text-base sm:text-lg text-gray-800 dark:text-gray-300 text-center">
-				Vous serez redirigé vers le tableau de bord dans{" "}
-				<span className="font-bold">{secondsLeft}</span> secondes...
-			</p>
+					{/* Barre de progression */}
+					<div className="w-full mt-8">
+						<div className="relative w-full bg-gray-300 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+							<div
+								className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-blue-700 rounded-full transition-all duration-100"
+								style={{ width: `${progress}%` }}
+							/>
+						</div>
+						<div className="mt-3 text-center text-sm text-gray-600 dark:text-gray-400">
+							Téléchargement : {Math.round(progress)}%
+						</div>
+					</div>
 
-			{/* Bouton pour aller directement au tableau de bord */}
-			<Link href="/dashboard" prefetch={false}>
-				<button className="mt-8 sm:mt-10 px-6 py-3 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg shadow-lg hover:bg-gradient-to-l hover:scale-[1.05] transition-transform duration-[300ms]">
-					Tableau de bord immédiat
-				</button>
-			</Link>
+					{/* Notification de redirection */}
+					<p className="mt-6 text-base text-gray-800 dark:text-gray-300 text-center">
+						Vous serez redirigé vers le tableau de bord dans{" "}
+						<span className="font-bold">{secondsLeft}</span> seconde
+						{secondsLeft > 1 ? "s" : ""}...
+					</p>
+
+					{/* Bouton de redirection immédiate */}
+					<Link href="/dashboard" prefetch={false}>
+						<button className="mt-8 px-6 py-3 text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg shadow-lg hover:scale-105 transition-transform duration-300">
+							Accéder au tableau de bord
+						</button>
+					</Link>
+				</section>
+			</main>
 
 			{/* Footer */}
-			<footer className="w-screen mt-auto py-4 bg-gray-200 dark:bg-gray-900 border-t border-gray-300 dark:border-gray-700">
-				<p className="text-center text-sm sm:text-base font-light text-gray-600 dark:text-gray-400">
-					Copyright © 2024 AFDEV. Tous droits réservés.
+			<footer className="py-4 bg-gray-200 dark:bg-gray-900 border-t border-gray-300 dark:border-gray-700">
+				<p className="text-center text-sm font-light text-gray-600 dark:text-gray-400">
+					© 2024 AFDEV. Tous droits réservés.
 				</p>
 			</footer>
 		</div>

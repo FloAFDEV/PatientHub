@@ -55,7 +55,7 @@ const PatientList = ({ onAddPatientClick }) => {
 		if (isLoading) return;
 		setIsLoading(true);
 		try {
-			mutate(); // Recharge les patients depuis l'API
+			mutate();
 			toast.success("La liste des patients a été mise à jour !");
 		} catch (error) {
 			console.error(error);
@@ -72,13 +72,12 @@ const PatientList = ({ onAddPatientClick }) => {
 			const response = await fetch(`/api/patients?id=${patientId}`, {
 				method: "DELETE",
 			});
-
 			if (!response.ok) {
 				throw new Error("Erreur lors de la suppression du patient");
 			}
 			mutate(
 				`/api/patients?page=${currentPage}&search=${debouncedSearchTerm}&letter=${searchLetter}`
-			); // Invalidation du cache
+			);
 			toast.success("Le patient a été supprimé avec succès !", {
 				className: "custom-toast",
 				position: "top-center",
@@ -136,25 +135,21 @@ const PatientList = ({ onAddPatientClick }) => {
 		setCurrentPage(1);
 	}, []);
 
-	// Tri directement dans le rendu, sans useMemo
 	const sortedPatients = (patients || [])
 		.filter((patient) => {
 			const firstName = patient.firstName || "";
 			const lastName = patient.lastName || "";
-
 			const isMatchingByLetter = searchLetter
 				? firstName
 						.toUpperCase()
 						.startsWith(searchLetter.toUpperCase()) ||
 				  lastName.toUpperCase().startsWith(searchLetter.toUpperCase())
 				: true;
-
 			const isMatchingByTerm = searchTerm
 				? `${firstName} ${lastName}`
 						.toUpperCase()
 						.includes(searchTerm.toUpperCase())
 				: true;
-
 			return isMatchingByLetter || isMatchingByTerm;
 		})
 		.sort((a, b) => {
@@ -163,7 +158,6 @@ const PatientList = ({ onAddPatientClick }) => {
 			return nameA.localeCompare(nameB, "fr", { sensitivity: "base" });
 		});
 
-	// Gestion du rendu quand isLoading ou isError
 	if (isLoading) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900">
@@ -189,147 +183,134 @@ const PatientList = ({ onAddPatientClick }) => {
 			</div>
 		);
 	}
+
 	return (
-		<div className="flex-1 p-2 sm:p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
+		<div className="flex-1 p-4 bg-gray-50 dark:bg-gray-900">
 			<ToastContainer />
 			{/* Header */}
-			<header className="relative mb-4 group">
-				<div className="relative w-full h-36 sm:h-48 md:h-64 lg:h-72 overflow-hidden rounded-xl shadow-lg transition-transform duration-300 group-hover:scale-[1.01]">
+			<header className="mb-6">
+				<div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105">
 					<Image
 						src="/assets/images/PatientRoom.webp"
 						alt="Cabinet médical moderne"
 						fill
 						style={{ objectFit: "cover" }}
-						className="transform transition-transform duration-500 group-hover:scale-105"
 						priority
 					/>
-					<div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30 backdrop-blur-sm">
-						<div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-							<h1 className="text-3xl font-bold text-white tracking-tight">
-								Liste de vos patients
-							</h1>
-							<p className="mt-2 text-lg text-gray-200 max-w-2xl">
-								Consultez et gérez la liste de vos patients en
-								toute simplicité
-							</p>
-						</div>
+					<div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30 backdrop-blur-sm flex flex-col items-center justify-center text-center p-4">
+						<h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+							Liste de vos patients
+						</h1>
+						<p className="mt-2 text-sm sm:text-base text-gray-200 max-w-xs sm:max-w-2xl">
+							Consultez et gérez la liste de vos patients en toute
+							simplicité
+						</p>
 					</div>
 				</div>
 			</header>
+
 			{/* Barre de recherche et actions */}
-			<div className="flex flex-col gap-3 sm:gap-4 mb-6">
-				<div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-					<div className="relative flex-1">
-						<IconSearch
-							className="absolute left-3 top-1/3 transform -translate-y-1/2 text-gray-400"
-							size={20}
-						/>
-						<Input
-							type="text"
-							placeholder="Rechercher un patient..."
-							value={searchTerm}
-							onChange={handleSearchChange}
-							className="pl-10 h-11 w-full"
-						/>
-					</div>
-					<div className="flex gap-2">
-						<Sheet
-							open={isFilterOpen}
-							onOpenChange={setIsFilterOpen}
-						>
-							<SheetTrigger asChild>
-								<Button
-									variant="outline"
-									className="md:hidden flex-1 sm:flex-none"
-								>
-									<IconFilter className="h-4 w-4 sm:mr-2" />
-									<span className="hidden sm:inline">
-										Filtres
-									</span>
-								</Button>
-							</SheetTrigger>
-							<SheetContent side="bottom" className="h-[80vh]">
-								<SheetHeader>
-									<SheetTitle>Filtrer par lettre</SheetTitle>
-								</SheetHeader>
-								<div className="grid grid-cols-5 gap-4 p-4 mt-8">
-									{alphabet.map((letter) => (
-										<Button
-											key={letter}
-											variant={
-												searchLetter === letter
-													? "default"
-													: "outline"
-											}
-											className="w-full"
-											onClick={() =>
-												handleLetterClick(letter)
-											}
-										>
-											{letter}
-										</Button>
-									))}
+			<div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
+				<div className="relative flex-1">
+					<IconSearch
+						className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+						size={20}
+					/>
+					<Input
+						type="text"
+						placeholder="Rechercher un patient..."
+						value={searchTerm}
+						onChange={handleSearchChange}
+						className="pl-10 h-10 rounded-md border shadow-sm"
+					/>
+				</div>
+				<div className="flex gap-2">
+					<Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+						<SheetTrigger asChild>
+							<Button variant="outline" className="sm:hidden">
+								<IconFilter className="h-4 w-4 mr-1" />
+								Filtres
+							</Button>
+						</SheetTrigger>
+						<SheetContent side="bottom" className="h-[70vh] p-4">
+							<SheetHeader>
+								<SheetTitle className="text-lg">
+									Filtrer par lettre
+								</SheetTitle>
+							</SheetHeader>
+							<div className="grid grid-cols-5 gap-2 mt-4">
+								{alphabet.map((letter) => (
 									<Button
+										key={letter}
 										variant={
-											!searchLetter && !searchTerm
+											searchLetter === letter
 												? "default"
 												: "outline"
 										}
-										className="w-full col-span-5 border-2 border-neutral-900 dark:border-white"
-										onClick={handleResetFilters}
+										className="w-full text-xs"
+										onClick={() =>
+											handleLetterClick(letter)
+										}
 									>
-										Réinitialiser
+										{letter}
 									</Button>
-								</div>
-							</SheetContent>
-						</Sheet>
-
-						{/* Actions rapides */}
-						<div className="flex gap-2 mb-6">
-							<Button
-								onClick={onAddPatientClick}
-								className="flex-1 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transition-all duration-300 hover:scale-105"
-							>
-								<IconPlus size={18} className="mr-2" />
-								Nouveau patient
-							</Button>
-						</div>
-					</div>
-				</div>
-
-				{/* Filtre alphabétique desktop */}
-				<div className="hidden md:flex flex-wrap justify-center gap-1.5">
-					{alphabet.map((letter) => (
-						<Button
-							aria-label={`Filtrer par lettre ${letter}`}
-							key={letter}
-							variant={
-								searchLetter === letter ? "default" : "outline"
-							}
-							className="w-8 h-8 p-0 text-sm"
-							onClick={() => handleLetterClick(letter)}
-						>
-							{letter}
-						</Button>
-					))}
+								))}
+								<Button
+									variant={
+										!searchLetter && !searchTerm
+											? "default"
+											: "outline"
+									}
+									className="col-span-5 text-xs border-2 border-neutral-900 dark:border-white"
+									onClick={handleResetFilters}
+								>
+									Réinitialiser
+								</Button>
+							</div>
+						</SheetContent>
+					</Sheet>
 					<Button
-						variant={
-							!searchLetter && !searchTerm ? "default" : "outline"
-						}
-						className="px-3 text-sm"
-						onClick={handleResetFilters}
+						onClick={onAddPatientClick}
+						className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary transition-transform duration-300 hover:scale-105 text-sm px-3 py-2"
 					>
-						Tous
+						<IconPlus size={16} className="mr-1" />
+						Nouveau patient
 					</Button>
 				</div>
 			</div>
 
+			{/* Filtre alphabétique pour desktop */}
+			<div className="hidden md:flex flex-wrap justify-center gap-2 mb-6">
+				{alphabet.map((letter) => (
+					<Button
+						key={letter}
+						aria-label={`Filtrer par lettre ${letter}`}
+						variant={
+							searchLetter === letter ? "default" : "outline"
+						}
+						className="w-7 h-7 p-0 text-xs"
+						onClick={() => handleLetterClick(letter)}
+					>
+						{letter}
+					</Button>
+				))}
+				<Button
+					variant={
+						!searchLetter && !searchTerm ? "default" : "outline"
+					}
+					className="px-2 text-xs"
+					onClick={handleResetFilters}
+				>
+					Tous
+				</Button>
+			</div>
+
 			{/* Liste des patients */}
-			<div className="space-y-3 m-2 gap-6 p-2">
+			<div className="grid gap-4">
 				{!sortedPatients.length ? (
-					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-md animate-fadeIn">
-						<IconSearch className="mx-auto h-12 w-12 text-gray-400 animate-pulse" />
-						<p className="mt-4 text-lg font-medium">
+					<div className="text-center py-6 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+						<IconSearch className="mx-auto h-10 w-10 text-gray-400 animate-pulse" />
+						<p className="mt-4 text-base font-medium">
 							Aucun patient trouvé
 						</p>
 						<p className="mt-2 text-sm text-gray-500">
@@ -341,7 +322,7 @@ const PatientList = ({ onAddPatientClick }) => {
 					sortedPatients.map((patient, index) => (
 						<div
 							key={patient.id}
-							className="relative bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 px-1 py-2"
+							className="relative bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-4"
 							style={{
 								animation: `fadeSlideIn 0.5s ease forwards ${
 									index * 50
@@ -349,113 +330,108 @@ const PatientList = ({ onAddPatientClick }) => {
 								opacity: 0,
 							}}
 						>
-							<div className="p-1">
-								<div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
-									<div className="flex items-start sm:items-center gap-3 flex-1">
-										<div className="mt-1 sm:mt-0">
-											{patient.gender === "Homme" ? (
-												<IconGenderMale
-													className="text-blue-500"
-													size={24}
-												/>
-											) : (
-												<IconGenderFemale
-													className="text-pink-500"
-													size={24}
-												/>
-											)}
-										</div>
-										<div className="flex-1 min-w-0">
-											<h3 className="text-lg sm:text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-												{`${
-													patient.firstName ||
-													"Inconnu"
-												} ${patient.lastName || ""}`}
-												{patient.isDeceased && (
-													<span className="inline-flex items-center gap-1 text-sm text-red-500">
-														<IconSkull size={16} />
-														<span className="hidden sm:inline">
-															Décédé(e)
-														</span>
-													</span>
-												)}
-											</h3>
-
-											<div className="mt-1 flex flex-row gap-1 text-sm text-gray-500 dark:text-gray-400 sm:flex-row sm:gap-4">
-												<span>
-													Âge:{" "}
-													{calculateAge(
-														patient.birthDate
-													)}{" "}
-													ans
-												</span>
-												{patient.phone && (
-													<a
-														href={`tel:${patient.phone}`}
-														className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
-													>
-														<IconPhone size={14} />
-														{patient.phone}
-													</a>
-												)}
-												{patient.email && (
-													<a
-														href={`mailto:${patient.email}`}
-														className="hidden sm:flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
-													>
-														<IconMail size={14} />
-														{patient.email}
-													</a>
-												)}
-											</div>
-										</div>
-									</div>
-									<div className="flex items-center justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-0 mt-2 sm:mt-0">
-										<Button
-											aria-label={`Voir les détails du patient ${patient.firstName} ${patient.lastName}`}
-											variant="ghost"
-											size="sm"
-											onClick={() =>
-												setSelectedPatientId(
-													selectedPatientId ===
-														patient.id
-														? null
-														: patient.id
-												)
-											}
-											className="hover:text-blue-500 dark:hover:text-amber-500"
-										>
-											{selectedPatientId === patient.id
-												? "Fermer"
-												: "Détails"}
-										</Button>
-										<Button
-											variant="outline"
-											size="sm"
-											onClick={() =>
-												handleAddAppointment(patient)
-											}
-											className="flex-1 sm:flex-none h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
-										>
-											<IconCalendar className="h-4 w-4 sm:mr-2" />
-											<span className="hidden sm:inline ">
-												Rendez-vous
-											</span>
-										</Button>{" "}
-										{showAppointmentDialog && (
-											<AppointmentDialog
-												open={showAppointmentDialog}
-												onOpenChange={
-													setShowAppointmentDialog
-												}
-												selectedPatient={
-													selectedPatientForAppointment
-												}
-												selectedDate={new Date()}
-												patients={[]}
+							<div className="flex flex-col sm:flex-row gap-4">
+								<div className="flex items-center gap-4 flex-1">
+									<div>
+										{patient.gender === "Homme" ? (
+											<IconGenderMale
+												className="text-blue-500"
+												size={24}
+											/>
+										) : (
+											<IconGenderFemale
+												className="text-pink-500"
+												size={24}
 											/>
 										)}
 									</div>
+									<div className="flex-1">
+										<h3 className="text-base font-medium text-gray-900 dark:text-white flex items-center gap-1">
+											{`${
+												patient.firstName || "Inconnu"
+											} ${patient.lastName || ""}`}
+											{patient.isDeceased && (
+												<span className="inline-flex items-center gap-1 text-xs text-red-500">
+													<IconSkull size={14} />
+													<span className="hidden sm:inline">
+														Décédé(e)
+													</span>
+												</span>
+											)}
+										</h3>
+										<div className="mt-1 flex flex-wrap gap-1 text-xs text-gray-500 dark:text-gray-400">
+											<span>
+												Âge:{" "}
+												{calculateAge(
+													patient.birthDate
+												)}{" "}
+												ans
+											</span>
+											{patient.phone && (
+												<a
+													href={`tel:${patient.phone}`}
+													className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
+												>
+													<IconPhone size={12} />
+													{patient.phone}
+												</a>
+											)}
+											{patient.email && (
+												<a
+													href={`mailto:${patient.email}`}
+													className="hidden sm:flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs"
+												>
+													<IconMail size={12} />
+													{patient.email}
+												</a>
+											)}
+										</div>
+									</div>
+								</div>
+								<div className="flex flex-col sm:flex-row items-center gap-2 border-t sm:border-0 pt-2 sm:pt-0">
+									<Button
+										aria-label={`Voir les détails du patient ${patient.firstName} ${patient.lastName}`}
+										variant="ghost"
+										size="sm"
+										onClick={() =>
+											setSelectedPatientId(
+												selectedPatientId === patient.id
+													? null
+													: patient.id
+											)
+										}
+										className="hover:text-blue-500 dark:hover:text-amber-500 text-xs"
+									>
+										{selectedPatientId === patient.id
+											? "Fermer"
+											: "Détails"}
+									</Button>
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={() =>
+											handleAddAppointment(patient)
+										}
+										className="flex-1 sm:flex-none h-8 dark:hover:text-gray-900 dark:hover:bg-amber-500 text-xs"
+									>
+										<IconCalendar className="h-4 w-4 sm:mr-1" />
+										<span className="hidden sm:inline">
+											Rendez-vous
+										</span>
+									</Button>
+									{showAppointmentDialog && (
+										<AppointmentDialog
+											open={showAppointmentDialog}
+											onOpenChange={
+												setShowAppointmentDialog
+											}
+											selectedPatient={
+												selectedPatientForAppointment
+											}
+											selectedDate={new Date()}
+											patients={[]}
+										/>
+									)}
 								</div>
 							</div>
 							{selectedPatientId === patient.id && (
@@ -480,9 +456,10 @@ const PatientList = ({ onAddPatientClick }) => {
 					))
 				)}
 			</div>
-			{/* Pagination adaptative */}
+
+			{/* Pagination */}
 			{totalPages > 1 && (
-				<div className="flex justify-center gap-2 mt-6">
+				<div className="flex justify-center gap-2 mt-8">
 					<Button
 						variant="outline"
 						onClick={() =>
@@ -501,7 +478,7 @@ const PatientList = ({ onAddPatientClick }) => {
 									currentPage === page ? "default" : "outline"
 								}
 								onClick={() => setCurrentPage(page)}
-								className="w-8 h-8 transition-transform hover:scale-110"
+								className="w-8 h-8 transition-transform hover:scale-110 text-xs"
 							>
 								{page}
 							</Button>
@@ -531,9 +508,8 @@ const PatientList = ({ onAddPatientClick }) => {
 						transform: translateY(0);
 					}
 				}
-
 				.animate-fadeIn {
-					animation: fadeIn 0.5s ease-in-out;
+					animation: fadeSlideIn 0.5s ease-in-out forwards;
 				}
 			`}</style>
 		</div>

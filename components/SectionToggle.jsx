@@ -5,7 +5,7 @@ import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 const SectionToggle = ({ title, isOpen, onToggle, children }) => (
 	<div className="mb-4 border rounded-lg overflow-hidden">
 		<button
-			className="flex justify-between items-center w-full bg-gray-200 dark:bg-gray-700 p-2 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
+			className="flex justify-between items-center w-full bg-gray-200 dark:bg-blue-950 p-2 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200"
 			onClick={onToggle}
 		>
 			<span className="font-semibold">{title}</span>
@@ -20,7 +20,7 @@ const SectionToggle = ({ title, isOpen, onToggle, children }) => (
 				isOpen ? "max-h-max opacity-100" : "max-h-0 opacity-0"
 			}`}
 		>
-			<div className="p-4 bg-white dark:bg-gray-800">{children}</div>
+			<div className="p-4 bg-white dark:bg-blue-950">{children}</div>
 		</div>
 	</div>
 );
