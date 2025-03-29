@@ -719,7 +719,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 				{/* Informations du praticien et cabinet */}
 				<SectionToggle
-					title="Informations du praticien et cabinet"
+					title="Informations praticiens et cabinet"
 					isOpen={openSections.practitionerInfo}
 					onToggle={() => toggleSection("practitionerInfo")}
 					editable={isEditing}
@@ -757,7 +757,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 
 				{/* Documents médicaux et consultations */}
 				<SectionToggle
-					title="Documents médicaux et consultations"
+					title="Documents médicaux"
 					isOpen={openSections.documentsAndConsultations}
 					onToggle={() => toggleSection("documentsAndConsultations")}
 				>
