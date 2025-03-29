@@ -390,7 +390,7 @@ const PatientList = ({ onAddPatientClick }) => {
 										</div>
 									</div>
 								</div>
-								<div className="flex flex-col sm:flex-row items-center gap-2 border-t sm:border-0 pt-2 sm:pt-0">
+								<div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-2 sm:pt-0 border-t sm:border-0 mt-2 sm:mt-0">
 									<Button
 										aria-label={`Voir les détails du patient ${patient.firstName} ${patient.lastName}`}
 										variant="ghost"
@@ -402,7 +402,7 @@ const PatientList = ({ onAddPatientClick }) => {
 													: patient.id
 											)
 										}
-										className="hover:text-blue-500 dark:hover:text-amber-500"
+										className="w-full sm:w-auto hover:text-blue-500 dark:hover:text-amber-500"
 									>
 										{selectedPatientId === patient.id
 											? "Fermer"
@@ -414,26 +414,13 @@ const PatientList = ({ onAddPatientClick }) => {
 										onClick={() =>
 											handleAddAppointment(patient)
 										}
-										className="flex-1 sm:flex-none h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
+										className="w-full sm:w-auto h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
 									>
 										<IconCalendar className="h-4 w-4 sm:mr-2" />
 										<span className="hidden sm:inline">
 											Rendez-vous
 										</span>
 									</Button>
-									{showAppointmentDialog && (
-										<AppointmentDialog
-											open={showAppointmentDialog}
-											onOpenChange={
-												setShowAppointmentDialog
-											}
-											selectedPatient={
-												selectedPatientForAppointment
-											}
-											selectedDate={new Date()}
-											patients={[]}
-										/>
-									)}
 								</div>
 							</div>
 							{selectedPatientId === patient.id && (
