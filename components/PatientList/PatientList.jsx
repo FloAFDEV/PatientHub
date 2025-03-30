@@ -390,10 +390,10 @@ const PatientList = ({ onAddPatientClick }) => {
 										</div>
 									</div>
 								</div>
-								<div className="flex flex-col sm:flex-row sm:items-center gap-2 pt-2 sm:pt-0 border-t sm:border-0 mt-2 sm:mt-0">
+								<div className="flex sm:flex-row sm:items-center gap-2 pt-2 sm:pt-0 border-t sm:border-0 mt-2 sm:mt-0">
 									<Button
 										aria-label={`Voir les détails du patient ${patient.firstName} ${patient.lastName}`}
-										variant="ghost"
+										variant="outline"
 										size="sm"
 										onClick={() =>
 											setSelectedPatientId(
@@ -402,7 +402,7 @@ const PatientList = ({ onAddPatientClick }) => {
 													: patient.id
 											)
 										}
-										className="hover:text-blue-500 dark:hover:text-amber-500"
+										className="flex-1 sm:flex-none h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
 									>
 										{selectedPatientId === patient.id
 											? "Fermer"
