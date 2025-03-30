@@ -2,26 +2,24 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useHasMounted } from "@/hooks/useHasMounted"; // on suppose que vous placez le hook quelque part
 import Image from "next/image";
-import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { ModeToggle } from "@/components/ModeToggle";
 import { BackgroundBeamsWithCollision } from "@/components/ui/background-beams-with-collision";
+import Link from "next/link";
 
 export default function LoginPage() {
 	const router = useRouter();
-	const hasMounted = useHasMounted(); // le hook qui détecte le montage client
-
-	// État local et logique
 	const [error, setError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [hiddenField] = useState("");
+	const [hiddenField] = useState(""); // Champ caché anti-spam/bot
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	// Validation du form
+	// -----------------------------------------
+	// Validation de base du formulaire
+	// -----------------------------------------
 	const validateForm = () => {
 		if (!email) {
 			setError("L'email est requis.");
@@ -46,7 +44,9 @@ export default function LoginPage() {
 		return true;
 	};
 
-	// Soumission form
+	// -----------------------------------------
+	// Soumission du formulaire
+	// -----------------------------------------
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setError(null);
@@ -68,7 +68,7 @@ export default function LoginPage() {
 				console.error("Erreur de connexion:", error);
 			} else if (data.session) {
 				localStorage.setItem("authToken", data.session.access_token);
-				setIsModalOpen(true);
+				setIsModalOpen(true); // On ouvre la "modale" (virtuelle) après succès
 			}
 		} catch (error) {
 			setError("Une erreur est survenue. Veuillez réessayer plus tard.");
@@ -78,35 +78,22 @@ export default function LoginPage() {
 		}
 	};
 
+	// -----------------------------------------
 	// Redirection après connexion
-	// => on attend que le composant soit monté pour éviter le mismatch
+	// -----------------------------------------
 	useEffect(() => {
-		if (!hasMounted) return; // tant qu'on est en phase d'hydratation, on ne fait rien
 		if (isModalOpen) {
 			console.log("Redirection vers /success...");
 			router.push("/success");
 		}
-	}, [isModalOpen, router, hasMounted]);
+	}, [isModalOpen, router]);
 
-	// **Important**: si `!hasMounted`, on affiche la même structure que SSR
-	// ou un fallback neutre (ex: un spinner).
-	// L'objectif : pas de divergences entre SSR et client.
-
-	if (!hasMounted) {
-		// Soit on renvoie null (écran vide pendant un bref instant)...
-		// return null;
-
-		// ... Soit on renvoie un petit loader (pour éviter l'écran blanc)
-		return (
-			<div className="flex items-center justify-center h-screen">
-				<p>Chargement...</p>
-			</div>
-		);
-	}
-
-	// Après le montage, on affiche la page normalement.
+	// -----------------------------------------
+	// Rendu principal
+	// -----------------------------------------
 	return (
 		<div className="flex min-h-screen h-full flex-col lg:flex-row">
+			{/* Background animé (beams) */}
 			<BackgroundBeamsWithCollision className="flex-grow relative overflow-hidden">
 				<div className="flex flex-col justify-between min-h-screen px-6 sm:px-8 lg:px-12 py-4">
 					{/* Toggle Dark / Light mode */}
@@ -125,6 +112,7 @@ export default function LoginPage() {
 
 					{/* Contenu principal (Formulaire) */}
 					<div className="flex flex-1 flex-col items-center justify-center">
+						{/* Titre principal */}
 						<div className="mx-auto max-w-md w-full text-center mt-16 lg:mt-20">
 							<h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-800 dark:text-gray-100">
 								Votre espace dédié aux ostéopathes
@@ -186,6 +174,15 @@ export default function LoginPage() {
 										}
 									/>
 								</div>
+
+								{/* Champ caché anti-bot, optionnel */}
+								{/* <input
+                  type="text"
+                  name="antiBot"
+                  value={hiddenField}
+                  onChange={() => {}}
+                  className="hidden"
+                /> */}
 
 								{/* Bouton de soumission */}
 								<button
