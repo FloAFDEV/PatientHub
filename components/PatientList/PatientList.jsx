@@ -35,6 +35,9 @@ const PatientDetails = React.lazy(() =>
 );
 
 const PatientList = ({ onAddPatientClick }) => {
+	// ----------------------------------------------------------
+	// States
+	// ----------------------------------------------------------
 	const [selectedPatientId, setSelectedPatientId] = useState(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchLetter, setSearchLetter] = useState("");
@@ -43,55 +46,71 @@ const PatientList = ({ onAddPatientClick }) => {
 	const [selectedPatientForAppointment, setSelectedPatientForAppointment] =
 		useState(null);
 	const [showAppointmentDialog, setShowAppointmentDialog] = useState(false);
-	const debouncedSearchTerm = useDebounce(searchTerm, 300);
-	const { patients, totalPages, isError, mutate } = usePatients(
-		currentPage,
-		debouncedSearchTerm,
-		searchLetter
-	);
-	const [isLoading, setIsLoading] = useState(false);
 
-	const handlePatientUpdated = useCallback(() => {
-		if (isLoading) return;
-		setIsLoading(true);
+	// État local pour indiquer qu’on fait une action lourde (update/delete)
+	const [isActionLoading, setIsActionLoading] = useState(false);
+
+	// ----------------------------------------------------------
+	// Hooks
+	// ----------------------------------------------------------
+	const debouncedSearchTerm = useDebounce(searchTerm, 300);
+	const {
+		patients,
+		totalPages,
+		isError,
+		isLoading, // ← état de chargement de SWR
+		mutate,
+	} = usePatients(currentPage, debouncedSearchTerm, searchLetter);
+
+	// ----------------------------------------------------------
+	// Handlers
+	// ----------------------------------------------------------
+	const handlePatientUpdated = useCallback(async () => {
+		// On évite de relancer si on est déjà en train de faire une action
+		if (isActionLoading) return;
+		setIsActionLoading(true);
 		try {
-			mutate(); // Recharge les patients depuis l'API
+			// Recharge les patients depuis l'API via SWR
+			await mutate();
 			toast.success("La liste des patients a été mise à jour !");
 		} catch (error) {
 			console.error(error);
 			toast.error(`Erreur : ${error.message}`);
 		} finally {
-			setIsLoading(false);
+			setIsActionLoading(false);
 		}
-	}, [mutate, isLoading]);
+	}, [mutate, isActionLoading]);
 
-	const handlePatientDeleted = async (patientId) => {
-		if (isLoading) return;
-		setIsLoading(true);
-		try {
-			const response = await fetch(`/api/patients?id=${patientId}`, {
-				method: "DELETE",
-			});
-			if (!response.ok) {
-				throw new Error("Erreur lors de la suppression du patient");
+	const handlePatientDeleted = useCallback(
+		async (patientId) => {
+			// Même logique : on évite double-clic
+			if (isActionLoading) return;
+			setIsActionLoading(true);
+			try {
+				const response = await fetch(`/api/patients?id=${patientId}`, {
+					method: "DELETE",
+				});
+				if (!response.ok) {
+					throw new Error("Erreur lors de la suppression du patient");
+				}
+				// Invalidation du cache : recharge la liste
+				await mutate();
+				toast.success("Le patient a été supprimé avec succès !", {
+					className: "custom-toast",
+					position: "top-center",
+				});
+			} catch (error) {
+				console.error("Erreur de suppression:", error);
+				toast.error(`Une erreur est survenue: ${error.message}`, {
+					className: "custom-toast",
+					position: "top-center",
+				});
+			} finally {
+				setIsActionLoading(false);
 			}
-			mutate(
-				`/api/patients?page=${currentPage}&search=${debouncedSearchTerm}&letter=${searchLetter}`
-			); // Invalidation du cache
-			toast.success("Le patient a été supprimé avec succès !", {
-				className: "custom-toast",
-				position: "top-center",
-			});
-		} catch (error) {
-			console.error("Erreur de suppression:", error);
-			toast.error(`Une erreur est survenue: ${error.message}`, {
-				className: "custom-toast",
-				position: "top-center",
-			});
-		} finally {
-			setIsLoading(false);
-		}
-	};
+		},
+		[mutate, isActionLoading]
+	);
 
 	const handleAddAppointment = useCallback((patient) => {
 		setSelectedPatientForAppointment(patient);
@@ -135,7 +154,9 @@ const PatientList = ({ onAddPatientClick }) => {
 		setCurrentPage(1);
 	}, []);
 
-	// Tri des patients en fonction du filtre et de la recherche
+	// ----------------------------------------------------------
+	// Filtrage et tri local des patients (facultatif, si besoin)
+	// ----------------------------------------------------------
 	const sortedPatients = (patients || [])
 		.filter((patient) => {
 			const firstName = patient.firstName || "";
@@ -162,9 +183,13 @@ const PatientList = ({ onAddPatientClick }) => {
 			return nameA.localeCompare(nameB, "fr", { sensitivity: "base" });
 		});
 
+	// ----------------------------------------------------------
+	// Affichage du loader initial (SWR) ou de l'erreur
+	// ----------------------------------------------------------
 	if (isLoading) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900">
+				<div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary" />
 				<p className="mt-2 text-gray-500">Chargement des patients...</p>
 			</div>
 		);
@@ -188,9 +213,20 @@ const PatientList = ({ onAddPatientClick }) => {
 		);
 	}
 
+	// ----------------------------------------------------------
+	// Rendu principal
+	// ----------------------------------------------------------
 	return (
 		<div className="flex-1 p-4 bg-gray-50 dark:bg-gray-900">
 			<ToastContainer />
+
+			{/* Afficher un loader "d’action" si besoin (update/delete) */}
+			{isActionLoading && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+					<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
+				</div>
+			)}
+
 			{/* Header avec image de couverture */}
 			<header className="mb-6">
 				<div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 overflow-hidden rounded-xl shadow-lg transform transition-transform duration-300 hover:scale-105">
@@ -440,7 +476,7 @@ const PatientList = ({ onAddPatientClick }) => {
 								<React.Suspense
 									fallback={
 										<div className="p-4 text-center">
-											<div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto"></div>
+											<div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mx-auto" />
 										</div>
 									}
 								>
@@ -499,6 +535,7 @@ const PatientList = ({ onAddPatientClick }) => {
 				</div>
 			)}
 
+			{/* Animations */}
 			<style jsx global>{`
 				@keyframes fadeSlideIn {
 					from {

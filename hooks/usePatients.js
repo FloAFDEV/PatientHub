@@ -11,17 +11,17 @@ export function usePatients(page, search = "", letter = "") {
 		`/api/patients?page=${page}&search=${search}&letter=${letter}`,
 		fetcher,
 		{
-			revalidateOnFocus: true, // Revalidation sur focus
-			dedupingInterval: 0, // Désactivation de la déduplication
-			keepPreviousData: false, // Désactivation de la conservation des données précédentes
-			revalidateIfStale: true, //Revalidation si les données sont périmées
+			revalidateOnFocus: true,
+			dedupingInterval: 0,
+			keepPreviousData: false,
+			revalidateIfStale: true,
 		}
 	);
 
 	return {
 		patients: data?.patients || [],
 		totalPages: data?.totalPages || 1,
-		isLoading: !error && !data,
+		isLoading: !error && !data, // ← on détecte le chargement ici
 		isError: error,
 		mutate,
 	};

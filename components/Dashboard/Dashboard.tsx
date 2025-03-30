@@ -10,6 +10,7 @@ import {
 	IconCalendar,
 } from "@tabler/icons-react";
 
+// Composants de charting "recharts"
 import {
 	PieChart,
 	Pie,
@@ -27,10 +28,12 @@ import {
 	LineChart,
 } from "recharts";
 
-interface DashboardProps {
-	user: User | null;
-}
-
+/**
+ * Types & interfaces
+ * ------------------
+ * On peut ajuster `DashboardData` selon les champs exacts
+ * retournés par l'API `/api/dashboard`.
+ */
 interface DashboardData {
 	totalPatients: number;
 	maleCount: number;
@@ -55,14 +58,33 @@ interface DashboardData {
 	}[];
 }
 
+interface DashboardProps {
+	user: User | null;
+}
+
+/**
+ * Composant Dashboard
+ * -------------------
+ * Affiche un tableau de bord avec différentes statistiques et graphiques
+ * basés sur les données renvoyées par l'API "/api/dashboard".
+ */
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
+	// État pour stocker les données du dashboard
 	const [dashboardData, setDashboardData] = useState<DashboardData | null>(
 		null
 	);
+
+	// État pour gérer l'affichage d'un loader pendant le chargement
 	const [loading, setLoading] = useState<boolean>(true);
 
+	/**
+	 * useEffect: on déclenche la récupération des données au montage du composant.
+	 * `isMounted` est utilisé pour éviter de modifier l'état quand le composant
+	 * est déjà démonté (précaution).
+	 */
 	useEffect(() => {
 		let isMounted = true;
+
 		const fetchDashboardData = async () => {
 			try {
 				const response = await fetch("/api/dashboard");
@@ -71,31 +93,41 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						`Erreur serveur: ${response.status} - ${response.statusText}`
 					);
 				}
+
 				const data = await response.json();
 
+				/**
+				 * Vérifie si le composant est toujours monté et si les données ont changé.
+				 * On met à jour l'état local, et on arrête le "loading".
+				 */
 				if (
 					isMounted &&
 					JSON.stringify(data) !== JSON.stringify(dashboardData)
 				) {
 					setDashboardData(data);
-					setLoading(false); // Données chargées, mettre loading à false
+					setLoading(false);
 				}
 			} catch (error) {
 				console.error(
 					"Erreur lors de la récupération des données:",
 					error instanceof Error ? error.message : error
 				);
-				setLoading(false); // Si erreur, mettre loading à false
+				setLoading(false); // En cas d'erreur, on arrête aussi le "loading".
 			}
 		};
+
 		fetchDashboardData();
-		// Cleanup function pour éviter les mises à jour après démontage
+
+		// Nettoyage pour éviter toute mise à jour d'état si le composant est démonté
 		return () => {
 			isMounted = false;
 		};
 	}, [dashboardData]);
 
-	// Données pour la répartition des Hommes/Femmes
+	/**
+	 * Rassemble les données de répartition par genre (homme/femme)
+	 * au format attendu par le <PieChart>.
+	 */
 	const genderData = useMemo(
 		() => [
 			{ name: "Hommes", value: dashboardData?.maleCount || 0 },
@@ -104,7 +136,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 		[dashboardData?.maleCount, dashboardData?.femaleCount]
 	);
 
-	// Données pour les âges moyens des hommes et des femmes
+	/**
+	 * Données pour l'affichage de l'âge moyen (homme/femme).
+	 * On stocke aussi la couleur directement dans l'objet de données.
+	 */
 	const ageData = useMemo(
 		() => [
 			{
@@ -121,34 +156,42 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 		[dashboardData?.averageAgeMale, dashboardData?.averageAgeFemale]
 	);
 
+	/**
+	 * Petite fonction de mapping pour traduire les mois en français.
+	 * (Par exemple "January" -> "Janvier", etc.)
+	 */
 	const mapMonthToFrench = useMemo(() => {
-		return (month: string): string => {
-			const months: { [key: string]: string } = {
-				January: "Janvier",
-				February: "Février",
-				March: "Mars",
-				April: "Avril",
-				May: "Mai",
-				June: "Juin",
-				July: "Juillet",
-				August: "Août",
-				September: "Septembre",
-				October: "Octobre",
-				November: "Novembre",
-				December: "Décembre",
-			};
-			return months[month] || month;
+		const months: { [key: string]: string } = {
+			January: "Janvier",
+			February: "Février",
+			March: "Mars",
+			April: "Avril",
+			May: "Mai",
+			June: "Juin",
+			July: "Juillet",
+			August: "Août",
+			September: "Septembre",
+			October: "Octobre",
+			November: "Novembre",
+			December: "Décembre",
 		};
+
+		return (month: string): string => months[month] || month;
 	}, []);
 
-	// Si les données sont en cours de chargement, afficher un message unique
+	/**
+	 * Affichage du loader si `loading === true`.
+	 * On peut personnaliser la page de chargement ici
+	 * ou simplement mettre un spinner, etc.
+	 */
 	if (loading) {
 		return (
 			<div className="flex justify-center items-center h-screen">
 				<div className="w-full h-full flex justify-center items-center">
-					<div className="absolute animate-ping h-[16rem] w-[16rem] rounded-full  border-t-4 border-b-4 border-red-500 "></div>
-					<div className="absolute animate-spin h-[14rem] w-[14rem] rounded-full  border-t-4 border-b-4 border-purple-500 "></div>
-					<div className="absolute animate-ping h-[12rem] w-[12rem] rounded-full  border-t-4 border-b-4 border-pink-500 "></div>
+					{/* Différents anneaux animés pour faire un loader stylé */}
+					<div className="absolute animate-ping h-[16rem] w-[16rem] rounded-full border-t-4 border-b-4 border-red-500 "></div>
+					<div className="absolute animate-spin h-[14rem] w-[14rem] rounded-full border-t-4 border-b-4 border-purple-500 "></div>
+					<div className="absolute animate-ping h-[12rem] w-[12rem] rounded-full border-t-4 border-b-4 border-pink-500 "></div>
 					<div className="absolute animate-spin h-[10rem] w-[10rem] rounded-full border-t-4 border-b-4 border-yellow-500"></div>
 					<div className="absolute animate-ping h-[8rem] w-[8rem] rounded-full border-t-4 border-b-4 border-green-500"></div>
 					<div className="absolute animate-spin h-[6rem] w-[6rem] rounded-full border-t-4 border-b-4 border-blue-500"></div>
@@ -160,9 +203,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 		);
 	}
 
+	/**
+	 * Une fois les données chargées, on affiche le tableau de bord.
+	 * Au besoin, ajustez les conditions "undefined" pour éviter les crashs
+	 * si certaines données manquent.
+	 */
 	return (
 		<div className="flex-1 p-3 bg-gray-50 dark:bg-gray-900">
-			{/* En-tête de bienvenue */}
+			{/* En-tête de page / bannière */}
 			<header className="mb-8">
 				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
 					<Image
@@ -201,7 +249,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				</div>
 			</header>
 
-			{/* Section des statistiques */}
+			{/* Section: Cartes de statistiques clés */}
 			<div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
 				<StatCard
 					icon={
@@ -213,8 +261,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						</div>
 					}
 					title="Patients actifs"
-					explanation="Vos patients au complet 🎉 
-					Les patients archivés ou décédés ne sont pas inclus."
+					explanation="Vos patients au complet 🎉 (patients archivés ou décédés exclus)."
 					value={
 						dashboardData?.totalPatients !== undefined
 							? dashboardData.totalPatients
@@ -232,10 +279,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						</div>
 					}
 					title="Rendez-vous aujourd'hui"
-					value="8"
+					value="8" // <-- vous pouvez brancher un champ de `dashboardData` si dispo
 					subtitle="Prochain RDV à 14h30"
-					explanation="Représente le nombre total de rendez-vous prévus dans votre journée. Les rendez-vous annulés ou manqués ne sont pas inclus."
+					explanation="Nombre total de rendez-vous pour la journée."
 				/>
+
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-10 h-10">
@@ -246,7 +294,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						</div>
 					}
 					title="Nouveaux patients (30 derniers jours)"
-					explanation="Représente le nombre de nouveaux patients enregistrés ce mois-ci."
+					explanation="Représente le nombre de nouveaux patients enregistrés ces 30 derniers jours."
 					value={
 						dashboardData?.newPatientsLast30Days !== undefined
 							? dashboardData.newPatientsLast30Days
@@ -262,6 +310,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						return "Chargement...";
 					})()}
 				/>
+
 				<StatCard
 					icon={
 						<div className="flex items-center justify-center w-10 h-10">
@@ -312,13 +361,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 				/>
 			</div>
 
-			{/* Section des graphiques */}
-			<section className="rounded-lg p-0 ">
+			{/* Section: Graphiques */}
+			<section className="rounded-lg p-0">
 				<h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-8 text-center">
 					Graphiques et visualisations
 				</h2>
+
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-					{/* Graphique pour l'âge moyen des hommes et des femmes */}
+					{/* Graphique 1: BarChart de l'âge moyen (hommes/femmes) */}
 					<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg">
 						<h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 sm:mb-6 text-gray-800 dark:text-white text-center flex items-center justify-center gap-2">
 							<IconCalendar
@@ -372,7 +422,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							</BarChart>
 						</ResponsiveContainer>
 					</div>
-					{/* Graphique pour la répartition Hommes/Femmes */}
+
+					{/* Graphique 2: PieChart de la répartition H/F */}
 					<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg">
 						<h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-4 text-gray-800 dark:text-white text-center flex items-center justify-center gap-2">
 							<IconUsers
@@ -382,11 +433,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 							/>
 							Répartition Hommes/Femmes
 						</h3>
-						<ResponsiveContainer
-							width="100%"
-							height={200}
-							className="sm:height-[300px]"
-						>
+						<ResponsiveContainer width="100%" height={200}>
 							<PieChart>
 								<Pie
 									data={genderData}
@@ -446,8 +493,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 						</ResponsiveContainer>
 					</div>
 				</div>
+
+				{/* Graphique 3: Évolution mensuelle (LineChart) */}
 				<div className="w-full mt-8">
-					{/* Graphique pour la croissance mensuelle */}
 					<div className="bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 sm:p-6 rounded-lg shadow-lg">
 						<h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 sm:mb-6 text-gray-800 dark:text-white text-center flex items-center justify-center gap-2">
 							<IconChartBar
@@ -506,7 +554,6 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 										];
 									}}
 								/>
-
 								<Line
 									type="monotone"
 									dataKey="patients"

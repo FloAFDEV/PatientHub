@@ -1,12 +1,17 @@
+// utils/supabase/middleware.ts
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-const SESSION_EXPIRATION_TIME = 60 * 60 * 1000; // 1 heure (en millisecondes)
+// Durée de la session : 1 heure (en millisecondes)
+const SESSION_EXPIRATION_TIME = 60 * 60 * 1000;
 
 export async function updateSession(
 	request: NextRequest
-): Promise<NextResponse | undefined> {
-	// Initialisation de la réponse
+): Promise<NextResponse | null> {
+	/**
+	 * On part d'une réponse "next" par défaut,
+	 * qu'on modifiera si besoin.
+	 */
 	let response = NextResponse.next();
 
 	try {
@@ -16,10 +21,13 @@ export async function updateSession(
 			process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
 			{
 				cookies: {
+					// Lecture des cookies depuis la requête
 					get: (name: string) => {
 						return request.cookies.get(name)?.value;
 					},
+					// Écriture: on mettra à jour la "response" pour y ajouter des cookies
 					set: (name: string, value: string, options: any) => {
+						// On recrée une NextResponse pour coller nos nouveaux cookies
 						response = NextResponse.next({
 							request: {
 								headers: request.headers,
@@ -31,7 +39,7 @@ export async function updateSession(
 							...options,
 						});
 					},
-					remove: (name: string, options: any) => {
+					remove: (name: string) => {
 						response = NextResponse.next({
 							request: {
 								headers: request.headers,
@@ -43,7 +51,7 @@ export async function updateSession(
 			}
 		);
 
-		// Vérification utilisateur via Supabase
+		// Récupération de l'utilisateur
 		const {
 			data: { user },
 			error,
@@ -54,17 +62,16 @@ export async function updateSession(
 				"Erreur lors de la récupération de l'utilisateur :",
 				error
 			);
-			// Rediriger vers / seulement si l'erreur est liée à l'authentification
+
+			// Si c'est une erreur d'auth (401), on redirige vers la page d'accueil
 			if (error.status === 401) {
-				console.warn(
-					"Aucune session active trouvée ou erreur d'authentification."
-				);
+				console.warn("Pas de session active ou erreur d'auth.");
 				return NextResponse.redirect(new URL("/", request.url));
 			} else {
-				// Gérer les autres types d'erreurs (par exemple, erreur réseau)
+				// Autres erreurs (réseau, serveur, etc.) => on ne redirige pas forcément
+				// vous pouvez renvoyer null pour continuer, ou rediriger vers une page d'erreur
 				console.error("Erreur non liée à l'authentification :", error);
-				// Peut-être rediriger vers une page d'erreur générique ou simplement ne rien faire
-				return; // Ne pas rediriger pour éviter une boucle
+				return null;
 			}
 		}
 
@@ -75,10 +82,10 @@ export async function updateSession(
 
 		console.log("Utilisateur connecté :", user.email);
 
-		// Session valide, on calcule la nouvelle date d'expiration
+		// Session valide, on recalcule la nouvelle date d'expiration
 		const newExpirationTime = Date.now() + SESSION_EXPIRATION_TIME;
 
-		// Mise à jour du cookie d'expiration
+		// Mise à jour du cookie 'sessionExpiration'
 		response = NextResponse.next({
 			request: {
 				headers: request.headers,
@@ -95,16 +102,13 @@ export async function updateSession(
 			}
 		);
 
-		console.log("Cookie sessionExpiration mis à jour.");
+		console.log("Cookie 'sessionExpiration' prolongé.");
 
-		// Retourne une réponse normale si l'utilisateur est connecté et que le cookie est mis à jour
+		// On retourne la réponse (avec le nouveau cookie).
 		return response;
 	} catch (error) {
-		console.error(
-			"Erreur inattendue lors de la mise à jour de la session :",
-			error
-		);
-		// Redirection en cas d'erreur générale
+		console.error("Erreur inattendue dans updateSession :", error);
+		// En cas d'erreur générale, on redirige vers l'accueil
 		return NextResponse.redirect(new URL("/", request.url));
 	}
 }
