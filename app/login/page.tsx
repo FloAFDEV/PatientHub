@@ -243,6 +243,7 @@ export default function LoginPage() {
 				priority
 				alt="Image d'accueil"
 				className="hidden lg:block lg:w-1/2 object-cover"
+				unoptimized
 			/>
 		</div>
 	);
