@@ -15,9 +15,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { AppointmentType } from "./AppointmentsManager";
 
-// --------------------------------------------------------
-// Types & Interfaces
-// --------------------------------------------------------
+/**
+ * Propriétés acceptées par la liste des rendez-vous :
+ *  - date : la date pour laquelle on affiche les rendez-vous
+ *  - onEdit : callback pour éditer un rendez-vous (ouvre modal par ex.)
+ *  - onDelete : callback pour supprimer un rendez-vous
+ *  - onCancel : callback pour annuler un rendez-vous (status = "CANCELED")
+ */
 interface AppointmentListProps {
 	date: Date;
 	onEdit: (appointment: AppointmentType) => void;
@@ -25,21 +29,22 @@ interface AppointmentListProps {
 	onCancel: (appointmentId: number) => Promise<void>;
 }
 
-// --------------------------------------------------------
-// Fetcher pour useSWR
-// --------------------------------------------------------
+/**
+ * Fetcher utilisé par SWR : simple GET qui parse la réponse en JSON.
+ */
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-// --------------------------------------------------------
-// Composant principal
-// --------------------------------------------------------
+/**
+ * Composant qui affiche la liste des rendez-vous du jour.
+ * Il gère l'état de chargement, l'erreur, et appelle onEdit/onDelete/onCancel sur les actions.
+ */
 export function AppointmentList({
 	date,
 	onEdit,
 	onDelete,
 	onCancel,
 }: AppointmentListProps) {
-	// On récupère via SWR la liste des rendez-vous du jour
+	// -- Récupération via SWR des RDV du jour
 	const {
 		data: appointments,
 		error,
@@ -53,26 +58,23 @@ export function AppointmentList({
 		}
 	);
 
+	// État de chargement tant qu'on n'a pas de data ni d'erreur
 	const isLoading = !appointments && !error;
 
-	// ------------------------------------------------------
-	// Gestion du chargement
-	// ------------------------------------------------------
+	// -- Gestion de l'état de chargement
 	if (isLoading) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900">
-				<div className="animate-spin h-12 w-12 border-t-4 border-b-4 border-primary rounded-full" />
+				<div className="animate-spin h-12 w-12 border-t-4 border-b-4 border-primary rounded-full"></div>
 			</div>
 		);
 	}
 
-	// ------------------------------------------------------
-	// Gestion de l'erreur
-	// ------------------------------------------------------
+	// -- Gestion de l'erreur
 	if (error) {
 		return (
 			<div className="text-center py-8 text-red-500">
-				<p>Impossible de charger les rendez-vous.</p>
+				<p>Impossible de charger les rendez-vous</p>
 				<Button
 					onClick={() => mutate()}
 					variant="outline"
@@ -84,9 +86,7 @@ export function AppointmentList({
 		);
 	}
 
-	// ------------------------------------------------------
-	// Aucune donnée
-	// ------------------------------------------------------
+	// -- Pas de rendez-vous
 	if (!appointments?.length) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl">
@@ -101,35 +101,26 @@ export function AppointmentList({
 		);
 	}
 
-	// ------------------------------------------------------
-	// Gestion des actions (delete ou cancel)
-	// ------------------------------------------------------
+	// -- Appels aux callbacks parent : onDelete / onCancel
+	//    puis on "mutate" pour rafraîchir la liste
 	const handleAction = async (
 		action: "delete" | "cancel",
 		appointmentId: number
 	) => {
 		try {
-			const endpoint =
-				action === "delete"
-					? `/api/appointments/${appointmentId}`
-					: `/api/appointments/${appointmentId}/cancel`;
-			const method = action === "delete" ? "DELETE" : "PUT";
-
-			const response = await fetch(endpoint, { method });
-			if (!response.ok) {
-				throw new Error(`Erreur lors de l'action ${action}`);
+			if (action === "delete") {
+				await onDelete(appointmentId);
+			} else {
+				await onCancel(appointmentId);
 			}
-
-			// Revalider les données après une action
+			// Après suppression/annulation, on revalide la liste
 			mutate();
 		} catch (error) {
 			console.error(`Erreur lors de l'action ${action}:`, error);
 		}
 	};
 
-	// ------------------------------------------------------
-	// Rendu principal
-	// ------------------------------------------------------
+	// -- Rendu principal
 	return (
 		<div className="rounded-lg border border-gray-200 dark:border-gray-700">
 			<Table>
@@ -142,18 +133,16 @@ export function AppointmentList({
 						<TableHead className="text-right">Actions</TableHead>
 					</TableRow>
 				</TableHeader>
-
 				<TableBody>
 					{appointments.map((appointment) => (
 						<TableRow key={appointment.id}>
 							<TableCell>
 								{format(new Date(appointment.date), "HH:mm")}
 							</TableCell>
-
 							<TableCell>{appointment.patientName}</TableCell>
-
 							<TableCell>{appointment.reason}</TableCell>
 
+							{/* Statut (badge coloré) */}
 							<TableCell>
 								<span
 									className={`px-2 py-1 rounded-full text-sm ${
@@ -173,9 +162,10 @@ export function AppointmentList({
 								</span>
 							</TableCell>
 
+							{/* Boutons d'action */}
 							<TableCell className="text-right">
 								<div className="flex justify-end space-x-2">
-									{/* Bouton Éditer */}
+									{/* Bouton éditer */}
 									<Button
 										variant="ghost"
 										size="sm"
@@ -187,7 +177,7 @@ export function AppointmentList({
 										<Edit2 className="h-4 w-4" />
 									</Button>
 
-									{/* Bouton Supprimer */}
+									{/* Bouton supprimer */}
 									<Button
 										variant="ghost"
 										size="sm"
@@ -202,7 +192,7 @@ export function AppointmentList({
 										<Trash2 className="h-4 w-4" />
 									</Button>
 
-									{/* Bouton Annuler (si SCHEDULED) */}
+									{/* Bouton annuler (uniquement si SCHEDULED) */}
 									{appointment.status === "SCHEDULED" && (
 										<Button
 											variant="ghost"
