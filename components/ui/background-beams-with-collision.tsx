@@ -1,8 +1,13 @@
 "use client";
+
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useRef, useState, useEffect, useImperativeHandle } from "react";
 
+/**
+ * Composant principal.
+ * On y définit le tableau "beams" (les colonnes qui tombent).
+ */
 export const BackgroundBeamsWithCollision = ({
 	children,
 	className,
@@ -13,6 +18,7 @@ export const BackgroundBeamsWithCollision = ({
 	const containerRef = useRef<HTMLDivElement>(null);
 	const parentRef = useRef<HTMLDivElement>(null);
 
+	// ↑ On a désormais 10 beams (au lieu de 7), pour plus de “gouttes”
 	const beams = [
 		{
 			initialX: 10,
@@ -64,6 +70,28 @@ export const BackgroundBeamsWithCollision = ({
 			delay: 2,
 			className: "h-6",
 		},
+		// Ajout de 3 nouveaux beams
+		{
+			initialX: 1400,
+			translateX: 1400,
+			duration: 6,
+			repeatDelay: 3,
+			className: "h-6",
+		},
+		{
+			initialX: 1600,
+			translateX: 1600,
+			duration: 8,
+			repeatDelay: 5,
+			className: "h-8",
+		},
+		{
+			initialX: 1800,
+			translateX: 1800,
+			duration: 10,
+			repeatDelay: 6,
+			className: "h-24",
+		},
 	];
 
 	return (
@@ -71,13 +99,12 @@ export const BackgroundBeamsWithCollision = ({
 			ref={parentRef}
 			className={cn(
 				"h-screen bg-gradient-to-b from-white to-gray-200 dark:from-neutral-950 dark:bg-blue-950 relative flex items-center w-full justify-center overflow-hidden",
-
 				className
 			)}
 		>
-			{beams.map((beam) => (
+			{beams.map((beam, idx) => (
 				<CollisionMechanism
-					key={beam.initialX + "beam-idx"}
+					key={`beam-${idx}-${beam.initialX}`}
 					beamOptions={beam}
 					containerRef={containerRef}
 					parentRef={parentRef}
@@ -85,6 +112,8 @@ export const BackgroundBeamsWithCollision = ({
 			))}
 
 			{children}
+
+			{/* Le container en bas, détecteur de collision */}
 			<div
 				ref={containerRef}
 				className="absolute bottom-0 bg-neutral-100 w-full inset-x-0 pointer-events-none"
@@ -97,6 +126,11 @@ export const BackgroundBeamsWithCollision = ({
 	);
 };
 
+/**
+ * CollisionMechanism
+ * - Gère l’animation d’une beam (colonne tombante).
+ * - Détecte la collision avec le containerRef pour déclencher l’explosion.
+ */
 const CollisionMechanism = React.forwardRef<
 	HTMLDivElement,
 	{
@@ -117,6 +151,7 @@ const CollisionMechanism = React.forwardRef<
 >(({ parentRef, containerRef, beamOptions = {} }, ref) => {
 	const beamRef = useRef<HTMLDivElement>(null);
 	useImperativeHandle(ref, () => beamRef.current as HTMLDivElement);
+
 	const [collision, setCollision] = useState<{
 		detected: boolean;
 		coordinates: { x: number; y: number } | null;
@@ -124,7 +159,8 @@ const CollisionMechanism = React.forwardRef<
 		detected: false,
 		coordinates: null,
 	});
-	const [beamKey, setBeamKey] = useState(0);
+
+	// Bloque la collision sur un cycle d’animation
 	const [cycleCollisionDetected, setCycleCollisionDetected] = useState(false);
 
 	useEffect(() => {
@@ -140,6 +176,7 @@ const CollisionMechanism = React.forwardRef<
 					containerRef.current.getBoundingClientRect();
 				const parentRect = parentRef.current.getBoundingClientRect();
 
+				// Beam touche le container
 				if (beamRect.bottom >= containerRect.top) {
 					const relativeX =
 						beamRect.left - parentRect.left + beamRect.width / 2;
@@ -158,17 +195,20 @@ const CollisionMechanism = React.forwardRef<
 		};
 
 		const animationInterval = setInterval(checkCollision, 50);
-
 		return () => clearInterval(animationInterval);
 	}, [cycleCollisionDetected, containerRef, parentRef]);
 
+	// Quand collision détectée, on réinitialise après un délai
+	const [beamKey, setBeamKey] = useState(0);
 	useEffect(() => {
 		if (collision.detected && collision.coordinates) {
+			// On masque l’explosion après 2s
 			setTimeout(() => {
 				setCollision({ detected: false, coordinates: null });
 				setCycleCollisionDetected(false);
 			}, 2000);
 
+			// On force le re-render de la beam après 2s (pour la retomber)
 			setTimeout(() => {
 				setBeamKey((prevKey) => prevKey + 1);
 			}, 2000);
@@ -177,19 +217,20 @@ const CollisionMechanism = React.forwardRef<
 
 	return (
 		<>
+			{/* La beam animée */}
 			<motion.div
 				key={beamKey}
 				ref={beamRef}
 				animate="animate"
 				initial={{
 					translateY: beamOptions.initialY || "-200px",
-					translateX: beamOptions.initialX || "0px",
+					translateX: beamOptions.initialX || 0,
 					rotate: beamOptions.rotate || 0,
 				}}
 				variants={{
 					animate: {
 						translateY: beamOptions.translateY || "1800px",
-						translateX: beamOptions.translateX || "0px",
+						translateX: beamOptions.translateX || 0,
 						rotate: beamOptions.rotate || 0,
 					},
 				}}
@@ -206,11 +247,12 @@ const CollisionMechanism = React.forwardRef<
 					beamOptions.className
 				)}
 			/>
+
+			{/* L’explosion sur collision */}
 			<AnimatePresence>
 				{collision.detected && collision.coordinates && (
 					<Explosion
 						key={`${collision.coordinates.x}-${collision.coordinates.y}`}
-						className=""
 						style={{
 							left: `${collision.coordinates.x}px`,
 							top: `${collision.coordinates.y}px`,
@@ -225,8 +267,14 @@ const CollisionMechanism = React.forwardRef<
 
 CollisionMechanism.displayName = "CollisionMechanism";
 
-const Explosion = ({ ...props }: React.HTMLProps<HTMLDivElement>) => {
-	const spans = Array.from({ length: 20 }, (_, index) => ({
+/**
+ * Explosion
+ * - Contient 40 particules (au lieu de 20),
+ *   qui partent dans des directions aléatoires.
+ */
+const Explosion = (props: React.HTMLProps<HTMLDivElement>) => {
+	// On augmente le nombre de particules à 40
+	const spans = Array.from({ length: 40 }, (_, index) => ({
 		id: index,
 		initialX: 0,
 		initialY: 0,
@@ -237,19 +285,29 @@ const Explosion = ({ ...props }: React.HTMLProps<HTMLDivElement>) => {
 	return (
 		<div
 			{...props}
-			className={cn("absolute z-50 h-2 w-2", props.className)}
+			className={cn(
+				"absolute z-50 h-2 w-2 pointer-events-none",
+				props.className
+			)}
 		>
+			{/* Petite barre horizontale lumineuse */}
 			<motion.div
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
 				transition={{ duration: 1.5, ease: "easeOut" }}
 				className="absolute -inset-x-10 top-0 m-auto h-2 w-10 rounded-full bg-gradient-to-r from-transparent via-indigo-500 to-transparent blur-sm"
-			></motion.div>
+			/>
+
+			{/* Particules */}
 			{spans.map((span) => (
 				<motion.span
 					key={span.id}
-					initial={{ x: span.initialX, y: span.initialY, opacity: 1 }}
+					initial={{
+						x: span.initialX,
+						y: span.initialY,
+						opacity: 1,
+					}}
 					animate={{
 						x: span.directionX,
 						y: span.directionY,

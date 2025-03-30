@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
@@ -5,13 +7,16 @@ import { fr } from "date-fns/locale";
 import { toast } from "react-toastify";
 import { AppointmentDialog } from "./AppointmentDialog";
 import { AppointmentList } from "./AppointmentList";
+
 import FullCalendar from "@fullcalendar/react";
-import { EventContentArg } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import frLocale from "@fullcalendar/core/locales/fr";
 
+/**
+ * Types
+ */
 export interface AppointmentType {
 	id: number;
 	date: string;
@@ -30,24 +35,10 @@ export interface Patient {
 	phone?: string;
 }
 
-const getEasterMonday = (year: number) => {
-	const f = Math.floor(year / 100);
-	const g = Math.floor(year % 100);
-	const c = Math.floor(f / 4);
-	const e = Math.floor(f % 4);
-	const h = Math.floor((8 * f + 13) / 25);
-	const l = Math.floor((19 * g + f - c - h + 15) % 30);
-	const p = Math.floor(g / 4);
-	const q = Math.floor((32 + 2 * e + 2 * p - l) % 7);
-	const r = Math.floor((l + q - 7) % 7);
-	const easterDate = new Date(year, 2, 1);
-	easterDate.setDate(22 + r + (l == 29 || (l == 28 && r == 6) ? 1 : 0));
-	const easterMonday = new Date(easterDate);
-	easterMonday.setDate(easterDate.getDate() + 1);
-	return easterMonday.getDate();
-};
-
-const getEasterDate = (year: number) => {
+/**
+ * Fonctions pour calcul des jours fériés et vacances
+ */
+function getEasterDate(year: number): Date {
 	const f = Math.floor(year / 100);
 	const g = year % 19;
 	const c = Math.floor(
@@ -56,37 +47,80 @@ const getEasterDate = (year: number) => {
 	const h = Math.floor(
 		(32 + 2 * (year % 4) + 2 * Math.floor(year / 4) - c - (year % 7)) % 7
 	);
-	const easterDate = new Date(year, 2, 1);
-	easterDate.setDate(22 + c + h);
-	return easterDate;
-};
+	const easter = new Date(year, 2, 1);
+	easter.setDate(22 + c + h);
+	return easter;
+}
 
-const getAscensionDay = (year: number) => {
-	const easterDate = getEasterDate(year);
-	const ascensionDate = new Date(easterDate);
-	ascensionDate.setDate(easterDate.getDate() + 39);
-	return ascensionDate.getDate();
-};
+function getEasterMonday(year: number) {
+	const easter = getEasterDate(year);
+	const monday = new Date(easter);
+	monday.setDate(easter.getDate() + 1);
+	return monday.getDate();
+}
 
-const getWhitMonday = (year: number) => {
-	const easterDate = getEasterDate(year);
-	const whitMondayDate = new Date(easterDate);
-	whitMondayDate.setDate(easterDate.getDate() + 50);
-	return whitMondayDate.getDate();
-};
+function getAscensionDay(year: number) {
+	const easter = getEasterDate(year);
+	const ascension = new Date(easter);
+	ascension.setDate(easter.getDate() + 39);
+	return ascension.getDate();
+}
 
-const generateHolidaysAndVacations = (
+function getWhitMonday(year: number) {
+	const easter = getEasterDate(year);
+	const whitMonday = new Date(easter);
+	whitMonday.setDate(easter.getDate() + 50);
+	return whitMonday.getDate();
+}
+
+function getWinterHolidays(year: number, zone: string) {
+	switch (zone) {
+		case "A":
+			return { start: `${year}-02-08`, end: `${year}-02-24` };
+		case "B":
+			return { start: `${year}-02-22`, end: `${year}-03-10` };
+		case "C":
+			return { start: `${year}-02-15`, end: `${year}-03-03` };
+		default:
+			return { start: `${year}-02-15`, end: `${year}-03-03` };
+	}
+}
+
+function getSpringHolidays(year: number, zone: string) {
+	switch (zone) {
+		case "A":
+			return { start: `${year}-04-12`, end: `${year}-04-28` };
+		case "B":
+			return { start: `${year}-04-26`, end: `${year}-05-12` };
+		case "C":
+			return { start: `${year}-04-19`, end: `${year}-05-05` };
+		default:
+			return { start: `${year}-04-19`, end: `${year}-05-05` };
+	}
+}
+
+/**
+ * Génère jours fériés + vacances
+ */
+function generateHolidaysAndVacations(
 	startYear: number,
 	endYear: number,
 	zone: string
-) => {
-	const events = [];
+) {
+	const events: {
+		title: string;
+		start: string;
+		end?: string;
+		allDay?: boolean;
+		color: string;
+	}[] = [];
 
 	for (let year = startYear; year <= endYear; year++) {
 		const easterMondayDate = getEasterMonday(year);
-		const ascensionDayDate = getAscensionDay(year);
+		const ascensionDate = getAscensionDay(year);
 		const whitMondayDate = getWhitMonday(year);
 
+		// Jours fériés
 		events.push(
 			{
 				title: "Jour de l'An",
@@ -114,7 +148,7 @@ const generateHolidaysAndVacations = (
 			},
 			{
 				title: "Ascension",
-				start: `${year}-05-${ascensionDayDate}`,
+				start: `${year}-05-${ascensionDate}`,
 				allDay: true,
 				color: "#0c4a6e",
 			},
@@ -156,8 +190,10 @@ const generateHolidaysAndVacations = (
 			}
 		);
 
+		// Vacances scolaires
 		const winterHolidays = getWinterHolidays(year, zone);
 		const springHolidays = getSpringHolidays(year, zone);
+
 		events.push(
 			{
 				title: "Vacances d'hiver",
@@ -193,38 +229,16 @@ const generateHolidaysAndVacations = (
 	}
 
 	return events;
-};
+}
 
-const getWinterHolidays = (year: number, zone: string) => {
-	switch (zone) {
-		case "A":
-			return { start: `${year}-02-08`, end: `${year}-02-24` };
-		case "B":
-			return { start: `${year}-02-22`, end: `${year}-03-10` };
-		case "C":
-			return { start: `${year}-02-15`, end: `${year}-03-03` };
-		default:
-			return { start: `${year}-02-15`, end: `${year}-03-03` };
-	}
-};
-
-const getSpringHolidays = (year: number, zone: string) => {
-	switch (zone) {
-		case "A":
-			return { start: `${year}-04-12`, end: `${year}-04-28` };
-		case "B":
-			return { start: `${year}-04-26`, end: `${year}-05-12` };
-		case "C":
-			return { start: `${year}-04-19`, end: `${year}-05-05` };
-		default:
-			return { start: `${year}-04-19`, end: `${year}-05-05` };
-	}
-};
-
+/**
+ * Composant principal
+ */
 export default function AppointmentsManager() {
 	const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 	const [isNewAppointmentOpen, setIsNewAppointmentOpen] = useState(false);
 	const [isEditAppointmentOpen, setIsEditAppointmentOpen] = useState(false);
+
 	const [selectedAppointment, setSelectedAppointment] =
 		useState<AppointmentType | null>(null);
 	const [selectedPatient, setSelectedPatient] = useState<Patient | null>(
@@ -232,7 +246,13 @@ export default function AppointmentsManager() {
 	);
 	const [patients, setPatients] = useState<Patient[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [events, setEvents] = useState<AppointmentType[]>([]);
+
+	// Événements "rendez-vous"
+	const [events, setEvents] = useState<
+		{ id: string; title: string; start: string; status: string }[]
+	>([]);
+
+	// Événements jours fériés / vacances
 	const [holidaysAndVacations, setHolidaysAndVacations] = useState<
 		{
 			title: string;
@@ -242,12 +262,18 @@ export default function AppointmentsManager() {
 			color: string;
 		}[]
 	>([]);
+
+	// Zone scolaire
 	const [selectedZone, setSelectedZone] = useState<string>("A");
 
+	/**
+	 * useEffect: chargement initial + changement zone
+	 */
 	useEffect(() => {
 		fetchPatients();
 		checkForPatientInUrl();
 		fetchAppointments();
+
 		const currentYear = new Date().getFullYear();
 		const generatedEvents = generateHolidaysAndVacations(
 			currentYear,
@@ -257,7 +283,11 @@ export default function AppointmentsManager() {
 		setHolidaysAndVacations(generatedEvents);
 	}, [selectedZone]);
 
-	const checkForPatientInUrl = () => {
+	/**
+	 * Vérifie si l'URL contient un patientId,
+	 * pour pré-remplir la création de rendez-vous
+	 */
+	function checkForPatientInUrl() {
 		const params = new URLSearchParams(window.location.search);
 		const patientId = params.get("patientId");
 		const firstName = params.get("firstName");
@@ -265,20 +295,24 @@ export default function AppointmentsManager() {
 
 		if (patientId && firstName && lastName) {
 			setSelectedPatient({
-				id: parseInt(patientId),
+				id: parseInt(patientId, 10),
 				firstName,
 				lastName,
 			});
 			setIsNewAppointmentOpen(true);
 		}
-	};
+	}
 
-	const fetchPatients = async () => {
+	/**
+	 * Fetch liste patients
+	 */
+	async function fetchPatients() {
 		try {
 			setIsLoading(true);
 			const response = await fetch("/api/patients?fetchAll=true");
-			if (!response.ok)
+			if (!response.ok) {
 				throw new Error("Erreur lors du chargement des patients");
+			}
 			const data = await response.json();
 			setPatients(data);
 		} catch (error) {
@@ -287,14 +321,20 @@ export default function AppointmentsManager() {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}
 
-	const fetchAppointments = async () => {
+	/**
+	 * Fetch liste rendez-vous
+	 */
+	async function fetchAppointments() {
 		try {
 			const response = await fetch("/api/appointments");
-			if (!response.ok)
+			if (!response.ok) {
 				throw new Error("Erreur lors du chargement des rendez-vous");
+			}
 			const data = await response.json();
+
+			// Mapping AppointmentType vers format FullCalendar
 			const formattedEvents = data.map(
 				(appointment: AppointmentType) => ({
 					id: appointment.id.toString(),
@@ -308,59 +348,90 @@ export default function AppointmentsManager() {
 			console.error("Erreur:", error);
 			toast.error("Erreur lors du chargement des rendez-vous");
 		}
-	};
+	}
 
-	const handleEditAppointment = (appointment: AppointmentType) => {
-		setSelectedAppointment(appointment);
-		setIsEditAppointmentOpen(true);
-	};
-
-	const handleDeleteAppointment = async (appointmentId: number) => {
+	/**
+	 * Supprimer un rendez-vous
+	 */
+	async function handleDeleteAppointment(appointmentId: number) {
 		if (!confirm("Êtes-vous sûr de vouloir supprimer ce rendez-vous ?"))
 			return;
 		try {
 			const response = await fetch(`/api/appointments/${appointmentId}`, {
 				method: "DELETE",
 			});
-			if (!response.ok) throw new Error("Erreur lors de la suppression");
+			if (!response.ok) {
+				throw new Error("Erreur lors de la suppression");
+			}
 			toast.success("Rendez-vous supprimé avec succès");
 			fetchAppointments();
 		} catch (error) {
 			console.error("Erreur:", error);
 			toast.error("Erreur lors de la suppression du rendez-vous");
 		}
-	};
+	}
 
-	const handleCancelAppointment = async (appointmentId: number) => {
+	/**
+	 * Annuler un rendez-vous
+	 */
+	async function handleCancelAppointment(appointmentId: number) {
 		try {
 			const response = await fetch(
 				`/api/appointments/${appointmentId}/cancel`,
-				{ method: "PUT" }
+				{
+					method: "PUT",
+				}
 			);
-			if (!response.ok) throw new Error("Erreur lors de l'annulation");
+			if (!response.ok) {
+				throw new Error("Erreur lors de l'annulation");
+			}
 			toast.success("Rendez-vous annulé avec succès");
 			fetchAppointments();
 		} catch (error) {
 			console.error("Erreur:", error);
 			toast.error("Erreur lors de l'annulation du rendez-vous");
 		}
-	};
+	}
 
-	const handleDateClick = (arg: { date: Date }) => {
+	/**
+	 * Éditer un rendez-vous
+	 */
+	function handleEditAppointment(appointment: AppointmentType) {
+		setSelectedAppointment(appointment);
+		setIsEditAppointmentOpen(true);
+	}
+
+	/**
+	 * Quand on clique un jour du calendrier
+	 */
+	function handleDateClick(arg: { date: Date }) {
 		setSelectedDate(arg.date);
 		setIsNewAppointmentOpen(true);
-	};
+	}
 
-	const handleEventClick = (info: { event: { id: string } }) => {
-		const appointment = events.find(
-			(event) => event.id === parseInt(info.event.id)
-		);
-		if (appointment) {
-			setSelectedAppointment(appointment);
-			setIsEditAppointmentOpen(true);
-		}
-	};
+	/**
+	 * Quand on clique un événement (rendez-vous) du calendrier
+	 */
+	function handleEventClick(info: { event: { id: string } }) {
+		const apt = events.find((ev) => ev.id === info.event.id);
+		if (!apt) return;
 
+		// Reconstruit un AppointmentType minimal
+		const appointment: AppointmentType = {
+			id: parseInt(apt.id, 10),
+			date: apt.start.split("T")[0],
+			time: apt.start.split("T")[1],
+			patientId: 0, // On ne l'a pas dans l'événement
+			patientName: apt.title.split("-")[0].trim(),
+			reason: apt.title.split("-")[1]?.trim() || "",
+			status: apt.status as AppointmentType["status"],
+		};
+		handleEditAppointment(appointment);
+	}
+
+	/**
+	 * Loader
+	 */
 	if (isLoading) {
 		return (
 			<div className="flex flex-col items-center justify-center min-h-[60vh] bg-gray-100 dark:bg-gray-900">
@@ -372,8 +443,12 @@ export default function AppointmentsManager() {
 		);
 	}
 
+	/**
+	 * Rendu principal
+	 */
 	return (
 		<div className="flex-1 p-6 bg-gray-50 dark:bg-gray-900">
+			{/* Header / bannière */}
 			<header className="mb-8">
 				<div className="relative w-full h-48 md:h-64 lg:h-72 overflow-hidden rounded-lg shadow-xl mb-8">
 					<Image
@@ -381,7 +456,8 @@ export default function AppointmentsManager() {
 						alt="Modern Planning Desktop"
 						className="w-full h-full object-cover object-center opacity-80"
 						style={{ objectPosition: "center 30%" }}
-						layout="fill"
+						fill
+						priority
 					/>
 					<div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4 bg-black bg-opacity-40 rounded-lg">
 						<h1 className="mt-2 text-3xl font-bold drop-shadow-sm">
@@ -394,7 +470,9 @@ export default function AppointmentsManager() {
 				</div>
 			</header>
 
+			{/* Contenu principal */}
 			<div className="flex flex-col gap-8">
+				{/* Liste des rendez-vous pour la date sélectionnée */}
 				<div className="w-full mt-8">
 					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
 						<h2 className="text-2xl font-bold mb-6">
@@ -411,14 +489,17 @@ export default function AppointmentsManager() {
 						/>
 					</div>
 				</div>
+
+				{/* Calendrier */}
 				<div className="w-full h-full">
 					<div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+						{/* Choix de la zone scolaire */}
 						<div className="mb-4">
 							<label
 								htmlFor="zone-select"
 								className="block text-md font-medium text-gray-700 dark:text-gray-300"
 							>
-								Zones scolaire
+								Zone scolaire
 							</label>
 							<select
 								id="zone-select"
@@ -433,6 +514,7 @@ export default function AppointmentsManager() {
 								<option value="C">Zone C</option>
 							</select>
 						</div>
+
 						<div className="mb-6">
 							<FullCalendar
 								plugins={[
@@ -443,23 +525,11 @@ export default function AppointmentsManager() {
 								initialView="dayGridMonth"
 								locale={frLocale}
 								firstDay={1}
-								events={[
-									...events.map((event) => ({
-										...event,
-										id: event.id.toString(),
-									})),
-									...holidaysAndVacations,
-								]}
+								events={[...events, ...holidaysAndVacations]}
 								dateClick={handleDateClick}
 								eventClick={handleEventClick}
 								height="auto"
-								dayCellClassNames={({
-									date,
-									isToday,
-								}: {
-									date: Date;
-									isToday: boolean;
-								}) => {
+								dayCellClassNames={({ date, isToday }) => {
 									const day = date.getDay();
 									const isWeekend = day === 0 || day === 6;
 									const baseClass = isWeekend
@@ -474,7 +544,7 @@ export default function AppointmentsManager() {
 									return `${baseClass} ${darkModeClass} ${todayClass}`;
 								}}
 								dayHeaderClassNames="uppercase text-lg font-semibold bg-gray-300 dark:bg-gray-500 dark:text-white"
-								dayHeaderContent={(arg: { text: string }) => (
+								dayHeaderContent={(arg) => (
 									<span className="uppercase text-lg font-semibold dark:text-white">
 										{arg.text}
 									</span>
@@ -507,7 +577,8 @@ export default function AppointmentsManager() {
 										scrollTime: "08:00:00",
 									},
 								}}
-								eventContent={(info: EventContentArg) => (
+								// Personnalisation du contenu d'un événement
+								eventContent={(info) => (
 									<div className="p-1 text-sm bg-pink-400 text-white rounded">
 										{info.event.title === "All-day"
 											? "Jour"
@@ -515,12 +586,14 @@ export default function AppointmentsManager() {
 									</div>
 								)}
 								allDayText="Jour"
-								nowIndicator={true}
+								nowIndicator
 								now={new Date()}
 							/>
 						</div>
 					</div>
 				</div>
+
+				{/* Dialog pour la création de rendez-vous */}
 				<AppointmentDialog
 					open={isNewAppointmentOpen}
 					onOpenChange={setIsNewAppointmentOpen}
@@ -528,6 +601,8 @@ export default function AppointmentsManager() {
 					selectedDate={selectedDate}
 					selectedPatient={selectedPatient}
 				/>
+
+				{/* Dialog pour l'édition de rendez-vous */}
 				{selectedAppointment && (
 					<AppointmentDialog
 						open={isEditAppointmentOpen}

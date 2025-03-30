@@ -1,9 +1,12 @@
+"use client";
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Calendar, Clock, User, FileText } from "lucide-react";
 import { toast } from "react-toastify";
+
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -27,6 +30,9 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 
+/**
+ * Types
+ */
 interface Patient {
 	id: number;
 	firstName: string;
@@ -43,6 +49,9 @@ interface AppointmentType {
 	status: "SCHEDULED" | "COMPLETED" | "CANCELED";
 }
 
+/**
+ * Props pour le composant AppointmentDialog
+ */
 interface AppointmentDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
@@ -53,20 +62,27 @@ interface AppointmentDialogProps {
 	selectedPatient?: Patient | null;
 }
 
+/**
+ * Interface pour nos valeurs de formulaire
+ */
 interface FormValues {
 	patientId: string;
 	time: string;
 	reason: string;
 }
 
+/**
+ * Génère un tableau des horaires à 45 minutes d'intervalle,
+ * de 08:00 à 20:45.
+ */
 const generateTimes = () => {
-	const times = [];
+	const times: string[] = [];
 	const currentTime = new Date();
 	currentTime.setHours(8, 0, 0, 0);
 
 	while (currentTime.getHours() < 21) {
-		const hour = currentTime.getHours().toString().padStart(2, "0");
-		const minutes = currentTime.getMinutes().toString().padStart(2, "0");
+		const hour = String(currentTime.getHours()).padStart(2, "0");
+		const minutes = String(currentTime.getMinutes()).padStart(2, "0");
 		times.push(`${hour}:${minutes}`);
 		currentTime.setMinutes(currentTime.getMinutes() + 45);
 	}
@@ -74,6 +90,9 @@ const generateTimes = () => {
 	return times;
 };
 
+/**
+ * Composant AppointmentDialog
+ */
 export function AppointmentDialog({
 	open,
 	onOpenChange,
@@ -85,6 +104,9 @@ export function AppointmentDialog({
 }: AppointmentDialogProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
+	/**
+	 * Initialisation du formulaire via React Hook Form
+	 */
 	const form = useForm<FormValues>({
 		defaultValues: {
 			patientId:
@@ -96,9 +118,14 @@ export function AppointmentDialog({
 		},
 	});
 
+	/**
+	 * Soumission du formulaire
+	 */
 	const onSubmit = async (data: FormValues) => {
 		setIsSubmitting(true);
+
 		try {
+			// Vérifications de base
 			if (!data.patientId) {
 				form.setError("patientId", {
 					type: "manual",
@@ -121,12 +148,14 @@ export function AppointmentDialog({
 				return;
 			}
 
+			// Choix du endpoint et de la méthode selon create/edit
 			const endpoint =
 				mode === "create"
 					? "/api/appointments"
 					: `/api/appointments/${appointment?.id}`;
 			const method = mode === "create" ? "POST" : "PUT";
 
+			// Requête vers l'API
 			const response = await fetch(endpoint, {
 				method,
 				headers: { "Content-Type": "application/json" },
@@ -144,11 +173,15 @@ export function AppointmentDialog({
 					}`
 				);
 			}
+
+			// Toast de succès
 			toast.success(
 				mode === "create"
 					? "Rendez-vous créé avec succès"
 					: "Rendez-vous modifié avec succès"
 			);
+
+			// Fermeture de la modale
 			onOpenChange(false);
 		} catch (error) {
 			console.error("Erreur détaillée:", error);
@@ -158,14 +191,19 @@ export function AppointmentDialog({
 		}
 	};
 
+	// ID utilisé pour la description ARIA
 	const descriptionId = "appointment-dialog-description";
 
+	/**
+	 * Rendu principal
+	 */
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent
 				className="sm:max-w-[500px] p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700"
 				aria-describedby={descriptionId}
 			>
+				{/* Header de la modale */}
 				<DialogHeader className="space-y-4">
 					<DialogTitle className="text-2xl font-bold flex items-center gap-3 text-gray-900 dark:text-white">
 						{mode === "create" ? (
@@ -190,11 +228,13 @@ export function AppointmentDialog({
 					</div>
 				</DialogHeader>
 
+				{/* Formulaire (React Hook Form) */}
 				<Form {...form}>
 					<form
 						onSubmit={form.handleSubmit(onSubmit)}
 						className="space-y-6 mt-6"
 					>
+						{/* Patient */}
 						<FormField
 							control={form.control}
 							name="patientId"
@@ -230,6 +270,7 @@ export function AppointmentDialog({
 							)}
 						/>
 
+						{/* Heure */}
 						<FormField
 							control={form.control}
 							name="time"
@@ -264,6 +305,7 @@ export function AppointmentDialog({
 							)}
 						/>
 
+						{/* Motif */}
 						<FormField
 							control={form.control}
 							name="reason"
@@ -282,6 +324,7 @@ export function AppointmentDialog({
 							)}
 						/>
 
+						{/* Boutons de confirmation / annulation */}
 						<div className="flex justify-end gap-3 pt-6">
 							<Button
 								type="button"
