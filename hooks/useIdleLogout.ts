@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
@@ -18,30 +19,40 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 	const { redirectDelay = 1000, onAuthChange } = options;
 
 	const cleanupStorage = useCallback(() => {
-		// Nettoyer localStorage
 		localStorage.clear();
-		// Nettoyer sessionStorage
 		sessionStorage.clear();
-		// Nettoyer tous les cookies
 		document.cookie.split(";").forEach((cookie) => {
 			const name = cookie.split("=")[0].trim();
 			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
 		});
-		console.log("🧹 Nettoyage du stockage effectué");
+		if (process.env.NODE_ENV === "development") {
+			console.log("🧹 Nettoyage du stockage effectué");
+		}
 	}, []);
 
 	const handleAuthChange = useCallback(
 		async (event: AuthChangeEvent, session: Session | null) => {
-			console.log(`🔥 Événement Auth : ${event}`);
-			console.log("🛠 Session : ", session);
+			if (process.env.NODE_ENV === "development") {
+				console.log(`🔥 Événement Auth : ${event}`);
+				if (session?.user) {
+					console.log("👤 Utilisateur connecté :", {
+						id: session.user.id,
+						email: session.user.email,
+					});
+				} else {
+					console.log("⚠️ Aucune session active");
+				}
+			}
 			if (onAuthChange) {
 				onAuthChange(event, session);
 			}
 			if (event === "SIGNED_OUT" || !session) {
-				console.log("🔄 Déconnexion détectée");
+				if (process.env.NODE_ENV === "development") {
+					console.log("🔄 Déconnexion détectée");
+					console.log("➡️ Redirection vers /");
+				}
 				cleanupStorage();
 				setTimeout(() => {
-					console.log("➡️ Redirection vers /");
 					router.push("/");
 				}, redirectDelay);
 			}
@@ -57,7 +68,9 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 		const resetTimeout = () => {
 			clearTimeout(timeoutId);
 			timeoutId = setTimeout(async () => {
-				console.log("⏰ Déconnexion pour inactivité");
+				if (process.env.NODE_ENV === "development") {
+					console.log("⏰ Déconnexion pour inactivité");
+				}
 				await supabase.auth.signOut();
 				cleanupStorage();
 				router.push("/");
@@ -69,7 +82,6 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 			activityTimeout = setTimeout(resetTimeout, 1000);
 		};
 
-		// Liste des événements à surveiller pour l'activité
 		const activityEvents = [
 			"mousedown",
 			"mousemove",
@@ -82,7 +94,7 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 			window.addEventListener(event, handleActivity);
 		});
 
-		resetTimeout(); // Initialiser le timeout
+		resetTimeout();
 
 		const {
 			data: { subscription },
@@ -102,7 +114,9 @@ export const useIdleLogout = (options: IdleLogoutOptions = {}) => {
 		try {
 			const { error } = await supabase.auth.refreshSession();
 			if (error) throw error;
-			console.log("✨ Session rafraîchie avec succès");
+			if (process.env.NODE_ENV === "development") {
+				console.log("✨ Session rafraîchie avec succès");
+			}
 		} catch (error) {
 			console.error(
 				"❌ Erreur lors du rafraîchissement de la session :",

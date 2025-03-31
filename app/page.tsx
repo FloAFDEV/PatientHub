@@ -38,18 +38,12 @@ function App() {
 					</div>
 
 					{/* Hero Image */}
-					<div className="mt-16 relative">
+					<div className="mt-16 relative h-[400px]">
 						<Image
 							src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=2000&q=80"
 							alt="Medical Professional at Work"
-							width={2000}
-							height={400}
-							style={{
-								objectFit: "cover",
-								width: "100%",
-								height: "auto",
-							}}
-							className="rounded-xl opacity-80"
+							fill
+							className="rounded-xl opacity-80 object-cover"
 						/>
 					</div>
 				</div>
