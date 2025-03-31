@@ -64,20 +64,19 @@ export function AppointmentList({
 	// -- Gestion de l'état de chargement
 	if (isLoading) {
 		return (
-			<div className="flex flex-col items-center justify-center h-screen relative bg-white dark:bg-gray-900">
+			<div className="flex items-center justify-center h-screen relative bg-white dark:bg-gray-900">
 				{/* Anneaux stylisés */}
-				<div className="relative flex items-center justify-center">
+				<div className="absolute inset-0 flex items-center justify-center">
 					<div className="absolute h-64 w-64 rounded-full border-4 border-t-transparent border-red-500 animate-spin-slow" />
 					<div className="absolute h-48 w-48 rounded-full border-4 border-t-transparent border-purple-500 animate-spin-reverse-slow" />
 					<div className="absolute h-32 w-32 rounded-full border-4 border-t-transparent border-blue-500 animate-spin-slow" />
-					<div className="h-24 w-24 bg-white dark:bg-gray-900 rounded-full z-10" />
 				</div>
 
-				{/* Texte en dessous */}
-				<div className="mt-10 z-10 text-center">
-					<p className="text-xl sm:text-2xl font-medium text-gray-600 dark:text-gray-100 animate-bounce">
+				{/* Contenu au centre */}
+				<div className="relative z-10 text-center">
+					<div className="text-2xl sm:text-3xl font-semibold text-gray-600 dark:text-gray-100 animate-bounce">
 						Chargement...
-					</p>
+					</div>
 				</div>
 			</div>
 		);

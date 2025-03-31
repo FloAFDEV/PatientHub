@@ -188,20 +188,18 @@ const PatientList = ({ onAddPatientClick }) => {
 	// ----------------------------------------------------------
 	if (isLoading) {
 		return (
-			<div className="flex flex-col items-center justify-center h-screen relative bg-white dark:bg-gray-900">
-				{/* Anneaux stylisés */}
-				<div className="relative flex items-center justify-center">
-					<div className="absolute h-64 w-64 rounded-full border-4 border-t-transparent border-red-500 animate-spin-slow" />
-					<div className="absolute h-48 w-48 rounded-full border-4 border-t-transparent border-purple-500 animate-spin-reverse-slow" />
-					<div className="absolute h-32 w-32 rounded-full border-4 border-t-transparent border-blue-500 animate-spin-slow" />
-					<div className="h-24 w-24 bg-white dark:bg-gray-900 rounded-full z-10" />
-				</div>
-
-				{/* Texte en dessous */}
-				<div className="mt-10 z-10 text-center">
-					<p className="text-xl sm:text-2xl font-medium text-gray-600 dark:text-gray-100 animate-bounce">
+			<div className="flex justify-center items-center h-screen">
+				<div className="w-full h-full flex justify-center items-center">
+					{/* Différents anneaux animés pour faire un loader stylé */}
+					<div className="absolute animate-ping h-[16rem] w-[16rem] rounded-full border-t-4 border-b-4 border-red-500 "></div>
+					<div className="absolute animate-spin h-[14rem] w-[14rem] rounded-full border-t-4 border-b-4 border-purple-500 "></div>
+					<div className="absolute animate-ping h-[12rem] w-[12rem] rounded-full border-t-4 border-b-4 border-pink-500 "></div>
+					<div className="absolute animate-spin h-[10rem] w-[10rem] rounded-full border-t-4 border-b-4 border-yellow-500"></div>
+					<div className="absolute animate-ping h-[8rem] w-[8rem] rounded-full border-t-4 border-b-4 border-green-500"></div>
+					<div className="absolute animate-spin h-[6rem] w-[6rem] rounded-full border-t-4 border-b-4 border-blue-500"></div>
+					<div className="rounded-full h-28 w-28 animate-bounce flex items-center justify-center text-gray-500 font-semibold text-3xl dark:text-gray-100">
 						Chargement des patients...
-					</p>
+					</div>
 				</div>
 			</div>
 		);
