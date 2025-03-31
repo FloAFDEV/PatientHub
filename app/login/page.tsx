@@ -234,9 +234,9 @@ export default function LoginPage() {
 
 			{/* Image latérale (uniquement sur grands écrans) */}
 			<Image
-				src="/assets/images/onboarding-img.png"
-				height={1000}
-				width={1000}
+				src="/assets/images/onboarding-img.webp"
+				height={500}
+				width={500}
 				priority
 				alt="Image d'accueil"
 				className="hidden lg:block lg:w-1/2 object-cover"

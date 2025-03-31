@@ -80,8 +80,6 @@ export async function updateSession(
 			return NextResponse.redirect(new URL("/", request.url));
 		}
 
-		console.log("Utilisateur connecté :", user.email);
-
 		// Session valide, on recalcule la nouvelle date d'expiration
 		const newExpirationTime = Date.now() + SESSION_EXPIRATION_TIME;
 

@@ -1,3 +1,5 @@
+/* globals.css */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,5 +49,24 @@
 		--destructive: 3 83% 59%;
 		--destructive-foreground: 0 0% 100%;
 		--ring: 195 80% 58%;
+	}
+}
+
+@layer utilities {
+	.animate-spin-slow {
+		animation: spin 3s linear infinite;
+	}
+
+	.animate-spin-reverse-slow {
+		animation: spin-reverse 4s linear infinite;
+	}
+}
+
+@keyframes spin-reverse {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(-360deg);
 	}
 }
