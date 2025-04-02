@@ -301,7 +301,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 									onChange={(e) =>
 										handleChange("gender", e.target.value)
 									}
-									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 dark:bg-slate-600 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 									required // Champ obligatoire
 								>
 									<option value="" disabled>
@@ -371,7 +371,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 											e.target.value
 										)
 									}
-									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 dark:bg-slate-600 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 								>
 									<option value="">Non renseigné</option>
 									<option value="LEFT">Gaucher</option>
@@ -414,7 +414,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 											e.target.value === "true"
 										)
 									}
-									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 dark:bg-slate-600 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 								>
 									<option value="">Non renseigné</option>
 									<option value="true">Oui</option>
@@ -440,7 +440,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 											e.target.value
 										)
 									}
-									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 dark:bg-slate-600 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 								>
 									<option value="">Non renseigné</option>
 									<option value="true">Oui</option>
@@ -493,7 +493,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 												);
 											}
 										}}
-										className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+										className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 dark:bg-slate-600 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 									>
 										<option value="">Non renseigné</option>
 										<option value="NONE">Aucune</option>
@@ -563,7 +563,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 														);
 													}}
 													min="0"
-													className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+													className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 dark:bg-slate-600 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 												/>
 												<button
 													type="button"
