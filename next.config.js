@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: false,
+	swcMinify: true, // ✅ Active la minification avancée via SWC
+
 	images: {
 		remotePatterns: [
 			{
@@ -13,6 +15,7 @@ const nextConfig = {
 			},
 		],
 	},
+
 	async headers() {
 		return [
 			{

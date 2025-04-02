@@ -334,7 +334,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 											e.target.value
 										)
 									}
-									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 w-full sm:text-right p-2 border border-gray-300 rounded-md"
+									className="text-xs sm:text-sm bg-inherit text-gray-800 dark:text-gray-200 dark:bg-slate-600 w-full sm:text-right p-2 border border-gray-300 rounded-md"
 								>
 									<option value="">Non renseigné</option>
 									<option value="SINGLE">Célibataire</option>

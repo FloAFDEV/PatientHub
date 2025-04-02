@@ -370,7 +370,7 @@ const PatientList = ({ onAddPatientClick }) => {
 					sortedPatients.map((patient, index) => (
 						<div
 							key={patient.id}
-							className="relative bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-4"
+							className="relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-4"
 							style={{
 								animation: `fadeSlideIn 0.5s ease forwards ${
 									index * 50
