@@ -144,17 +144,11 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 					Number(age)
 				),
 			};
-
-			console.log("Données envoyées au serveur:", preparedPatient);
-
 			const response = await fetch(`/api/patients`, {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(preparedPatient),
 			});
-
-			console.log("Réponse du serveur:", response);
-
 			if (response.ok) {
 				toast.success(
 					<div className="relative">
@@ -474,12 +468,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 										onChange={(e) => {
 											const selectedValue =
 												e.target.value;
-
-											console.log(
-												"Valeur sélectionnée :",
-												selectedValue
-											);
-
+											// Mettre à jour la contraception
 											handleChange(
 												"contraception",
 												selectedValue

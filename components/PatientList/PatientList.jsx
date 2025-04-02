@@ -227,7 +227,7 @@ const PatientList = ({ onAddPatientClick }) => {
 	// Rendu principal
 	// ----------------------------------------------------------
 	return (
-		<div className="flex-1 p-4 bg-gray-50 dark:bg-gray-900">
+		<div className="flex-1 p-2 bg-gray-50 dark:bg-gray-900">
 			<ToastContainer />
 
 			{/* Afficher un loader "d’action" si besoin (update/delete) */}
@@ -370,7 +370,7 @@ const PatientList = ({ onAddPatientClick }) => {
 					sortedPatients.map((patient, index) => (
 						<div
 							key={patient.id}
-							className="relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-4"
+							className="relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-1 sm:p-2"
 							style={{
 								animation: `fadeSlideIn 0.5s ease forwards ${
 									index * 50
@@ -378,65 +378,37 @@ const PatientList = ({ onAddPatientClick }) => {
 								opacity: 0,
 							}}
 						>
-							<div className="flex flex-col sm:flex-row gap-4">
-								<div className="flex items-center gap-4 flex-1">
-									<div>
-										{patient.gender === "Homme" ? (
-											<IconGenderMale
-												className="text-blue-500"
-												size={24}
-											/>
-										) : (
-											<IconGenderFemale
-												className="text-pink-500"
-												size={24}
-											/>
-										)}
-									</div>
-									<div className="flex-1">
-										<h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2">
-											{`${
-												patient.firstName || "Inconnu"
-											} ${patient.lastName || ""}`}
-											{patient.isDeceased && (
-												<span className="inline-flex items-center gap-1 text-sm text-red-500">
-													<IconSkull size={16} />
-													<span className="hidden sm:inline">
-														Décédé(e)
-													</span>
+							{/* HEADER */}
+							<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+								<div className="flex items-center gap-2">
+									{patient.gender === "Homme" ? (
+										<IconGenderMale
+											className="text-blue-500"
+											size={24}
+										/>
+									) : (
+										<IconGenderFemale
+											className="text-pink-500"
+											size={24}
+										/>
+									)}
+									<h3 className="text-lg font-medium text-gray-900 dark:text-white flex items-center gap-2 flex-wrap">
+										{`${patient.firstName || "Inconnu"} ${
+											patient.lastName || ""
+										}`}
+										{patient.isDeceased && (
+											<span className="inline-flex items-center gap-1 text-sm text-red-500">
+												<IconSkull size={16} />
+												<span className="hidden sm:inline">
+													Décédé(e)
 												</span>
-											)}
-										</h3>
-										<div className="mt-1 flex flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400">
-											<span>
-												Âge :{" "}
-												{calculateAge(
-													patient.birthDate
-												)}{" "}
-												ans
 											</span>
-											{patient.phone && (
-												<a
-													href={`tel:${patient.phone}`}
-													className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
-												>
-													<IconPhone size={14} />
-													{patient.phone}
-												</a>
-											)}
-											{patient.email && (
-												<a
-													href={`mailto:${patient.email}`}
-													className="hidden sm:flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
-												>
-													<IconMail size={14} />
-													{patient.email}
-												</a>
-											)}
-										</div>
-									</div>
+										)}
+									</h3>
 								</div>
-								<div className="flex sm:flex-row sm:items-center gap-2 pt-2 sm:pt-0 border-t sm:border-0 mt-2 sm:mt-0">
+
+								{/* BOUTONS ACTIONS */}
+								<div className="flex flex-wrap gap-2 sm:flex-nowrap sm:items-center">
 									<Button
 										aria-label={`Voir les détails du patient ${patient.firstName} ${patient.lastName}`}
 										variant="outline"
@@ -448,7 +420,7 @@ const PatientList = ({ onAddPatientClick }) => {
 													: patient.id
 											)
 										}
-										className="flex-1 sm:flex-none h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
+										className="h-9 flex-1 sm:flex-none min-w-[100px] dark:hover:text-gray-900 dark:hover:bg-amber-500"
 									>
 										{selectedPatientId === patient.id
 											? "Fermer"
@@ -460,28 +432,42 @@ const PatientList = ({ onAddPatientClick }) => {
 										onClick={() =>
 											handleAddAppointment(patient)
 										}
-										className="flex-1 sm:flex-none h-9 dark:hover:text-gray-900 dark:hover:bg-amber-500"
+										className="h-9 flex-1 sm:flex-none min-w-[100px] dark:hover:text-gray-900 dark:hover:bg-amber-500"
 									>
 										<IconCalendar className="h-4 w-4 sm:mr-2" />
-										<span className="hidden sm:inline">
+										<span className="hidden xs:inline sm:inline">
 											Rendez-vous
 										</span>
 									</Button>
-									{showAppointmentDialog && (
-										<AppointmentDialog
-											open={showAppointmentDialog}
-											onOpenChange={
-												setShowAppointmentDialog
-											}
-											selectedPatient={
-												selectedPatientForAppointment
-											}
-											selectedDate={new Date()}
-											patients={[]}
-										/>
-									)}
 								</div>
 							</div>
+
+							{/* INFOS */}
+							<div className="mt-2 flex flex-wrap gap-3 text-sm text-gray-600 dark:text-gray-300">
+								<span>
+									Âge : {calculateAge(patient.birthDate)} ans
+								</span>
+								{patient.phone && (
+									<a
+										href={`tel:${patient.phone}`}
+										className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
+									>
+										<IconPhone size={14} />
+										{patient.phone}
+									</a>
+								)}
+								{patient.email && (
+									<a
+										href={`mailto:${patient.email}`}
+										className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
+									>
+										<IconMail size={14} />
+										{patient.email}
+									</a>
+								)}
+							</div>
+
+							{/* PATIENT DETAILS */}
 							{selectedPatientId === patient.id && (
 								<React.Suspense
 									fallback={
@@ -499,6 +485,19 @@ const PatientList = ({ onAddPatientClick }) => {
 										onPatientUpdated={handlePatientUpdated}
 									/>
 								</React.Suspense>
+							)}
+
+							{/* DIALOG */}
+							{showAppointmentDialog && (
+								<AppointmentDialog
+									open={showAppointmentDialog}
+									onOpenChange={setShowAppointmentDialog}
+									selectedPatient={
+										selectedPatientForAppointment
+									}
+									selectedDate={new Date()}
+									patients={[]}
+								/>
 							)}
 						</div>
 					))
