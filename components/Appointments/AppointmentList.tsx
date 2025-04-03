@@ -48,7 +48,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
 	if (!appointments || appointments.length === 0) {
 		return (
 			<div className="text-center py-10 text-gray-500">
-				Aucun rendez-vous prévu pour aujourd'hui.
+				Aucun rendez-vous prévu pour aujourd&apos;hui.
 			</div>
 		);
 	}

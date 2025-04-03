@@ -118,7 +118,6 @@ const AppointmentDialog: FC<AppointmentDialogProps> = ({
 				</DialogHeader>
 
 				<div className="grid gap-4 py-4">
-					{/* Patient */}
 					<div className="grid gap-2">
 						<Label>Patient</Label>
 						<Select
@@ -140,7 +139,6 @@ const AppointmentDialog: FC<AppointmentDialogProps> = ({
 						</Select>
 					</div>
 
-					{/* Date */}
 					<div className="grid gap-2">
 						<Label>Date</Label>
 						<Input
@@ -152,7 +150,6 @@ const AppointmentDialog: FC<AppointmentDialogProps> = ({
 						/>
 					</div>
 
-					{/* Heure */}
 					<div className="grid gap-2">
 						<Label>Heure</Label>
 						<Input
@@ -164,7 +161,6 @@ const AppointmentDialog: FC<AppointmentDialogProps> = ({
 						/>
 					</div>
 
-					{/* Motif */}
 					<div className="grid gap-2">
 						<Label>Motif</Label>
 						<Textarea
@@ -176,7 +172,6 @@ const AppointmentDialog: FC<AppointmentDialogProps> = ({
 						/>
 					</div>
 
-					{/* Statut */}
 					<div className="grid gap-2">
 						<Label>Statut</Label>
 						<Select

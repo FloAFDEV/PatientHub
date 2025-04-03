@@ -7,7 +7,9 @@ import AppointmentList, {
 import AppointmentDialog from "@/components/Appointments/AppointmentDialog";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { formatISO } from "date-fns";
+import { Label } from "@/components/ui/label";
 
 interface Patient {
 	id: string;
@@ -35,17 +37,18 @@ const AppointmentsManager: React.FC = () => {
 	);
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [editingAppointment, setEditingAppointment] =
-		useState<AppointmentListItem | null>(null);
+		useState<Appointment | null>(null);
 
 	useEffect(() => {
+		// Récupération des rendez-vous de l'API en fonction de la date sélectionnée
 		fetch(`/api/appointments?date=${selectedDate}`)
 			.then((res) => res.json())
 			.then((data) => setAppointments(data))
-
 			.catch((err) =>
 				console.error("Erreur de chargement des rendez-vous:", err)
 			);
 
+		// Récupération des patients de l'API
 		fetch("/api/patients")
 			.then((res) => res.json())
 			.then((data) => setPatients(data))
@@ -54,7 +57,7 @@ const AppointmentsManager: React.FC = () => {
 			);
 	}, [selectedDate]);
 
-	const handleSaveAppointment = async (appt: AppointmentListItem) => {
+	const handleSaveAppointment = async (appt: Appointment) => {
 		const res = await fetch("/api/appointments", {
 			method: appt.id ? "PATCH" : "POST",
 			headers: { "Content-Type": "application/json" },
@@ -74,7 +77,7 @@ const AppointmentsManager: React.FC = () => {
 		}
 	};
 
-	const handleDeleteAppointment = async (appt: AppointmentListItem) => {
+	const handleDeleteAppointment = async (appt: Appointment) => {
 		if (!window.confirm("Confirmer la suppression de ce rendez-vous ?"))
 			return;
 		const res = await fetch(`/api/appointments?id=${appt.id}`, {
@@ -97,6 +100,16 @@ const AppointmentsManager: React.FC = () => {
 				>
 					<PlusCircle className="w-4 h-4 mr-2" /> Nouveau
 				</Button>
+			</div>
+
+			{/* Sélecteur de date */}
+			<div className="grid gap-2">
+				<Label>Date</Label>
+				<Input
+					type="date"
+					value={selectedDate}
+					onChange={(e) => setSelectedDate(e.target.value)} // Change la date sélectionnée
+				/>
 			</div>
 
 			<AppointmentList
