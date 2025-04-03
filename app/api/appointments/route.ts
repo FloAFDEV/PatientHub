@@ -1,7 +1,10 @@
+// app/api/appointments/route.ts
+
 import { NextResponse } from "next/server";
 import prisma from "../../../lib/connect";
 import { getSession } from "../../../lib/session";
 
+// 🔍 Récupération des rendez-vous pour une journée donnée
 export async function GET(request: Request) {
 	try {
 		const session = await getSession();
@@ -62,6 +65,7 @@ export async function GET(request: Request) {
 	}
 }
 
+// ➕ Création d'un nouveau rendez-vous
 export async function POST(request: Request) {
 	try {
 		const session = await getSession();
@@ -75,7 +79,7 @@ export async function POST(request: Request) {
 		const data = await request.json();
 		const { patientId, date, time, reason } = data;
 
-		// Vérifier que le patient appartient à l'ostéopathe
+		// 🔐 Vérifier que le patient appartient à l'ostéopathe
 		const patient = await prisma.patient.findFirst({
 			where: {
 				id: parseInt(patientId),
@@ -90,12 +94,12 @@ export async function POST(request: Request) {
 			);
 		}
 
-		// Créer la date du rendez-vous
+		// 🕓 Construire l'objet Date avec l'heure sélectionnée
 		const appointmentDate = new Date(date);
 		const [hours, minutes] = time.split(":");
 		appointmentDate.setHours(parseInt(hours), parseInt(minutes));
 
-		// Vérifier s'il n'y a pas déjà un rendez-vous à cette heure
+		// ⛔ Vérifier l'absence de doublon à cette heure
 		const existingAppointment = await prisma.appointment.findFirst({
 			where: {
 				date: appointmentDate,
@@ -113,6 +117,7 @@ export async function POST(request: Request) {
 			);
 		}
 
+		// ✅ Créer le rendez-vous
 		const appointment = await prisma.appointment.create({
 			data: {
 				date: appointmentDate,
@@ -130,6 +135,75 @@ export async function POST(request: Request) {
 		console.error("Erreur:", error);
 		return NextResponse.json(
 			{ error: "Erreur lors de la création du rendez-vous" },
+			{ status: 500 }
+		);
+	}
+}
+
+// 📝 Mise à jour d’un rendez-vous existant
+export async function PATCH(request: Request) {
+	try {
+		const session = await getSession();
+		if (!session?.user?.osteopathId) {
+			return NextResponse.json(
+				{ error: "Non autorisé" },
+				{ status: 401 }
+			);
+		}
+
+		const data = await request.json();
+		const { id, date, time, reason, status } = data;
+
+		const appointmentDate = new Date(date);
+		const [hours, minutes] = time.split(":");
+		appointmentDate.setHours(parseInt(hours), parseInt(minutes));
+
+		const appointment = await prisma.appointment.update({
+			where: { id },
+			data: {
+				date: appointmentDate,
+				reason,
+				status,
+			},
+		});
+
+		return NextResponse.json(appointment);
+	} catch (error) {
+		console.error("Erreur:", error);
+		return NextResponse.json(
+			{ error: "Erreur lors de la mise à jour du rendez-vous" },
+			{ status: 500 }
+		);
+	}
+}
+
+// ❌ Suppression d’un rendez-vous
+export async function DELETE(request: Request) {
+	try {
+		const session = await getSession();
+		if (!session?.user?.osteopathId) {
+			return NextResponse.json(
+				{ error: "Non autorisé" },
+				{ status: 401 }
+			);
+		}
+
+		const { searchParams } = new URL(request.url);
+		const id = searchParams.get("id");
+
+		if (!id) {
+			return NextResponse.json({ error: "ID manquant" }, { status: 400 });
+		}
+
+		await prisma.appointment.delete({
+			where: { id: parseInt(id) },
+		});
+
+		return NextResponse.json({ message: "Rendez-vous supprimé" });
+	} catch (error) {
+		console.error("Erreur:", error);
+		return NextResponse.json(
+			{ error: "Erreur lors de la suppression du rendez-vous" },
 			{ status: 500 }
 		);
 	}

@@ -1,349 +1,218 @@
 "use client";
 
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useState, useEffect, FC } from "react";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { Calendar, Clock, User, FileText } from "lucide-react";
-import { toast } from "react-toastify";
-
-import { Button } from "@/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
+	DialogFooter,
 } from "@/components/ui/dialog";
-import {
-	Form,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
 	Select,
-	SelectContent,
-	SelectItem,
 	SelectTrigger,
 	SelectValue,
+	SelectContent,
+	SelectItem,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import type { Appointment } from "./AppointmentsManager";
 
-/**
- * Types
- */
 interface Patient {
-	id: number;
+	id: string;
 	firstName: string;
 	lastName: string;
 }
 
-interface AppointmentType {
-	id: number;
-	date: string;
-	time: string;
-	patientId: number;
-	patientName: string;
-	reason: string;
-	status: "SCHEDULED" | "COMPLETED" | "CANCELED";
-}
-
-/**
- * Props pour le composant AppointmentDialog
- */
 interface AppointmentDialogProps {
 	open: boolean;
-	onOpenChange: (open: boolean) => void;
+	onClose: () => void;
+	onSave: (appointment: Appointment) => void;
+	appointment?: Appointment | null;
 	patients: Patient[];
-	selectedDate: Date;
-	appointment?: AppointmentType;
-	mode?: "create" | "edit";
-	selectedPatient?: Patient | null;
 }
 
-/**
- * Interface pour nos valeurs de formulaire
- */
-interface FormValues {
-	patientId: string;
-	time: string;
-	reason: string;
-}
+const statusOptions = [
+	{ value: "planned", label: "Prévu" },
+	{ value: "completed", label: "Terminé" },
+	{ value: "cancelled", label: "Annulé" },
+];
 
-/**
- * Génère un tableau des horaires à 45 minutes d'intervalle,
- * de 08:00 à 20:45.
- */
-const generateTimes = () => {
-	const times: string[] = [];
-	const currentTime = new Date();
-	currentTime.setHours(8, 0, 0, 0);
-
-	while (currentTime.getHours() < 21) {
-		const hour = String(currentTime.getHours()).padStart(2, "0");
-		const minutes = String(currentTime.getMinutes()).padStart(2, "0");
-		times.push(`${hour}:${minutes}`);
-		currentTime.setMinutes(currentTime.getMinutes() + 45);
-	}
-
-	return times;
-};
-
-/**
- * Composant AppointmentDialog
- */
-export function AppointmentDialog({
+const AppointmentDialog: FC<AppointmentDialogProps> = ({
 	open,
-	onOpenChange,
-	patients,
-	selectedDate,
+	onClose,
+	onSave,
 	appointment,
-	mode = "create",
-	selectedPatient,
-}: AppointmentDialogProps) {
-	const [isSubmitting, setIsSubmitting] = useState(false);
-
-	/**
-	 * Initialisation du formulaire via React Hook Form
-	 */
-	const form = useForm<FormValues>({
-		defaultValues: {
-			patientId:
-				selectedPatient?.id?.toString() ||
-				appointment?.patientId?.toString() ||
-				"",
-			time: appointment?.time || "08:00",
-			reason: appointment?.reason || "",
-		},
+	patients,
+}) => {
+	const [formData, setFormData] = useState<{
+		patientId: string;
+		date: string;
+		time: string;
+		reason: string;
+		status: Appointment["status"];
+	}>({
+		patientId: "",
+		date: "",
+		time: "",
+		reason: "",
+		status: "planned",
 	});
 
-	/**
-	 * Soumission du formulaire
-	 */
-	const onSubmit = async (data: FormValues) => {
-		setIsSubmitting(true);
-
-		try {
-			// Vérifications de base
-			if (!data.patientId) {
-				form.setError("patientId", {
-					type: "manual",
-					message: "Patient requis.",
-				});
-				return;
-			}
-			if (!data.time) {
-				form.setError("time", {
-					type: "manual",
-					message: "Heure requise.",
-				});
-				return;
-			}
-			if (!data.reason) {
-				form.setError("reason", {
-					type: "manual",
-					message: "Motif requis.",
-				});
-				return;
-			}
-
-			// Choix du endpoint et de la méthode selon create/edit
-			const endpoint =
-				mode === "create"
-					? "/api/appointments"
-					: `/api/appointments/${appointment?.id}`;
-			const method = mode === "create" ? "POST" : "PUT";
-
-			// Requête vers l'API
-			const response = await fetch(endpoint, {
-				method,
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					...data,
-					date: format(selectedDate, "yyyy-MM-dd"),
-				}),
+	useEffect(() => {
+		if (appointment) {
+			const dateObj = new Date(appointment.date);
+			setFormData({
+				patientId: appointment.patientId,
+				date: format(dateObj, "yyyy-MM-dd"),
+				time: format(dateObj, "HH:mm"),
+				reason: appointment.reason || "",
+				status: appointment.status,
 			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(
-					`Erreur lors de la sauvegarde: ${
-						errorData.message || response.statusText
-					}`
-				);
-			}
-
-			// Toast de succès
-			toast.success(
-				mode === "create"
-					? "Rendez-vous créé avec succès"
-					: "Rendez-vous modifié avec succès"
-			);
-
-			// Fermeture de la modale
-			onOpenChange(false);
-		} catch (error) {
-			console.error("Erreur détaillée:", error);
-			toast.error(`Une erreur est survenue: ${(error as Error).message}`);
-		} finally {
-			setIsSubmitting(false);
+		} else {
+			setFormData({
+				patientId: "",
+				date: "",
+				time: "",
+				reason: "",
+				status: "planned",
+			});
 		}
+	}, [appointment]);
+
+	const handleChange = (field: keyof typeof formData, value: string) => {
+		setFormData((prev) => ({ ...prev, [field]: value }));
 	};
 
-	// ID utilisé pour la description ARIA
-	const descriptionId = "appointment-dialog-description";
+	const handleSubmit = () => {
+		const fullDate = new Date(`${formData.date}T${formData.time}`);
+		const appointmentData: Appointment = {
+			id: appointment?.id ?? 0,
+			patientId: formData.patientId,
+			date: fullDate.toISOString(),
+			reason: formData.reason,
+			status: formData.status,
+		};
 
-	/**
-	 * Rendu principal
-	 */
+		if (appointment?.id !== undefined) {
+			appointmentData.id = appointment.id;
+		}
+
+		onSave(appointmentData);
+		onClose();
+	};
+
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent
-				className="sm:max-w-[500px] p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700"
-				aria-describedby={descriptionId}
-			>
-				{/* Header de la modale */}
-				<DialogHeader className="space-y-4">
-					<DialogTitle className="text-2xl font-bold flex items-center gap-3 text-gray-900 dark:text-white">
-						{mode === "create" ? (
-							<>
-								<Calendar className="h-6 w-6 text-primary" />
-								Nouveau rendez-vous
-							</>
-						) : (
-							<>
-								<Calendar className="h-6 w-6 text-primary" />
-								Modifier le rendez-vous
-							</>
-						)}
+		<Dialog open={open} onOpenChange={onClose}>
+			<DialogContent className="sm:max-w-lg">
+				<DialogHeader>
+					<DialogTitle>
+						{appointment
+							? "Modifier le rendez-vous"
+							: "Nouveau rendez-vous"}
 					</DialogTitle>
-					<div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-lg">
-						<Calendar className="h-4 w-4" />
-						<span className="text-lg">
-							{format(selectedDate, "EEEE dd MMMM yyyy", {
-								locale: fr,
-							})}
-						</span>
-					</div>
 				</DialogHeader>
 
-				{/* Formulaire (React Hook Form) */}
-				<Form {...form}>
-					<form
-						onSubmit={form.handleSubmit(onSubmit)}
-						className="space-y-6 mt-6"
-					>
-						{/* Patient */}
-						<FormField
-							control={form.control}
-							name="patientId"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-										<User className="h-4 w-4" />
-										Patient
-									</FormLabel>
-									<Select
-										onValueChange={field.onChange}
-										defaultValue={field.value}
-										value={field.value}
-									>
-										<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-											<SelectValue placeholder="Sélectionner un patient" />
-										</SelectTrigger>
-										<SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-											{patients.map((patient) => (
-												<SelectItem
-													key={patient.id}
-													value={patient.id.toString()}
-													className="py-3 hover:bg-gray-100 dark:hover:bg-gray-700"
-												>
-													{patient.firstName}{" "}
-													{patient.lastName}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+				<div className="grid gap-4 py-4">
+					{/* Patient */}
+					<div className="grid gap-2">
+						<Label>Patient</Label>
+						<Select
+							value={formData.patientId}
+							onValueChange={(value) =>
+								handleChange("patientId", value)
+							}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder="Sélectionner un patient" />
+							</SelectTrigger>
+							<SelectContent>
+								{patients.map((p) => (
+									<SelectItem key={p.id} value={p.id}>
+										{p.firstName} {p.lastName}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
 
-						{/* Heure */}
-						<FormField
-							control={form.control}
-							name="time"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-										<Clock className="h-4 w-4" />
-										Heure
-									</FormLabel>
-									<Select
-										onValueChange={field.onChange}
-										defaultValue={field.value}
-										value={field.value}
-									>
-										<SelectTrigger className="h-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-											<SelectValue placeholder="Sélectionner une heure" />
-										</SelectTrigger>
-										<SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-											{generateTimes().map((time) => (
-												<SelectItem
-													key={time}
-													value={time}
-													className="py-3 hover:bg-gray-100 dark:hover:bg-gray-700"
-												>
-													{time}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
+					{/* Date */}
+					<div className="grid gap-2">
+						<Label>Date</Label>
+						<Input
+							type="date"
+							value={formData.date}
+							onChange={(e) =>
+								handleChange("date", e.target.value)
+							}
 						/>
+					</div>
 
-						{/* Motif */}
-						<FormField
-							control={form.control}
-							name="reason"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-										<FileText className="h-4 w-4" />
-										Motif
-									</FormLabel>
-									<Input
-										{...field}
-										placeholder="Entrez le motif du rendez-vous"
-									/>
-									<FormMessage />
-								</FormItem>
-							)}
+					{/* Heure */}
+					<div className="grid gap-2">
+						<Label>Heure</Label>
+						<Input
+							type="time"
+							value={formData.time}
+							onChange={(e) =>
+								handleChange("time", e.target.value)
+							}
 						/>
+					</div>
 
-						{/* Boutons de confirmation / annulation */}
-						<div className="flex justify-end gap-3 pt-6">
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => onOpenChange(false)}
-							>
-								Annuler
-							</Button>
-							<Button type="submit" disabled={isSubmitting}>
-								{isSubmitting
-									? "Chargement..."
-									: mode === "create"
-									? "Créer"
-									: "Modifier"}
-							</Button>
-						</div>
-					</form>
-				</Form>
+					{/* Motif */}
+					<div className="grid gap-2">
+						<Label>Motif</Label>
+						<Textarea
+							placeholder="Détail du rendez-vous"
+							value={formData.reason}
+							onChange={(e) =>
+								handleChange("reason", e.target.value)
+							}
+						/>
+					</div>
+
+					{/* Statut */}
+					<div className="grid gap-2">
+						<Label>Statut</Label>
+						<Select
+							value={formData.status}
+							onValueChange={(value) =>
+								handleChange(
+									"status",
+									value as Appointment["status"]
+								)
+							}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder="Choisir un statut" />
+							</SelectTrigger>
+							<SelectContent>
+								{statusOptions.map((s) => (
+									<SelectItem key={s.value} value={s.value}>
+										{s.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+				</div>
+
+				<DialogFooter>
+					<Button variant="outline" onClick={onClose}>
+						Annuler
+					</Button>
+					<Button onClick={handleSubmit}>
+						{appointment ? "Mettre à jour" : "Créer"}
+					</Button>
+				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	);
-}
+};
+
+export default AppointmentDialog;

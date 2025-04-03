@@ -2,230 +2,110 @@
 
 import React from "react";
 import { format } from "date-fns";
-import { Edit2, Trash2, Calendar } from "lucide-react";
-import useSWR from "swr";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
+import { fr } from "date-fns/locale";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { AppointmentType } from "./AppointmentsManager";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { PencilIcon, Trash2Icon } from "lucide-react";
 
-/**
- * Propriétés acceptées par la liste des rendez-vous :
- *  - date : la date pour laquelle on affiche les rendez-vous
- *  - onEdit : callback pour éditer un rendez-vous (ouvre modal par ex.)
- *  - onDelete : callback pour supprimer un rendez-vous
- *  - onCancel : callback pour annuler un rendez-vous (status = "CANCELED")
- */
+// Mapping des statuts vers des couleurs
+const statusColors = {
+	planned: "bg-blue-500",
+	completed: "bg-green-500",
+	cancelled: "bg-red-500",
+};
+
+// Types des données d'un rendez-vous et des props
+export interface AppointmentListItem {
+	id: number;
+	date: string;
+	reason?: string;
+	status: "planned" | "completed" | "cancelled";
+	patientId: string;
+	patient?: {
+		id: number; // ✅ Ajout de l'ID manquant pour correspondre à Patient complet
+		firstName: string;
+		lastName: string;
+		phone?: string;
+		email?: string;
+	};
+}
+
 interface AppointmentListProps {
-	date: Date;
-	onEdit: (appointment: AppointmentType) => void;
-	onDelete: (appointmentId: number) => Promise<void>;
-	onCancel: (appointmentId: number) => Promise<void>;
+	appointments: AppointmentListItem[];
+	onEdit: (appointment: AppointmentListItem) => void;
+	onDelete: (appointment: AppointmentListItem) => void;
 }
 
 /**
- * Fetcher utilisé par SWR : simple GET qui parse la réponse en JSON.
+ * Composant d'affichage des rendez-vous sous forme de liste.
  */
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-/**
- * Composant qui affiche la liste des rendez-vous du jour.
- * Il gère l'état de chargement, l'erreur, et appelle onEdit/onDelete/onCancel sur les actions.
- */
-export function AppointmentList({
-	date,
+const AppointmentList: React.FC<AppointmentListProps> = ({
+	appointments,
 	onEdit,
 	onDelete,
-	onCancel,
-}: AppointmentListProps) {
-	// -- Récupération via SWR des RDV du jour
-	const {
-		data: appointments,
-		error,
-		mutate,
-	} = useSWR<AppointmentType[]>(
-		`/api/appointments?date=${format(date, "yyyy-MM-dd")}`,
-		fetcher,
-		{
-			revalidateOnFocus: false,
-			dedupingInterval: 5000,
-		}
-	);
-
-	// État de chargement tant qu'on n'a pas de data ni d'erreur
-	const isLoading = !appointments && !error;
-
-	// -- Gestion de l'état de chargement
-	if (isLoading) {
+}) => {
+	if (!appointments || appointments.length === 0) {
 		return (
-			<div className="flex items-center justify-center h-screen relative bg-white dark:bg-gray-900">
-				{/* Anneaux stylisés */}
-				<div className="absolute inset-0 flex items-center justify-center">
-					<div className="absolute h-64 w-64 rounded-full border-4 border-t-transparent border-red-500 animate-spin-slow" />
-					<div className="absolute h-48 w-48 rounded-full border-4 border-t-transparent border-purple-500 animate-spin-reverse-slow" />
-					<div className="absolute h-32 w-32 rounded-full border-4 border-t-transparent border-blue-500 animate-spin-slow" />
-				</div>
-
-				{/* Contenu au centre */}
-				<div className="relative z-10 text-center">
-					<div className="text-2xl sm:text-3xl font-semibold text-gray-600 dark:text-gray-100 animate-bounce">
-						Chargement...
-					</div>
-				</div>
+			<div className="text-center py-10 text-gray-500">
+				Aucun rendez-vous prévu pour aujourd'hui.
 			</div>
 		);
 	}
 
-	// -- Gestion de l'erreur
-	if (error) {
-		return (
-			<div className="text-center py-8 text-red-500">
-				<p>Impossible de charger les rendez-vous</p>
-				<Button
-					onClick={() => mutate()}
-					variant="outline"
-					className="mt-4"
-				>
-					Réessayer
-				</Button>
-			</div>
-		);
-	}
-
-	// -- Pas de rendez-vous
-	if (!appointments?.length) {
-		return (
-			<div className="flex flex-col items-center justify-center py-12 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl">
-				<Calendar className="h-12 w-12 mb-4 opacity-50" />
-				<p className="text-2xl font-medium p-4">
-					Aucun rendez-vous pour cette date
-				</p>
-				<p className="text-sm mt-2 p-4">
-					Cliquez sur le calendrier pour en créer
-				</p>
-			</div>
-		);
-	}
-
-	// -- Appels aux callbacks parent : onDelete / onCancel
-	//    puis on "mutate" pour rafraîchir la liste
-	const handleAction = async (
-		action: "delete" | "cancel",
-		appointmentId: number
-	) => {
-		try {
-			if (action === "delete") {
-				await onDelete(appointmentId);
-			} else {
-				await onCancel(appointmentId);
-			}
-			// Après suppression/annulation, on revalide la liste
-			mutate();
-		} catch (error) {
-			console.error(`Erreur lors de l'action ${action}:`, error);
-		}
-	};
-
-	// -- Rendu principal
 	return (
-		<div className="rounded-lg border border-gray-200 dark:border-gray-700">
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead>Heure</TableHead>
-						<TableHead>Patient</TableHead>
-						<TableHead>Motif</TableHead>
-						<TableHead>Statut</TableHead>
-						<TableHead className="text-right">Actions</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{appointments.map((appointment) => (
-						<TableRow key={appointment.id}>
-							<TableCell>
-								{format(new Date(appointment.date), "HH:mm")}
-							</TableCell>
-							<TableCell>{appointment.patientName}</TableCell>
-							<TableCell>{appointment.reason}</TableCell>
-
-							{/* Statut (badge coloré) */}
-							<TableCell>
-								<span
-									className={`px-2 py-1 rounded-full text-sm ${
-										appointment.status === "SCHEDULED"
-											? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
-											: appointment.status === "COMPLETED"
-											? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-											: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-									}`}
-								>
-									{appointment.status === "SCHEDULED" &&
-										"Prévu"}
-									{appointment.status === "COMPLETED" &&
-										"Terminé"}
-									{appointment.status === "CANCELED" &&
-										"Annulé"}
+		<ScrollArea className="h-[500px] w-full rounded-md border p-2">
+			<div className="space-y-4">
+				{appointments.map((appt) => (
+					<div
+						key={appt.id}
+						className="flex items-center justify-between bg-white dark:bg-slate-800 border rounded-xl p-4 shadow-sm"
+					>
+						<div className="flex flex-col space-y-1">
+							<span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+								{appt.patient?.firstName}{" "}
+								{appt.patient?.lastName}
+							</span>
+							<span className="text-sm text-gray-500">
+								{format(new Date(appt.date), "PPPP à HH:mm", {
+									locale: fr,
+								})}
+							</span>
+							{appt.reason && (
+								<span className="text-sm text-gray-400 italic">
+									Motif : {appt.reason}
 								</span>
-							</TableCell>
-
-							{/* Boutons d'action */}
-							<TableCell className="text-right">
-								<div className="flex justify-end space-x-2">
-									{/* Bouton éditer */}
-									<Button
-										variant="ghost"
-										size="sm"
-										onClick={() => onEdit(appointment)}
-										disabled={
-											appointment.status === "CANCELED"
-										}
-									>
-										<Edit2 className="h-4 w-4" />
-									</Button>
-
-									{/* Bouton supprimer */}
-									<Button
-										variant="ghost"
-										size="sm"
-										onClick={() =>
-											handleAction(
-												"delete",
-												appointment.id
-											)
-										}
-										className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-									>
-										<Trash2 className="h-4 w-4" />
-									</Button>
-
-									{/* Bouton annuler (uniquement si SCHEDULED) */}
-									{appointment.status === "SCHEDULED" && (
-										<Button
-											variant="ghost"
-											size="sm"
-											onClick={() =>
-												handleAction(
-													"cancel",
-													appointment.id
-												)
-											}
-											className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
-										>
-											Annuler
-										</Button>
-									)}
-								</div>
-							</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table>
-		</div>
+							)}
+						</div>
+						<div className="flex items-center space-x-2">
+							<Badge
+								className={`text-white ${
+									statusColors[appt.status]
+								}`}
+							>
+								{appt.status}
+							</Badge>
+							<Button
+								size="icon"
+								variant="ghost"
+								onClick={() => onEdit(appt)}
+							>
+								<PencilIcon className="w-4 h-4" />
+							</Button>
+							<Button
+								size="icon"
+								variant="ghost"
+								onClick={() => onDelete(appt)}
+								title="Supprimer ce rendez-vous"
+							>
+								<Trash2Icon className="w-4 h-4 text-red-500" />
+							</Button>
+						</div>
+					</div>
+				))}
+			</div>
+		</ScrollArea>
 	);
-}
+};
+
+export default AppointmentList;
