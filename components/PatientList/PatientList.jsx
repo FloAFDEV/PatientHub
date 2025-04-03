@@ -251,7 +251,7 @@ const PatientList = ({ onAddPatientClick }) => {
 						<h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
 							Liste de vos patients
 						</h1>
-						<p className="mt-2 text-lg text-gray-200 max-w-2xl">
+						<p className="mt-2 text-lg text-gray-200 max-w-2xl bg-gradient-to-r from-black/60 via-black/40 to-transparent">
 							Consultez et gérez la liste de vos patients en toute
 							simplicité
 						</p>
@@ -370,7 +370,7 @@ const PatientList = ({ onAddPatientClick }) => {
 					sortedPatients.map((patient, index) => (
 						<div
 							key={patient.id}
-							className="relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-1 sm:p-2"
+							className="relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-3 sm:p-2"
 							style={{
 								animation: `fadeSlideIn 0.5s ease forwards ${
 									index * 50
