@@ -118,7 +118,7 @@ function AppContent() {
 										{testimonial.role}
 									</p>
 									<p className="text-gray-700 italic">
-										"{testimonial.quote}"
+										&laquo; {testimonial.quote} &raquo;
 									</p>
 								</div>
 							</div>
