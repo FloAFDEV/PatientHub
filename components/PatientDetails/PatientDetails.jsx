@@ -187,7 +187,7 @@ const PatientDetails = ({ patient, onClose, onPatientUpdated }) => {
 	};
 
 	return (
-		<div className="p-1 w-full min-h-screen mx-auto dark:text-gray-300 overflow-y-auto mt-4">
+		<div className="p-1 w-full mx-auto dark:text-gray-300 mt-4">
 			<div className="flex items-center space-x-4 md:space-x-6 mb-6">
 				<Image
 					src={

@@ -354,7 +354,7 @@ const PatientList = ({ onAddPatientClick }) => {
 			</div>
 
 			{/* Liste des patients */}
-			<div className="grid gap-6 p-2">
+			<section className="grid gap-6 p-2 transition-all duration-300">
 				{!sortedPatients.length ? (
 					<div className="text-center py-8 px-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
 						<IconSearch className="mx-auto h-12 w-12 text-gray-400 animate-pulse" />
@@ -443,7 +443,7 @@ const PatientList = ({ onAddPatientClick }) => {
 							</div>
 
 							{/* INFOS */}
-							<div className="mt-2 flex flex-wrap gap-3 text-sm text-gray-600 dark:text-gray-300">
+							<div className="mt-2 ml-2 flex flex-wrap gap-3 text-sm text-gray-600 dark:text-gray-300">
 								<span>
 									Âge : {calculateAge(patient.birthDate)} ans
 								</span>
@@ -502,7 +502,7 @@ const PatientList = ({ onAddPatientClick }) => {
 						</div>
 					))
 				)}
-			</div>
+			</section>
 
 			{/* Pagination */}
 			{totalPages > 1 && (

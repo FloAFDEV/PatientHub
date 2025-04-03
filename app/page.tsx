@@ -1,11 +1,38 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Clock, Users, FileText, CheckCircle, Activity } from "lucide-react";
 import Image from "next/image";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
+	const searchParams = useSearchParams();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (searchParams.get("expired") === "1") {
+			toast.warning(
+				"Votre session a expiré. Veuillez vous reconnecter.",
+				{
+					position: "top-center",
+					autoClose: 4000,
+				}
+			);
+
+			// Rediriger automatiquement après 4,5s
+			setTimeout(() => {
+				router.push("/login");
+			}, 4500);
+		}
+	}, [searchParams, router]);
+
 	return (
 		<div className="min-h-screen bg-gray-100 text-gray-800 flex flex-col">
+			<ToastContainer />
+
 			{/* Hero Section */}
 			<header className="relative pt-16 pb-32 px-6 bg-slate-900 text-white">
 				<div className="flex items-center space-x-2 mb-12 justify-center md:justify-start">
