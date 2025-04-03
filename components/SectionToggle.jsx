@@ -5,34 +5,29 @@ import PropTypes from "prop-types";
 const SectionToggle = ({ title, isOpen, onToggle, children }) => {
 	const contentRef = useRef(null);
 	const [maxHeight, setMaxHeight] = useState("0px");
-	const [shouldRender, setShouldRender] = useState(isOpen);
 	const [isClient, setIsClient] = useState(false);
 
+	// Vérifie qu'on est bien côté client (évite les bugs SSR)
 	useEffect(() => {
 		setIsClient(true);
 	}, []);
 
+	// Gère l'ouverture/fermeture animée de la section
 	useEffect(() => {
+		if (!isClient || !contentRef.current) return;
+
 		if (isOpen) {
-			setShouldRender(true);
-			requestAnimationFrame(() => {
-				if (contentRef.current) {
-					setMaxHeight(`${contentRef.current.scrollHeight}px`);
-				}
-			});
+			const content = contentRef.current;
+			// On mesure la hauteur réelle du contenu
+			const scrollHeight = content.scrollHeight;
+			setMaxHeight(`${scrollHeight}px`);
 		} else {
-			if (contentRef.current) {
-				setMaxHeight("0px");
-				const timeout = setTimeout(() => {
-					setShouldRender(false);
-				}, 300);
-				return () => clearTimeout(timeout);
-			}
+			setMaxHeight("0px");
 		}
-	}, [isOpen, children]);
+	}, [isOpen, isClient, children]);
 
 	return (
-		<div className="mb-4 border rounded-lg shadow-sm">
+		<div className="mb-4 border rounded-lg shadow-sm overflow-hidden">
 			<button
 				id={`toggle-${title}`}
 				onClick={onToggle}
@@ -49,22 +44,20 @@ const SectionToggle = ({ title, isOpen, onToggle, children }) => {
 				/>
 			</button>
 
-			{isClient && shouldRender && (
-				<div
-					id={`section-${title}`}
-					role="region"
-					aria-labelledby={`toggle-${title}`}
-					ref={contentRef}
-					style={{
-						maxHeight,
-						overflow: "hidden",
-						transition: "max-height 0.3s ease-in-out",
-					}}
-					tabIndex={isOpen ? 0 : -1}
-				>
-					<div className="p-4">{children}</div>
-				</div>
-			)}
+			<div
+				id={`section-${title}`}
+				ref={contentRef}
+				role="region"
+				aria-labelledby={`toggle-${title}`}
+				style={{
+					maxHeight,
+					overflow: "hidden",
+					transition: "max-height 0.3s ease-in-out",
+				}}
+				tabIndex={isOpen ? 0 : -1}
+			>
+				<div className="p-4">{children}</div>
+			</div>
 		</div>
 	);
 };

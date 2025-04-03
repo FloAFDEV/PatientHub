@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useEffect, Suspense } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Clock, Users, FileText, CheckCircle, Activity } from "lucide-react";
+import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Image from "next/image";
-import { Clock, Users, FileText, CheckCircle, Activity } from "lucide-react";
 
-// 🔧 Nouveau composant pour gérer searchParams avec Suspense
-function SearchParamsHandler() {
+function App() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 
@@ -23,24 +22,16 @@ function SearchParamsHandler() {
 				}
 			);
 
+			// Rediriger automatiquement après 4,5s
 			setTimeout(() => {
 				router.push("/login");
 			}, 4500);
 		}
 	}, [searchParams, router]);
 
-	return null; // rien à afficher
-}
-
-function App() {
 	return (
 		<div className="min-h-screen bg-gray-100 text-gray-800 flex flex-col">
 			<ToastContainer />
-
-			{/* 👉 Ajout de Suspense ici pour éviter l’erreur */}
-			<Suspense fallback={null}>
-				<SearchParamsHandler />
-			</Suspense>
 
 			{/* Hero Section */}
 			<header className="relative pt-16 pb-32 px-6 bg-slate-900 text-white">
